@@ -1,6 +1,6 @@
 # 작업 전 참고하세요
 
-### 작업 절차 참고
+절차 등 **branch**를 나눠서 작업할 예정입니다. Pull Request는 @stevenahhh가 확정합니다.
 1. 로컬 동기화: 작업 시작 전 원격 `dev` 브랜치의 최신 상태를 로컬로 가져옴
 ```bash
 git checkout dev
