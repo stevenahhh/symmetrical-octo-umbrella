@@ -1,0 +1,50 @@
+/* 전체 배경과 기본 폰트 */
+.App {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #f0f2f5;
+  font-family: "Noto Sans KR", sans-serif;
+}
+
+/* 상단 메인 콘텐츠 영역 (지도 + 오른쪽 정보창) */
+.main-container {
+  display: flex;
+  flex: 1;
+  padding: 20px;
+  gap: 20px;
+}
+
+/* 중앙 지도 영역 */
+.map-section {
+  flex: 3;
+  background: white;
+  border-radius: 15px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* 오른쪽 정보창 영역 */
+.side-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* 하단 통계 바 (전력, 태양광 등) */
+.bottom-bar {
+  height: 120px;
+  display: flex;
+  padding: 0 20px 20px 20px;
+  gap: 20px;
+}
+
+/* 공통 카드 스타일 */
+.info-card {
+  background: white;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
