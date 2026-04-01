@@ -1,0 +1,53 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "zone_id": "z1", "zone_name": "공학관 앞 주차장" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[127.4840,34.9680],[127.4844,34.9680],[127.4844,34.9683],[127.4840,34.9683],[127.4840,34.9680]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "zone_id": "z2", "zone_name": "중앙 도로" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[127.4845,34.9680],[127.4849,34.9680],[127.4849,34.9683],[127.4845,34.9683],[127.4845,34.9680]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "zone_id": "z3", "zone_name": "도서관 앞 보행로" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[127.4850,34.9680],[127.4854,34.9680],[127.4854,34.9683],[127.4850,34.9683],[127.4850,34.9680]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "zone_id": "z4", "zone_name": "잔디 광장" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[127.4840,34.9676],[127.4844,34.9676],[127.4844,34.9679],[127.4840,34.9679],[127.4840,34.9676]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "zone_id": "z5", "zone_name": "건물 밀집 구역" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[127.4845,34.9676],[127.4849,34.9676],[127.4849,34.9679],[127.4845,34.9679],[127.4845,34.9676]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "zone_id": "z6", "zone_name": "운동장" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[127.4850,34.9676],[127.4854,34.9676],[127.4854,34.9679],[127.4850,34.9679],[127.4850,34.9676]]]
+      }
+    }
+  ]
+}
