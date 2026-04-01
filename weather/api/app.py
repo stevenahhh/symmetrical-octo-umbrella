@@ -2,6 +2,7 @@
 
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 from collectors.kma_current import fetch_kma_current
 from collectors.air_quality import fetch_air_quality
@@ -14,6 +15,15 @@ app = FastAPI(
     title="Campus Environment MVP API",
     description="AI 기반 스마트 캠퍼스 환경 디지털 트윈 MVP API",
     version="0.1.0",
+)
+
+# CORS 설정 (React 프론트엔드 연동을 위해)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # 개발 중이므로 전체 허용 (배포 시 프론트 주소로 변경 요망)
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
