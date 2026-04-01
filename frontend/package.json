@@ -7,7 +7,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@react-three/drei": "^9.105.6",
+    "@react-three/drei": "^9.122.0",
     "@react-three/fiber": "^8.16.2",
     "lucide-react": "^1.7.0",
     "react": "^18.2.0",
