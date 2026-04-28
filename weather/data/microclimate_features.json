@@ -15,14 +15,14 @@
       "zone_id": "zone_A",
       "element_type": "building",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "concrete",
+        "albedo": 0.3,
+        "vegetation_ratio": 0.147,
+        "shade_factor": 0.256,
+        "ventilation_factor": 0.689,
+        "building_density": 0.406,
+        "facade_reflectivity": 0.212,
+        "sky_view_factor": 0.659
       }
     },
     {
@@ -30,14 +30,14 @@
       "zone_id": "zone_A",
       "element_type": "building",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "concrete",
+        "albedo": 0.25,
+        "vegetation_ratio": 0.16,
+        "shade_factor": 0.259,
+        "ventilation_factor": 0.696,
+        "building_density": 0.396,
+        "facade_reflectivity": 0.206,
+        "sky_view_factor": 0.65
       }
     },
     {
@@ -45,14 +45,14 @@
       "zone_id": "zone_A",
       "element_type": "building",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "concrete",
+        "albedo": 0.25,
+        "vegetation_ratio": 0.116,
+        "shade_factor": 0.265,
+        "ventilation_factor": 0.707,
+        "building_density": 0.422,
+        "facade_reflectivity": 0.206,
+        "sky_view_factor": 0.654
       }
     },
     {
@@ -60,14 +60,14 @@
       "zone_id": "zone_A",
       "element_type": "building",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "concrete",
+        "albedo": 0.24,
+        "vegetation_ratio": 0.215,
+        "shade_factor": 0.295,
+        "ventilation_factor": 0.635,
+        "building_density": 0.62,
+        "facade_reflectivity": 0.192,
+        "sky_view_factor": 0.503
       }
     },
     {
@@ -75,14 +75,14 @@
       "zone_id": "zone_A",
       "element_type": "building",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "concrete",
+        "albedo": 0.24,
+        "vegetation_ratio": 0.223,
+        "shade_factor": 0.312,
+        "ventilation_factor": 0.6,
+        "building_density": 0.53,
+        "facade_reflectivity": 0.217,
+        "sky_view_factor": 0.585
       }
     },
     {
@@ -90,14 +90,14 @@
       "zone_id": "zone_A",
       "element_type": "building",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "concrete",
+        "albedo": 0.24,
+        "vegetation_ratio": 0.215,
+        "shade_factor": 0.331,
+        "ventilation_factor": 0.622,
+        "building_density": 0.574,
+        "facade_reflectivity": 0.194,
+        "sky_view_factor": 0.583
       }
     },
     {
@@ -105,14 +105,14 @@
       "zone_id": "zone_A",
       "element_type": "building",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "concrete",
+        "albedo": 0.24,
+        "vegetation_ratio": 0.216,
+        "shade_factor": 0.326,
+        "ventilation_factor": 0.638,
+        "building_density": 0.614,
+        "facade_reflectivity": 0.21,
+        "sky_view_factor": 0.497
       }
     },
     {
@@ -120,14 +120,14 @@
       "zone_id": "zone_A",
       "element_type": "building",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "concrete",
+        "albedo": 0.24,
+        "vegetation_ratio": 0.186,
+        "shade_factor": 0.309,
+        "ventilation_factor": 0.599,
+        "building_density": 0.537,
+        "facade_reflectivity": 0.18,
+        "sky_view_factor": 0.569
       }
     },
     {
@@ -135,14 +135,14 @@
       "zone_id": "zone_A",
       "element_type": "building",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "concrete",
+        "albedo": 0.24,
+        "vegetation_ratio": 0.207,
+        "shade_factor": 0.313,
+        "ventilation_factor": 0.614,
+        "building_density": 0.535,
+        "facade_reflectivity": 0.188,
+        "sky_view_factor": 0.602
       }
     },
     {
@@ -150,14 +150,14 @@
       "zone_id": "zone_A",
       "element_type": "building",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "concrete",
+        "albedo": 0.22,
+        "vegetation_ratio": 0.127,
+        "shade_factor": 0.255,
+        "ventilation_factor": 0.684,
+        "building_density": 0.411,
+        "facade_reflectivity": 0.163,
+        "sky_view_factor": 0.644
       }
     },
     {
@@ -165,14 +165,14 @@
       "zone_id": "zone_A",
       "element_type": "building",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "concrete",
+        "albedo": 0.22,
+        "vegetation_ratio": 0.144,
+        "shade_factor": 0.257,
+        "ventilation_factor": 0.703,
+        "building_density": 0.409,
+        "facade_reflectivity": 0.197,
+        "sky_view_factor": 0.664
       }
     },
     {
@@ -180,14 +180,14 @@
       "zone_id": "zone_A",
       "element_type": "building",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "concrete",
+        "albedo": 0.22,
+        "vegetation_ratio": 0.106,
+        "shade_factor": 0.227,
+        "ventilation_factor": 0.691,
+        "building_density": 0.388,
+        "facade_reflectivity": 0.166,
+        "sky_view_factor": 0.672
       }
     },
     {
@@ -195,14 +195,14 @@
       "zone_id": "zone_A",
       "element_type": "building",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "concrete",
+        "albedo": 0.22,
+        "vegetation_ratio": 0.139,
+        "shade_factor": 0.241,
+        "ventilation_factor": 0.708,
+        "building_density": 0.395,
+        "facade_reflectivity": 0.201,
+        "sky_view_factor": 0.648
       }
     },
     {
@@ -210,14 +210,14 @@
       "zone_id": "zone_A",
       "element_type": "facility",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "grass",
+        "albedo": 0.18,
+        "vegetation_ratio": 0.458,
+        "shade_factor": 0.037,
+        "ventilation_factor": 0.953,
+        "building_density": 0.038,
+        "facade_reflectivity": 0.054,
+        "sky_view_factor": 0.97
       }
     },
     {
@@ -225,14 +225,14 @@
       "zone_id": "zone_A",
       "element_type": "facility",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "grass",
+        "albedo": 0.18,
+        "vegetation_ratio": 0.465,
+        "shade_factor": 0.036,
+        "ventilation_factor": 0.975,
+        "building_density": 0.05,
+        "facade_reflectivity": 0.03,
+        "sky_view_factor": 0.927
       }
     },
     {
@@ -240,14 +240,14 @@
       "zone_id": "zone_A",
       "element_type": "facility",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "grass",
+        "albedo": 0.18,
+        "vegetation_ratio": 0.45,
+        "shade_factor": 0.056,
+        "ventilation_factor": 0.965,
+        "building_density": 0.046,
+        "facade_reflectivity": 0.028,
+        "sky_view_factor": 0.944
       }
     },
     {
@@ -255,14 +255,14 @@
       "zone_id": "zone_A",
       "element_type": "building",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "concrete",
+        "albedo": 0.22,
+        "vegetation_ratio": 0.145,
+        "shade_factor": 0.151,
+        "ventilation_factor": 0.824,
+        "building_density": 0.218,
+        "facade_reflectivity": 0.156,
+        "sky_view_factor": 0.811
       }
     },
     {
@@ -270,14 +270,14 @@
       "zone_id": "zone_A",
       "element_type": "facility",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "grass",
+        "albedo": 0.18,
+        "vegetation_ratio": 0.479,
+        "shade_factor": 0.052,
+        "ventilation_factor": 0.938,
+        "building_density": 0.057,
+        "facade_reflectivity": 0.031,
+        "sky_view_factor": 0.947
       }
     },
     {
@@ -285,14 +285,14 @@
       "zone_id": "zone_A",
       "element_type": "facility",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "grass",
+        "albedo": 0.18,
+        "vegetation_ratio": 0.468,
+        "shade_factor": 0.073,
+        "ventilation_factor": 0.969,
+        "building_density": 0.038,
+        "facade_reflectivity": 0.05,
+        "sky_view_factor": 0.934
       }
     },
     {
@@ -300,14 +300,14 @@
       "zone_id": "zone_B",
       "element_type": "building",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "concrete",
+        "albedo": 0.35,
+        "vegetation_ratio": 0.201,
+        "shade_factor": 0.239,
+        "ventilation_factor": 0.71,
+        "building_density": 0.357,
+        "facade_reflectivity": 0.265,
+        "sky_view_factor": 0.693
       }
     },
     {
@@ -315,14 +315,14 @@
       "zone_id": "zone_B",
       "element_type": "building",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "concrete",
+        "albedo": 0.3,
+        "vegetation_ratio": 0.193,
+        "shade_factor": 0.222,
+        "ventilation_factor": 0.734,
+        "building_density": 0.352,
+        "facade_reflectivity": 0.255,
+        "sky_view_factor": 0.701
       }
     },
     {
@@ -330,14 +330,14 @@
       "zone_id": "zone_B",
       "element_type": "building",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "concrete",
+        "albedo": 0.23,
+        "vegetation_ratio": 0.396,
+        "shade_factor": 0.241,
+        "ventilation_factor": 0.799,
+        "building_density": 0.327,
+        "facade_reflectivity": 0.17,
+        "sky_view_factor": 0.678
       }
     },
     {
@@ -345,14 +345,14 @@
       "zone_id": "zone_B",
       "element_type": "building",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "concrete",
+        "albedo": 0.23,
+        "vegetation_ratio": 0.439,
+        "shade_factor": 0.242,
+        "ventilation_factor": 0.759,
+        "building_density": 0.309,
+        "facade_reflectivity": 0.158,
+        "sky_view_factor": 0.713
       }
     },
     {
@@ -360,14 +360,14 @@
       "zone_id": "zone_B",
       "element_type": "building",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "glass",
+        "albedo": 0.18,
+        "vegetation_ratio": 0.883,
+        "shade_factor": 0.381,
+        "ventilation_factor": 0.899,
+        "building_density": 0.092,
+        "facade_reflectivity": 0.288,
+        "sky_view_factor": 0.829
       }
     },
     {
@@ -375,14 +375,14 @@
       "zone_id": "zone_B",
       "element_type": "building",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "concrete",
+        "albedo": 0.22,
+        "vegetation_ratio": 0.136,
+        "shade_factor": 0.236,
+        "ventilation_factor": 0.702,
+        "building_density": 0.381,
+        "facade_reflectivity": 0.165,
+        "sky_view_factor": 0.671
       }
     },
     {
@@ -390,14 +390,14 @@
       "zone_id": "zone_B",
       "element_type": "building",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "concrete",
+        "albedo": 0.27,
+        "vegetation_ratio": 0.365,
+        "shade_factor": 0.227,
+        "ventilation_factor": 0.777,
+        "building_density": 0.271,
+        "facade_reflectivity": 0.241,
+        "sky_view_factor": 0.736
       }
     },
     {
@@ -405,14 +405,14 @@
       "zone_id": "zone_B",
       "element_type": "building",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "concrete",
+        "albedo": 0.25,
+        "vegetation_ratio": 0.152,
+        "shade_factor": 0.284,
+        "ventilation_factor": 0.687,
+        "building_density": 0.376,
+        "facade_reflectivity": 0.199,
+        "sky_view_factor": 0.687
       }
     },
     {
@@ -420,14 +420,14 @@
       "zone_id": "zone_C",
       "element_type": "building",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "concrete",
+        "albedo": 0.3,
+        "vegetation_ratio": 0.186,
+        "shade_factor": 0.24,
+        "ventilation_factor": 0.768,
+        "building_density": 0.259,
+        "facade_reflectivity": 0.267,
+        "sky_view_factor": 0.778
       }
     },
     {
@@ -435,14 +435,14 @@
       "zone_id": "zone_C",
       "element_type": "building",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "concrete",
+        "albedo": 0.23,
+        "vegetation_ratio": 0.426,
+        "shade_factor": 0.202,
+        "ventilation_factor": 0.832,
+        "building_density": 0.254,
+        "facade_reflectivity": 0.179,
+        "sky_view_factor": 0.774
       }
     },
     {
@@ -450,14 +450,14 @@
       "zone_id": "zone_C",
       "element_type": "building",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "concrete",
+        "albedo": 0.23,
+        "vegetation_ratio": 0.375,
+        "shade_factor": 0.205,
+        "ventilation_factor": 0.79,
+        "building_density": 0.247,
+        "facade_reflectivity": 0.176,
+        "sky_view_factor": 0.758
       }
     },
     {
@@ -465,14 +465,14 @@
       "zone_id": "zone_C",
       "element_type": "building",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "concrete",
+        "albedo": 0.25,
+        "vegetation_ratio": 0.191,
+        "shade_factor": 0.289,
+        "ventilation_factor": 0.754,
+        "building_density": 0.35,
+        "facade_reflectivity": 0.215,
+        "sky_view_factor": 0.682
       }
     },
     {
@@ -480,14 +480,14 @@
       "zone_id": "zone_C",
       "element_type": "building",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "concrete",
+        "albedo": 0.25,
+        "vegetation_ratio": 0.198,
+        "shade_factor": 0.267,
+        "ventilation_factor": 0.715,
+        "building_density": 0.367,
+        "facade_reflectivity": 0.216,
+        "sky_view_factor": 0.679
       }
     },
     {
@@ -495,14 +495,14 @@
       "zone_id": "zone_C",
       "element_type": "facility",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "grass",
+        "albedo": 0.18,
+        "vegetation_ratio": 0.497,
+        "shade_factor": 0.071,
+        "ventilation_factor": 0.977,
+        "building_density": 0.018,
+        "facade_reflectivity": 0.053,
+        "sky_view_factor": 0.968
       }
     },
     {
@@ -510,14 +510,14 @@
       "zone_id": "zone_D",
       "element_type": "building",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "concrete",
+        "albedo": 0.26,
+        "vegetation_ratio": 0.055,
+        "shade_factor": 0.397,
+        "ventilation_factor": 0.643,
+        "building_density": 0.691,
+        "facade_reflectivity": 0.377,
+        "sky_view_factor": 0.463
       }
     },
     {
@@ -525,14 +525,14 @@
       "zone_id": "zone_D",
       "element_type": "building",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "concrete",
+        "albedo": 0.22,
+        "vegetation_ratio": 0.029,
+        "shade_factor": 0.366,
+        "ventilation_factor": 0.615,
+        "building_density": 0.688,
+        "facade_reflectivity": 0.274,
+        "sky_view_factor": 0.454
       }
     },
     {
@@ -540,14 +540,14 @@
       "zone_id": "zone_D",
       "element_type": "building",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "concrete",
+        "albedo": 0.22,
+        "vegetation_ratio": 0.018,
+        "shade_factor": 0.394,
+        "ventilation_factor": 0.618,
+        "building_density": 0.706,
+        "facade_reflectivity": 0.303,
+        "sky_view_factor": 0.455
       }
     },
     {
@@ -555,14 +555,14 @@
       "zone_id": "zone_D",
       "element_type": "building",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "concrete",
+        "albedo": 0.22,
+        "vegetation_ratio": 0.033,
+        "shade_factor": 0.391,
+        "ventilation_factor": 0.603,
+        "building_density": 0.7,
+        "facade_reflectivity": 0.303,
+        "sky_view_factor": 0.434
       }
     },
     {
@@ -570,14 +570,14 @@
       "zone_id": "zone_E",
       "element_type": "building",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "concrete",
+        "albedo": 0.25,
+        "vegetation_ratio": 0.132,
+        "shade_factor": 0.292,
+        "ventilation_factor": 0.678,
+        "building_density": 0.444,
+        "facade_reflectivity": 0.22,
+        "sky_view_factor": 0.668
       }
     },
     {
@@ -585,14 +585,14 @@
       "zone_id": "zone_E",
       "element_type": "building",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "concrete",
+        "albedo": 0.25,
+        "vegetation_ratio": 0.113,
+        "shade_factor": 0.303,
+        "ventilation_factor": 0.679,
+        "building_density": 0.424,
+        "facade_reflectivity": 0.225,
+        "sky_view_factor": 0.659
       }
     },
     {
@@ -600,14 +600,14 @@
       "zone_id": "zone_E",
       "element_type": "building",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "concrete",
+        "albedo": 0.25,
+        "vegetation_ratio": 0.117,
+        "shade_factor": 0.261,
+        "ventilation_factor": 0.72,
+        "building_density": 0.467,
+        "facade_reflectivity": 0.225,
+        "sky_view_factor": 0.606
       }
     },
     {
@@ -615,14 +615,14 @@
       "zone_id": "zone_E",
       "element_type": "building",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "concrete",
+        "albedo": 0.25,
+        "vegetation_ratio": 0.126,
+        "shade_factor": 0.284,
+        "ventilation_factor": 0.701,
+        "building_density": 0.502,
+        "facade_reflectivity": 0.205,
+        "sky_view_factor": 0.611
       }
     },
     {
@@ -630,14 +630,14 @@
       "zone_id": "zone_E",
       "element_type": "building",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "concrete",
+        "albedo": 0.25,
+        "vegetation_ratio": 0.117,
+        "shade_factor": 0.275,
+        "ventilation_factor": 0.709,
+        "building_density": 0.47,
+        "facade_reflectivity": 0.211,
+        "sky_view_factor": 0.613
       }
     },
     {
@@ -645,14 +645,14 @@
       "zone_id": "zone_E",
       "element_type": "building",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "concrete",
+        "albedo": 0.29,
+        "vegetation_ratio": 0.109,
+        "shade_factor": 0.278,
+        "ventilation_factor": 0.725,
+        "building_density": 0.465,
+        "facade_reflectivity": 0.279,
+        "sky_view_factor": 0.636
       }
     },
     {
@@ -660,14 +660,14 @@
       "zone_id": "zone_E",
       "element_type": "building",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "concrete",
+        "albedo": 0.25,
+        "vegetation_ratio": 0.118,
+        "shade_factor": 0.302,
+        "ventilation_factor": 0.719,
+        "building_density": 0.459,
+        "facade_reflectivity": 0.213,
+        "sky_view_factor": 0.633
       }
     },
     {
@@ -675,14 +675,14 @@
       "zone_id": "zone_E",
       "element_type": "building",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "concrete",
+        "albedo": 0.25,
+        "vegetation_ratio": 0.147,
+        "shade_factor": 0.29,
+        "ventilation_factor": 0.706,
+        "building_density": 0.464,
+        "facade_reflectivity": 0.228,
+        "sky_view_factor": 0.625
       }
     },
     {
@@ -690,14 +690,14 @@
       "zone_id": "zone_F",
       "element_type": "building",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "concrete",
+        "albedo": 0.29,
+        "vegetation_ratio": 0.186,
+        "shade_factor": 0.27,
+        "ventilation_factor": 0.748,
+        "building_density": 0.382,
+        "facade_reflectivity": 0.282,
+        "sky_view_factor": 0.681
       }
     },
     {
@@ -705,14 +705,14 @@
       "zone_id": "zone_F",
       "element_type": "building",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "concrete",
+        "albedo": 0.25,
+        "vegetation_ratio": 0.15,
+        "shade_factor": 0.283,
+        "ventilation_factor": 0.729,
+        "building_density": 0.365,
+        "facade_reflectivity": 0.231,
+        "sky_view_factor": 0.685
       }
     },
     {
@@ -720,14 +720,14 @@
       "zone_id": "zone_F",
       "element_type": "facility",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "grass",
+        "albedo": 0.18,
+        "vegetation_ratio": 0.507,
+        "shade_factor": 0.038,
+        "ventilation_factor": 0.989,
+        "building_density": 0.02,
+        "facade_reflectivity": 0.067,
+        "sky_view_factor": 0.98
       }
     },
     {
@@ -735,14 +735,14 @@
       "zone_id": "zone_F",
       "element_type": "facility",
       "microclimate": {
-        "surface_type": null,
-        "albedo": null,
-        "vegetation_ratio": null,
-        "shade_factor": null,
-        "ventilation_factor": null,
-        "building_density": null,
-        "facade_reflectivity": null,
-        "sky_view_factor": null
+        "surface_type": "grass",
+        "albedo": 0.18,
+        "vegetation_ratio": 0.496,
+        "shade_factor": 0.039,
+        "ventilation_factor": 0.965,
+        "building_density": 0.014,
+        "facade_reflectivity": 0.057,
+        "sky_view_factor": 0.988
       }
     },
     {
