@@ -10,3 +10,5 @@ KMA_NY = 84
 # 에어코리아 측정소/시군 이름
 AIR_STATION_NAME = "용당동"
 AIR_SIDO_NAME = "전남"
+
+#AIR_STATION_NAME = "매곡동"
