@@ -1,12 +1,4 @@
 {
-  "element_id": "RD_011",
-  "name": "중앙로",
-  "element_type": "road",
-  "zone_id": "zone_central",
-  "geometry": null
-}
-
-{
   "metadata": {
     "project": "campus_digital_twin",
     "layer": "common",
@@ -52,66 +44,31 @@
       "zone_id": "zone_B",
       "zone_name": "B계열_박물관_70주년기념관_생명대권",
       "description": "박물관, 70주년기념관, 생명산업과학대, 산학협력관 및 주변 도로를 포함하는 동북/생명대 구역",
-      "building_ids": [
-        "B1",
-        "B2",
-        "B3",
-        "B4",
-        "B5",
-        "B6",
-        "B7",
-        "B9"
-      ]
+      "building_ids": ["B1", "B2", "B3", "B4", "B5", "B6", "B7", "B9"]
     },
     {
       "zone_id": "zone_C",
       "zone_name": "C계열_도서관_실습관_농업센터권",
       "description": "도서관, 친환경농업센터, 공동실험실습관, 북문 및 주변 도로를 포함하는 북부 학습/실습 구역",
-      "building_ids": [
-        "C1",
-        "C2",
-        "C3",
-        "C4",
-        "C5",
-        "C6"
-      ]
+      "building_ids": ["C1", "C2", "C3", "C4", "C5", "C6"]
     },
     {
       "zone_id": "zone_D",
       "zone_name": "D계열_공과대학권",
       "description": "공과대학 1·2·3호관, 창업보육센터 및 공학대로 주변 도로를 포함하는 공학 구역",
-      "building_ids": [
-        "D1",
-        "D2",
-        "D3",
-        "D4"
-      ]
+      "building_ids": ["D1", "D2", "D3", "D4"]
     },
     {
       "zone_id": "zone_E",
       "zone_name": "E계열_사범대_인문예술_사회과학_학생회관권",
       "description": "학생회관, 기초교육관, 사범대, 미래창조관, 사회과학대, 인문예술대 및 주변 도로를 포함하는 서부 교육/인문사회 구역",
-      "building_ids": [
-        "E1",
-        "E2",
-        "E3",
-        "E4",
-        "E5",
-        "E6",
-        "E7",
-        "E8"
-      ]
+      "building_ids": ["E1", "E2", "E3", "E4", "E5", "E6", "E7", "E8"]
     },
     {
       "zone_id": "zone_F",
       "zone_name": "F계열_국제문화_평생교육_테니스장권",
       "description": "국제문화컨벤션관, 평생교육원, 학생테니스장, 열린광장 등 남서부 부속시설 구역",
-      "building_ids": [
-        "F1",
-        "F2",
-        "F3",
-        "F4"
-      ]
+      "building_ids": ["F1", "F2", "F3", "F4"]
     }
   ],
   "elements": [

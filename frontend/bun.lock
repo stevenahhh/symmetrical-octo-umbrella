@@ -4,7 +4,11 @@
     "": {
       "name": "symmetrical-octo-umbrella",
       "dependencies": {
+<<<<<<< HEAD
         "@react-three/drei": "^9.122.0",
+=======
+        "@react-three/drei": "^9.105.6",
+>>>>>>> 89cde61 (fix: App.jsx 클릭 에러 수정중,  전체 프로젝트 업데이트)
         "@react-three/fiber": "^8.16.2",
         "lucide-react": "^1.7.0",
         "react": "^18.2.0",

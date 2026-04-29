@@ -1,4 +1,11 @@
+<<<<<<< HEAD
 ﻿user_id,total_xp,current_grade,current_weight
 SCN-A-0,50,Bronze,1.2
 SCN-A-1,200,Gold,2.0
 SCN-A-2,400,Platinum,3.0
+=======
+﻿user_id,total_xp,current_grade,current_weight
+SCN-A-0,50,Bronze,1.2
+SCN-A-1,200,Gold,2.0
+SCN-A-2,400,Platinum,3.0
+>>>>>>> 89cde61 (fix: App.jsx 클릭 에러 수정중,  전체 프로젝트 업데이트)

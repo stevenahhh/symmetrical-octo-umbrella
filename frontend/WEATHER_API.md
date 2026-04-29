@@ -43,10 +43,10 @@ GET http://localhost:8000/microclimate/elements/BLD_E1/popup
   },
 
   "factors": {
-    "shade":      { "level": "낮음", "value": 0.143 },
+    "shade": { "level": "낮음", "value": 0.143 },
     "vegetation": { "level": "낮음", "value": 0.073 },
-    "wind":       { "level": "보통", "value": 0.631 },
-    "radiation":  { "level": "보통", "value": 0.537 }
+    "wind": { "level": "보통", "value": 0.631 },
+    "radiation": { "level": "보통", "value": 0.537 }
   },
 
   "delta": {
@@ -76,26 +76,26 @@ GET http://localhost:8000/microclimate/elements/BLD_E1/popup
 
 ### `thermal` — 열환경 수치
 
-| 필드 | 타입 | 설명 |
-|---|---|---|
-| `local_temp` | float | 이 건물의 국지 기온 (°C) — 기준 기상 + 미기후 보정값 |
-| `feels_like` | float | 체감온도 (°C) — Heat Index 또는 Wind Chill |
-| `utci` | float | UTCI 열 스트레스 지수 (°C 단위, 사람 체감 기준) |
-| `wbgt` | float | WBGT 열 위험 지수 (°C 단위, 운동/야외활동 기준) |
-| `risk_level` | string | 위험 등급 텍스트 (아래 표 참고) |
-| `stress_category` | string | 위험 등급 설명 문장 |
-| `risk_color` | string | **위험 등급 hex 색상** → 직접 CSS/Three.js 에 사용 가능 |
-| `risk_score` | int | **위험 등급 정수 (0~4)** → 색상 그라디언트·진행 바에 사용 |
+| 필드              | 타입   | 설명                                                      |
+| ----------------- | ------ | --------------------------------------------------------- |
+| `local_temp`      | float  | 이 건물의 국지 기온 (°C) — 기준 기상 + 미기후 보정값      |
+| `feels_like`      | float  | 체감온도 (°C) — Heat Index 또는 Wind Chill                |
+| `utci`            | float  | UTCI 열 스트레스 지수 (°C 단위, 사람 체감 기준)           |
+| `wbgt`            | float  | WBGT 열 위험 지수 (°C 단위, 운동/야외활동 기준)           |
+| `risk_level`      | string | 위험 등급 텍스트 (아래 표 참고)                           |
+| `stress_category` | string | 위험 등급 설명 문장                                       |
+| `risk_color`      | string | **위험 등급 hex 색상** → 직접 CSS/Three.js 에 사용 가능   |
+| `risk_score`      | int    | **위험 등급 정수 (0~4)** → 색상 그라디언트·진행 바에 사용 |
 
 #### 위험 등급 매핑표
 
-| `risk_level` | `risk_score` | `risk_color` | UTCI 범위 |
-|---|---|---|---|
-| 낮음 | 0 | `#1976D2` (파랑) | 9 ~ 26 °C |
-| 주의 | 1 | `#388E3C` (초록) | 26 ~ 32 °C |
-| 높음 | 2 | `#FBC02D` (노랑) | 32 ~ 38 °C |
-| 매우 높음 | 3 | `#F57C00` (주황) | 38 ~ 46 °C |
-| 위험 | 4 | `#D32F2F` (빨강) | 46 °C 이상 |
+| `risk_level` | `risk_score` | `risk_color`     | UTCI 범위  |
+| ------------ | ------------ | ---------------- | ---------- |
+| 낮음         | 0            | `#1976D2` (파랑) | 9 ~ 26 °C  |
+| 주의         | 1            | `#388E3C` (초록) | 26 ~ 32 °C |
+| 높음         | 2            | `#FBC02D` (노랑) | 32 ~ 38 °C |
+| 매우 높음    | 3            | `#F57C00` (주황) | 38 ~ 46 °C |
+| 위험         | 4            | `#D32F2F` (빨강) | 46 °C 이상 |
 
 ---
 
@@ -104,12 +104,12 @@ GET http://localhost:8000/microclimate/elements/BLD_E1/popup
 건물 주변 환경 특성을 4가지로 요약합니다.  
 각 항목은 `level`(텍스트)과 `value`(0~1 원시값) 두 가지를 내려줍니다.
 
-| 인자 | 설명 | level 낮음 기준 | level 높음 기준 |
-|---|---|---|---|
-| `shade` | 그늘 비율 — 높을수록 시원함 | < 0.15 | ≥ 0.35 |
-| `vegetation` | 녹지 비율 — 높을수록 냉각 효과 | < 0.15 | ≥ 0.35 |
-| `wind` | 통풍 계수 — 높을수록 바람 잘 통함 | < 0.45 | ≥ 0.65 |
-| `radiation` | 하늘 노출도 — 높을수록 복사 노출 큼 | < 0.45 | ≥ 0.65 |
+| 인자         | 설명                                | level 낮음 기준 | level 높음 기준 |
+| ------------ | ----------------------------------- | --------------- | --------------- |
+| `shade`      | 그늘 비율 — 높을수록 시원함         | < 0.15          | ≥ 0.35          |
+| `vegetation` | 녹지 비율 — 높을수록 냉각 효과      | < 0.15          | ≥ 0.35          |
+| `wind`       | 통풍 계수 — 높을수록 바람 잘 통함   | < 0.45          | ≥ 0.65          |
+| `radiation`  | 하늘 노출도 — 높을수록 복사 노출 큼 | < 0.45          | ≥ 0.65          |
 
 `level` 값: `"낮음"` / `"보통"` / `"높음"` / `"매우 높음"` 네 가지입니다.
 
@@ -117,10 +117,10 @@ GET http://localhost:8000/microclimate/elements/BLD_E1/popup
 
 ### `delta` — 캠퍼스 기준 대비 차이
 
-| 필드 | 설명 |
-|---|---|
-| `temp` | 이 건물 local_temp - 현재 기준 기상 온도 (양수 = 더 더움) |
-| `utci` | 이 건물 UTCI - 캠퍼스 평균 UTCI (있을 경우) |
+| 필드    | 설명                                                       |
+| ------- | ---------------------------------------------------------- |
+| `temp`  | 이 건물 local_temp - 현재 기준 기상 온도 (양수 = 더 더움)  |
+| `utci`  | 이 건물 UTCI - 캠퍼스 평균 UTCI (있을 경우)                |
 | `label` | 사람이 읽을 수 있는 텍스트 (예: `"기준 기온 대비 +2.8°C"`) |
 
 ---
@@ -175,24 +175,24 @@ zone 단위로 평균 기온·UTCI·WBGT, 최고 위험도를 반환합니다.
 
 `common/data/common_elemetns.json` 파일 기준입니다.
 
-| 접두사 | 의미 | 예시 |
-|---|---|---|
-| `BLD_` | 건물 (building) | `BLD_E1`, `BLD_B5` |
-| `RD_` | 도로 (road) | `RD_011` |
-| `ND_` | 교차로/노드 (node) | `ND_006` |
-| `CW_` | 인도/보도 (crosswalk) | `CW_003` |
+| 접두사 | 의미                  | 예시               |
+| ------ | --------------------- | ------------------ |
+| `BLD_` | 건물 (building)       | `BLD_E1`, `BLD_B5` |
+| `RD_`  | 도로 (road)           | `RD_011`           |
+| `ND_`  | 교차로/노드 (node)    | `ND_006`           |
+| `CW_`  | 인도/보도 (crosswalk) | `CW_003`           |
 
-현재 미기후 데이터가 채워진 것은 **BLD_\* (건물 49개)** 입니다.  
+현재 미기후 데이터가 채워진 것은 **BLD\_\* (건물 49개)** 입니다.  
 RD/ND/CW 는 null이므로 클릭 시 팝업 처리 예외 처리 필요합니다.
 
 ---
 
 ## 5. 에러 처리
 
-| HTTP 코드 | 의미 | 대응 |
-|---|---|---|
-| `404` | element_id 없음 | 팝업 미표시 또는 "데이터 없음" 메시지 |
-| `500` | 서버 내부 오류 (KMA API 실패 등) | 재시도 또는 "잠시 후 다시 시도" 메시지 |
+| HTTP 코드 | 의미                             | 대응                                   |
+| --------- | -------------------------------- | -------------------------------------- |
+| `404`     | element_id 없음                  | 팝업 미표시 또는 "데이터 없음" 메시지  |
+| `500`     | 서버 내부 오류 (KMA API 실패 등) | 재시도 또는 "잠시 후 다시 시도" 메시지 |
 
 ---
 
@@ -200,7 +200,9 @@ RD/ND/CW 는 null이므로 클릭 시 팝업 처리 예외 처리 필요합니�
 
 ```javascript
 async function fetchBuildingPopup(elementId) {
-  const res = await fetch(`http://localhost:8000/microclimate/elements/${elementId}/popup`);
+  const res = await fetch(
+    `http://localhost:8000/microclimate/elements/${elementId}/popup`,
+  );
   if (!res.ok) return null;
   return await res.json();
 }
@@ -212,7 +214,9 @@ const data = await fetchBuildingPopup("BLD_E1");
 buildingMesh.material.color.set(data.thermal.risk_color);
 
 // 텍스트 렌더링
-console.log(`${data.name} — ${data.thermal.risk_level} (UTCI ${data.thermal.utci}°C)`);
-console.log(data.delta.label);          // "기준 기온 대비 +2.8°C"
-console.log(data.reasons.join("\n"));   // 원인 설명
+console.log(
+  `${data.name} — ${data.thermal.risk_level} (UTCI ${data.thermal.utci}°C)`,
+);
+console.log(data.delta.label); // "기준 기온 대비 +2.8°C"
+console.log(data.reasons.join("\n")); // 원인 설명
 ```
