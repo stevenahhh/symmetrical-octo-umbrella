@@ -133,32 +133,26 @@ def format_popup_response(
 ) -> Dict[str, Any]:
     """
     파이프라인 결과 + 건물 메타 + 미기후 특성을 묶어 팝업 응답 dict 반환.
-
-    Parameters
-    ----------
-    element_id      : "BLD_E1"
-    name            : "공과대학 1호관"  (common_elements 에서 조회)
-    zone_id         : "zone_D"
-    element_type    : "building" | "facility"
-    pipeline_result : run_pipeline_for_element() 결과
-    microclimate    : features JSON 의 microclimate dict
-    weather         : 기상 데이터 dict (temperature, humidity, wind_speed 필요)
-    timestamp       : 기상 타임스탬프 문자열
-    base_utci       : 캠퍼스 평균 UTCI (delta 계산용, 없으면 생략)
     """
+    # 안전한 기본값 처리
     risk_level  = pipeline_result.get("risk_level", "낮음")
-    local_temp  = pipeline_result.get("local_temp",  weather.get("temperature", 0.0))
-    utci        = pipeline_result.get("utci", 0.0)
+    local_temp  = pipeline_result.get("local_temp", weather.get("temperature", 25.0))
+    utci        = pipeline_result.get("utci", 25.0)
+    feels_like  = pipeline_result.get("feels_like", local_temp)
+    wbgt        = pipeline_result.get("wbgt", 20.0)
+    stress_category = pipeline_result.get("stress_category", "")
+    reasons     = pipeline_result.get("reasons", [])
+    
     base_temp   = weather.get("temperature", local_temp)
     ui          = _risk_ui(risk_level)
 
     thermal = {
-        "local_temp":      round(local_temp, 1),
-        "feels_like":      round(pipeline_result.get("feels_like", local_temp), 1),
-        "utci":            round(utci, 1),
-        "wbgt":            round(pipeline_result.get("wbgt", 0.0), 1),
+        "local_temp":      round(float(local_temp), 1),
+        "feels_like":      round(float(feels_like), 1),
+        "utci":            round(float(utci), 1),
+        "wbgt":            round(float(wbgt), 1),
         "risk_level":      risk_level,
-        "stress_category": pipeline_result.get("stress_category", ""),
+        "stress_category": str(stress_category),
         "risk_color":      ui["color"],
         "risk_score":      ui["score"],
     }
@@ -173,7 +167,7 @@ def format_popup_response(
         "thermal":  thermal,
         "factors":  build_factors(microclimate),
         "delta":    build_delta(local_temp, utci, base_temp, base_utci),
-        "reasons":  pipeline_result.get("reasons", []),
+        "reasons":  list(reasons) if reasons else [],
 
         "base_weather": {
             "temperature": weather.get("temperature"),

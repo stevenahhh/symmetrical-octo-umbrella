@@ -117,7 +117,11 @@ def _load_element_features(path: Optional[Path] = None) -> List[Dict[str, Any]]:
     target = path or _FEATURE_FILE
     if target.exists():
         with open(target, encoding="utf-8") as f:
-            return json.load(f)
+            data = json.load(f)
+        # JSON 파일이 {"metadata": ..., "features": [...]} 구조인 경우 대응
+        if isinstance(data, dict):
+            return data.get("features", [])
+        return data
 
     # --- fallback: 샘플 데이터 ---
     return [
@@ -297,7 +301,11 @@ def get_element_popup(element_id: str):
                 detail=f"element_id '{element_id}' 를 찾을 수 없습니다.",
             )
 
-        pipeline_result = run_pipeline_for_element(weather, feature, include_detail=False)
+        try:
+            pipeline_result = run_pipeline_for_element(weather, feature, include_detail=False)
+        except Exception as e:
+            print(f"❌ pipeline error for {element_id}: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Pipeline error: {str(e)}")
 
         # 건물 메타 (없으면 element_id 를 이름으로 사용)
         m = meta.get(element_id, {})
@@ -322,6 +330,7 @@ def get_element_popup(element_id: str):
     except HTTPException:
         raise
     except Exception as e:
+        print(f"❌ popup endpoint error for {element_id}: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
