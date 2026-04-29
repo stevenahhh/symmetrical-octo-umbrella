@@ -3,6 +3,7 @@
   - React + Three.js (react‑three‑fiber) 기반 UI
   - 기존 교통·안전·에너지 레이아웃 유지
   - 날씨·대기질 API 연동 (Vite env 변수 사용)
+  - ★ 건물 클릭 팝업 (미기후 API) 연동 추가
 =====================================================================*/
 
 import React, { Suspense, useState, useEffect, useMemo } from "react";
@@ -23,6 +24,11 @@ import {
   CheckCircle,
   Smartphone,
   MapPin,
+  X,
+  Wind,
+  Thermometer,
+  Droplets,
+  TreePine,
 } from "lucide-react";
 import AlertBadge from "./components/AlertBadge";
 import trafficData from "./utils/trafficData.json";
@@ -84,6 +90,296 @@ const DUMMY_DATA = {
   "선택된 객체 없음": { power: "-", solar: "-", roofArea: 0, status: [] },
 };
 
+/* --------------------------------------------------------------
+   ★ 건물 팝업 컴포넌트
+-------------------------------------------------------------- */
+function BuildingPopup({ data, onClose }) {
+  if (!data) return null;
+
+  const { thermal, factors, delta, reasons, base_weather, name, zone_id } =
+    data;
+
+  // 위험 등급별 배경색 (연한 버전)
+  const riskBgMap = {
+    "#1976D2": "rgba(25,118,210,0.08)",
+    "#388E3C": "rgba(56,142,60,0.08)",
+    "#FBC02D": "rgba(251,192,45,0.10)",
+    "#F57C00": "rgba(245,124,0,0.10)",
+    "#D32F2F": "rgba(211,47,47,0.08)",
+  };
+  const riskBg = riskBgMap[thermal.risk_color] ?? "rgba(0,0,0,0.04)";
+
+  // 인자 아이콘 매핑
+  const factorIcons = {
+    shade: { icon: Sun, label: "그늘" },
+    vegetation: { icon: TreePine, label: "녹지" },
+    wind: { icon: Wind, label: "통풍" },
+    radiation: { icon: Thermometer, label: "복사" },
+  };
+
+  // 위험 점수 바 (0~4)
+  const riskPercent = (thermal.risk_score / 4) * 100;
+
+  return (
+    <div
+      style={{
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        zIndex: 1000,
+        width: 320,
+        background: "white",
+        borderRadius: 20,
+        boxShadow: "0 8px 40px rgba(0,0,0,0.18)",
+        overflow: "hidden",
+        fontFamily: "inherit",
+      }}
+    >
+      {/* 헤더 */}
+      <div
+        style={{
+          background: thermal.risk_color,
+          padding: "14px 18px 12px",
+          color: "white",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+        }}
+      >
+        <div>
+          <div style={{ fontWeight: 900, fontSize: 16 }}>{name}</div>
+          <div style={{ fontSize: 11, opacity: 0.85, marginTop: 2 }}>
+            {zone_id} · {thermal.stress_category}
+          </div>
+        </div>
+        <button
+          onClick={onClose}
+          style={{
+            background: "rgba(255,255,255,0.25)",
+            border: "none",
+            borderRadius: 8,
+            padding: "4px 6px",
+            cursor: "pointer",
+            color: "white",
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <X size={14} />
+        </button>
+      </div>
+
+      <div style={{ padding: "14px 18px 18px" }}>
+        {/* 주요 수치 */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr 1fr 1fr",
+            gap: 8,
+            marginBottom: 14,
+          }}
+        >
+          {[
+            { label: "기온", value: `${thermal.local_temp}°C` },
+            { label: "체감", value: `${thermal.feels_like}°C` },
+            { label: "UTCI", value: `${thermal.utci}°C` },
+            { label: "WBGT", value: `${thermal.wbgt}°C` },
+          ].map(({ label, value }) => (
+            <div
+              key={label}
+              style={{
+                background: riskBg,
+                borderRadius: 10,
+                padding: "8px 4px",
+                textAlign: "center",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: 9,
+                  color: "#888",
+                  fontWeight: 700,
+                  marginBottom: 3,
+                }}
+              >
+                {label}
+              </div>
+              <div style={{ fontSize: 13, fontWeight: 900, color: "#222" }}>
+                {value}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* 위험도 바 */}
+        <div style={{ marginBottom: 14 }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              fontSize: 10,
+              fontWeight: 700,
+              color: "#666",
+              marginBottom: 5,
+            }}
+          >
+            <span>위험도</span>
+            <span style={{ color: thermal.risk_color, fontWeight: 900 }}>
+              {thermal.risk_level}
+            </span>
+          </div>
+          <div
+            style={{
+              height: 6,
+              background: "#f0f0f0",
+              borderRadius: 99,
+              overflow: "hidden",
+            }}
+          >
+            <div
+              style={{
+                width: `${riskPercent}%`,
+                height: "100%",
+                background: thermal.risk_color,
+                borderRadius: 99,
+                transition: "width 0.4s ease",
+              }}
+            />
+          </div>
+        </div>
+
+        {/* 미기후 인자 */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr 1fr 1fr",
+            gap: 6,
+            marginBottom: 14,
+          }}
+        >
+          {Object.entries(factors).map(([key, val]) => {
+            const meta = factorIcons[key] ?? { label: key };
+            const Icon = meta.icon;
+            return (
+              <div
+                key={key}
+                style={{
+                  background: "#f8f9fa",
+                  borderRadius: 10,
+                  padding: "7px 4px",
+                  textAlign: "center",
+                }}
+              >
+                {Icon && (
+                  <Icon
+                    size={13}
+                    style={{
+                      margin: "0 auto 3px",
+                      color: "#666",
+                      display: "block",
+                    }}
+                  />
+                )}
+                <div style={{ fontSize: 9, color: "#aaa", fontWeight: 700 }}>
+                  {meta.label}
+                </div>
+                <div
+                  style={{
+                    fontSize: 10,
+                    fontWeight: 800,
+                    color: "#444",
+                    marginTop: 2,
+                  }}
+                >
+                  {val.level}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* 기준 대비 델타 */}
+        <div
+          style={{
+            background: "#f8f9fa",
+            borderRadius: 10,
+            padding: "8px 12px",
+            marginBottom: 12,
+            fontSize: 11,
+            fontWeight: 700,
+            color: delta.temp > 0 ? "#D32F2F" : "#1976D2",
+          }}
+        >
+          📍 {delta.label}
+        </div>
+
+        {/* 원인 설명 */}
+        <div>
+          <div
+            style={{
+              fontSize: 10,
+              fontWeight: 800,
+              color: "#999",
+              marginBottom: 6,
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+            }}
+          >
+            원인 분석
+          </div>
+          <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
+            {reasons.map((r, i) => (
+              <li
+                key={i}
+                style={{
+                  fontSize: 11,
+                  color: "#555",
+                  padding: "3px 0",
+                  borderBottom:
+                    i < reasons.length - 1 ? "1px solid #f0f0f0" : "none",
+                  display: "flex",
+                  alignItems: "flex-start",
+                  gap: 5,
+                }}
+              >
+                <span
+                  style={{
+                    color: thermal.risk_color,
+                    fontWeight: 900,
+                    flexShrink: 0,
+                  }}
+                >
+                  ·
+                </span>
+                {r}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* 현재 날씨 요약 */}
+        <div
+          style={{
+            marginTop: 12,
+            paddingTop: 10,
+            borderTop: "1px solid #f0f0f0",
+            display: "flex",
+            gap: 12,
+            fontSize: 10,
+            color: "#999",
+            fontWeight: 700,
+          }}
+        >
+          <span>🌡 기온 {base_weather.temperature}°C</span>
+          <span>💧 습도 {base_weather.humidity}%</span>
+          <span>💨 풍속 {base_weather.wind_speed}m/s</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   /* --------------------------------------------------------------
      UI 상태 (기존)
@@ -96,13 +392,9 @@ export default function App() {
   const [shadingLoss, setShadingLoss] = useState(10);
   const [efficiency, setEfficiency] = useState(20);
   const [roofRatio, setRoofRatio] = useState(50);
-  // 추가: forecast 인덱스 (자동 재생용)
   const [forecastIdx, setForecastIdx] = useState(0);
-  // 모드: 실시간 vs 시뮬레이션
-  const [mode, setMode] = useState("realtime"); // 'realtime' | 'simulation'
-  // 시뮬레이션용 온도 (사용자 입력)
+  const [mode, setMode] = useState("realtime");
   const [simTemp, setSimTemp] = useState(20);
-  // 현재 표시할 주소 (순천시 매곡동)
   const locationName = "순천시 매곡동";
 
   /* --------------------------------------------------------------
@@ -111,6 +403,13 @@ export default function App() {
   const [weatherData, setWeatherData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  /* --------------------------------------------------------------
+     ★ 건물 팝업 상태
+  -------------------------------------------------------------- */
+  const [popupData, setPopupData] = useState(null);
+  const [popupLoading, setPopupLoading] = useState(false);
+  const [popupError, setPopupError] = useState(null);
 
   /* --------------------------------------------------------------
      ★ ① 날씨 API 호출 (마운트 시 1회)
@@ -132,7 +431,7 @@ export default function App() {
         setError(err.message);
       })
       .finally(() => setLoading(false));
-  }, []); // 빈 배열 → 마운트 시 한 번만 실행
+  }, []);
 
   // 자동 재생 (2초마다 forecast 인덱스 증가)
   useEffect(() => {
@@ -142,6 +441,48 @@ export default function App() {
     }, 2000);
     return () => clearInterval(interval);
   }, [weatherData]);
+
+  /* --------------------------------------------------------------
+     ★ ② 건물 클릭 → 미기후 팝업 API 호출
+  -------------------------------------------------------------- */
+  const handleBuildingClick = async (obj) => {
+    // CityModel에서 { name: elementId, parent: { name: elementId } } 형태로 전달됨
+    const elementId =
+      obj?.parent?.name && obj.parent.name !== "Scene"
+        ? obj.parent.name
+        : obj?.name;
+
+    if (!elementId) return;
+
+    // BLD_ 접두사가 없으면 미기후 데이터 없음 → 팝업 생략
+    if (!elementId.startsWith("BLD_")) {
+      setPopupData(null);
+      return;
+    }
+
+    const API_URL = import.meta.env.VITE_API_URL ?? "http://127.0.0.1:8000";
+    setPopupLoading(true);
+    setPopupError(null);
+    setPopupData(null);
+
+    try {
+      const res = await fetch(
+        `${API_URL}/microclimate/elements/${elementId}/popup`,
+      );
+      if (res.status === 404) {
+        setPopupError("이 건물의 미기후 데이터가 없습니다.");
+        return;
+      }
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      setPopupData(data);
+    } catch (err) {
+      console.error("팝업 API 호출 실패:", err);
+      setPopupError("데이터를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.");
+    } finally {
+      setPopupLoading(false);
+    }
+  };
 
   /* --------------------------------------------------------------
      현재 선택된 건물·구역 데이터 (기존 로직)
@@ -181,22 +522,17 @@ export default function App() {
     };
   }, [selectedId, selectedArea]);
 
-  // 현재 표시할 날씨(현재 혹은 forecast) 계산
-  // 현재 표시할 날씨(실시간 API 또는 시뮬레이션) 계산
   const activeWeather = useMemo(() => {
     if (!weatherData) return null;
-    // 시뮬레이션 모드: 사용자가 지정한 온도만 교체
     if (mode === "simulation") {
       return {
         ...weatherData.base_weather,
         temperature: simTemp,
       };
     }
-    // 실시간 모드: 현재 API 데이터 사용
     return weatherData.base_weather;
   }, [weatherData, mode, simTemp]);
 
-  // 경보 규칙 (임시값, 필요 시 조정)
   const ALERT_RULES = [
     {
       id: "heat_island",
@@ -217,7 +553,6 @@ export default function App() {
     },
   ];
 
-  // 현재 날씨에 해당하는 경보 리스트
   const activeAlerts = useMemo(() => {
     if (!activeWeather) return [];
     return ALERT_RULES.filter((rule) => rule.check(activeWeather));
@@ -236,9 +571,6 @@ export default function App() {
     return { totalArea: roofArea, selectedArea: effectiveArea, energy };
   }, [currentData, solarRadiation, shadingLoss, efficiency, roofRatio]);
 
-  /* --------------------------------------------------------------
-     Traffic Stats (unchanged)
-  -------------------------------------------------------------- */
   const confirmedCount = trafficData.filter((d) => d.status === "확정").length;
   const aiFastTrack = trafficData.filter(
     (d) => d.status === "확정" && d.ai_confidence >= 0.45,
@@ -269,15 +601,17 @@ export default function App() {
                 castShadow
               />
               <Stage environment="city" intensity={0.5} contactShadow>
+                {/* ★ onBuildingClick prop 추가 */}
                 <CityModel
                   onSelect={(name, area) => {
                     setSelectedId(name);
                     if (area) setSelectedArea(area);
                   }}
                   selectedId={selectedId}
+                  onBuildingClick={handleBuildingClick}
                 />
-                {/* 교통·안전 마커 */}
-                {mainTab === "traffic" &&
+                {/* 교통·안전 마커 — 비활성화 */}
+                {false &&
                   trafficData.map((d, i) => {
                     const SCALE = 14500;
                     const x = (d.longitude - 127.481) * SCALE;
@@ -336,6 +670,92 @@ export default function App() {
             <span className="text-gray-500 mr-2 text-xs">선택된 시설</span>
             <span className="text-blue-600 font-extrabold">{selectedId}</span>
           </div>
+
+          {/* ★ 팝업 로딩 인디케이터 */}
+          {popupLoading && (
+            <div
+              style={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                zIndex: 999,
+                background: "white",
+                borderRadius: 16,
+                padding: "16px 24px",
+                boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
+                fontSize: 13,
+                fontWeight: 700,
+                color: "#555",
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+              }}
+            >
+              <div
+                style={{
+                  width: 16,
+                  height: 16,
+                  border: "2px solid #ddd",
+                  borderTopColor: "#555",
+                  borderRadius: "50%",
+                  animation: "spin 0.7s linear infinite",
+                }}
+              />
+              미기후 데이터 불러오는 중…
+            </div>
+          )}
+
+          {/* ★ 팝업 에러 메시지 */}
+          {popupError && !popupLoading && (
+            <div
+              style={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                zIndex: 999,
+                background: "white",
+                borderRadius: 16,
+                padding: "16px 24px",
+                boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
+                fontSize: 12,
+                color: "#D32F2F",
+                fontWeight: 700,
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+              }}
+            >
+              <AlertTriangle size={16} />
+              {popupError}
+              <button
+                onClick={() => setPopupError(null)}
+                style={{
+                  marginLeft: 8,
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  color: "#aaa",
+                }}
+              >
+                <X size={14} />
+              </button>
+            </div>
+          )}
+
+          {/* ★ 건물 팝업 */}
+          {popupData && !popupLoading && (
+            <BuildingPopup
+              data={popupData}
+              onClose={() => setPopupData(null)}
+            />
+          )}
+
+          {/* 로딩 스피너 CSS */}
+          <style>{`
+            @keyframes spin { to { transform: rotate(360deg); } }
+          `}</style>
         </div>
 
         {/* 하단 탭 영역 (에너지·교통·리포팅) */}

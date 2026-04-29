@@ -3,8 +3,8 @@ import { useGLTF } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 
-export function CityModel({ onSelect, selectedId, ...props }) {
-  const { scene } = useGLTF("/City2.glb");
+export function CityModel({ onSelect, selectedId, onBuildingClick, ...props }) {
+  const { scene } = useGLTF("/uni.glb");
   const { camera, controls } = useThree();
   const [targetPos, setTargetPos] = useState(null);
 
@@ -22,7 +22,6 @@ export function CityModel({ onSelect, selectedId, ...props }) {
         if (child.isMesh) {
           child.castShadow = true;
           child.receiveShadow = true;
-          // clone original color only once
           child.material = child.material.clone();
           if (!child.userData.originalColor && child.material.color) {
             child.userData.originalColor = child.material.color.clone();
@@ -32,7 +31,7 @@ export function CityModel({ onSelect, selectedId, ...props }) {
     }
   }, [scene]);
 
-  useFrame((state, delta) => {
+  useFrame(() => {
     if (scene) {
       scene.traverse((child) => {
         if (child.isMesh && child.userData.originalColor) {
@@ -42,7 +41,6 @@ export function CityModel({ onSelect, selectedId, ...props }) {
               : child.name;
           const isSelected =
             parentName === selectedId || child.name === selectedId;
-          // ��ũ�迭�� ���� ����/���̶���Ʈ
           const targetColor = isSelected
             ? new THREE.Color("#ffb8c6")
             : child.userData.originalColor;
@@ -53,7 +51,6 @@ export function CityModel({ onSelect, selectedId, ...props }) {
 
     if (targetPos && controls) {
       controls.target.lerp(targetPos, 0.08);
-      // �������� �ξ� �ڿ������� ���� �ü� Ȯ��
       const desiredCamPos = targetPos
         .clone()
         .add(new THREE.Vector3(40, 40, 40));
@@ -80,13 +77,39 @@ export function CityModel({ onSelect, selectedId, ...props }) {
     const center = box.getCenter(new THREE.Vector3());
     setTargetPos(center);
 
-    // Calculate actual roof area (X * Z) in square meters
     const size = new THREE.Vector3();
     box.getSize(size);
-    // Apply a realistic scaling factor if necessary, e.g. * 100 for visual scale to real-world
     const area = Math.round(size.x * 20 * (size.z * 20));
 
     if (onSelect) onSelect(name, area);
+
+    if (onBuildingClick) {
+      const buildingMap = {
+        대학본부: "BLD_A1",
+        약학대학: "BLD_A2",
+        천연물신약연구소: "BLD_A3",
+        생활관: "BLD_A4",
+        박물관: "BLD_B1",
+        "70주년기념관": "BLD_B2",
+        생명대: "BLD_B3",
+        도서관: "BLD_C1",
+        학생회관: "BLD_E1",
+        사범대: "BLD_E2",
+        공과대학: "BLD_D1",
+        공과대1호: "BLD_D1",
+        공과대2호: "BLD_D2",
+        공과대3호: "BLD_D3",
+        창업보육센터: "BLD_D4",
+      };
+
+      const elementId = buildingMap[name] || name;
+
+      // ★ App.jsx의 handleBuildingClick이 기대하는 객체 형태로 전달
+      onBuildingClick({
+        name: elementId,
+        parent: { name: elementId },
+      });
+    }
   };
 
   return (
@@ -95,12 +118,6 @@ export function CityModel({ onSelect, selectedId, ...props }) {
       {...props}
       onClick={handleClick}
       onPointerOver={(e) => {
-        let name =
-          e.object.parent && e.object.parent.name !== "Scene"
-            ? e.object.parent.name
-            : e.object.name;
-        if (name && name.includes("학교")) return;
-
         e.stopPropagation();
         document.body.style.cursor = "pointer";
       }}
@@ -111,4 +128,5 @@ export function CityModel({ onSelect, selectedId, ...props }) {
   );
 }
 
-useGLTF.preload("/City2.glb");
+// ★ 수정: uni.glb 경로 명시
+useGLTF.preload("/uni.glb");
