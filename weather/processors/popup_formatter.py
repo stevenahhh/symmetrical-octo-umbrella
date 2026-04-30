@@ -20,6 +20,8 @@ from __future__ import annotations
 
 from typing import Any, Dict, Optional
 
+from processors.materials import resolve_material_properties
+
 
 # =========================================================
 # 1. 위험도 → UI 매핑
@@ -66,10 +68,12 @@ def build_factors(microclimate: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
 
     각 항목은 { "level": str, "value": float } 형태.
     """
+    material = resolve_material_properties(microclimate)
     shade_val  = microclimate.get("shade_factor",      0.0)
     veg_val    = microclimate.get("vegetation_ratio",  0.0)
     wind_val   = microclimate.get("ventilation_factor",0.0)
     sky_val    = microclimate.get("sky_view_factor",   0.0)  # 복사 노출 지표
+    heat_val   = material.get("heat_storage_factor", 0.0)
 
     return {
         "shade": {
@@ -88,6 +92,10 @@ def build_factors(microclimate: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
             # sky_view_factor 높을수록 복사 노출 많음 → level 반전 없이 그대로
             "level": _factor_level(sky_val,    (0.45, 0.65, 0.85)),
             "value": round(sky_val, 3),
+        },
+        "material_heat": {
+            "level": _factor_level(heat_val, (0.35, 0.55, 0.75)),
+            "value": round(heat_val, 3),
         },
     }
 
@@ -145,6 +153,7 @@ def format_popup_response(
     
     base_temp   = weather.get("temperature", local_temp)
     ui          = _risk_ui(risk_level)
+    material    = pipeline_result.get("material_detail") or resolve_material_properties(microclimate)
 
     thermal = {
         "local_temp":      round(float(local_temp), 1),
@@ -163,11 +172,24 @@ def format_popup_response(
         "zone_id":      zone_id,
         "element_type": element_type,
         "timestamp":    timestamp,
+        "data_note": {
+            "assumption_level": material.get("assumption_level", "estimated"),
+            "material_source": material.get("material_source", "estimated_surface_library_v1"),
+            "message": "현재 재질/복사 정보는 추정 기반 시뮬레이션 값이며, 추후 실측/정밀 모델로 교체될 수 있습니다.",
+        },
 
         "thermal":  thermal,
         "factors":  build_factors(microclimate),
         "delta":    build_delta(local_temp, utci, base_temp, base_utci),
         "reasons":  list(reasons) if reasons else [],
+        "material": {
+            "surface_type": material.get("surface_type"),
+            "albedo": material.get("albedo"),
+            "surface_emissivity": material.get("surface_emissivity"),
+            "thermal_conductivity": material.get("thermal_conductivity"),
+            "volumetric_heat_capacity": material.get("volumetric_heat_capacity"),
+            "moisture_availability": material.get("moisture_availability"),
+        },
 
         "base_weather": {
             "temperature": weather.get("temperature"),

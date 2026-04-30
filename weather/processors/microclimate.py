@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, asdict
 from typing import Dict, Any
 
+from processors.materials import resolve_material_properties
 from processors.radiation import calculate_radiation_from_dict
 from processors.wind import calculate_wind_from_dict
 
@@ -26,6 +27,8 @@ class MicroclimateResult:
     surface_heat_effect: float
     vegetation_cooling_effect: float
     wind_cooling_effect: float
+    material_heat_retention: float
+    evaporative_cooling_effect: float
 
 
 def calculate_microclimate_for_element(
@@ -45,16 +48,23 @@ def calculate_microclimate_for_element(
 
     element_id = element_feature["element_id"]
     micro = element_feature.get("microclimate", {})
+    material = resolve_material_properties(micro)
 
     base_temp = safe_float(weather.get("temperature"), 25.0)
+    humidity = safe_float(weather.get("humidity"), 50.0)
 
     vegetation_ratio = safe_float(micro.get("vegetation_ratio"), 0.0)
-    albedo = safe_float(micro.get("albedo"), 0.15)
+    albedo = safe_float(material.get("albedo"), 0.15)
+    heat_storage_factor = safe_float(material.get("heat_storage_factor"), 0.7)
+    moisture_availability = safe_float(material.get("moisture_availability"), 0.1)
 
     # 1. 복사 계산
     radiation = calculate_radiation_from_dict(weather, micro)
     radiation_load = safe_float(radiation.get("radiation_load"), 0.0)
     tmrt = safe_float(radiation.get("tmrt"), base_temp)
+    material_heat_storage = safe_float(radiation.get("material_heat_storage"), 0.0)
+    net_radiation_balance = safe_float(radiation.get("net_radiation_balance"), 0.0)
+    evaporative_cooling_offset = safe_float(radiation.get("evaporative_cooling_offset"), 0.0)
 
     # 2. 풍속 계산
     wind = calculate_wind_from_dict(weather, micro)
@@ -64,21 +74,36 @@ def calculate_microclimate_for_element(
     # 복사부하가 클수록 지표면 열효과 증가
     # albedo가 낮을수록 흡수율이 커지므로 열효과 증가
     absorbed_ratio = 1.0 - albedo
-    surface_heat_effect = radiation_load * absorbed_ratio * 0.004
+    surface_heat_effect = (
+        radiation_load * absorbed_ratio * (0.0025 + 0.002 * heat_storage_factor)
+        + material_heat_storage * 0.0018
+        + max(0.0, net_radiation_balance) * 0.0012
+    )
 
     # 4. 녹지 냉각효과
     # vegetation_ratio가 높을수록 냉각
-    vegetation_cooling_effect = vegetation_ratio * 2.5
+    vegetation_cooling_effect = vegetation_ratio * (2.2 + max(0.0, base_temp - 24.0) * 0.03)
+
+    # 4-1. 재료/수분 기반 증발 냉각효과
+    humidity_damping = max(0.35, 1.0 - ((humidity - 50.0) * 0.01))
+    evaporative_cooling_effect = (
+        evaporative_cooling_offset * 0.035 * humidity_damping
+        + moisture_availability * 0.8
+    )
 
     # 5. 바람 냉각효과
     # local wind가 클수록 열 제거 효과 증가
     wind_cooling_effect = min(local_wind_speed * 0.4, 2.0)
 
+    material_heat_retention = material_heat_storage * 0.0012
+
     # 6. 최종 국지기온
     local_temp = (
         base_temp
         + surface_heat_effect
+        + material_heat_retention
         - vegetation_cooling_effect
+        - evaporative_cooling_effect
         - wind_cooling_effect
     )
 
@@ -91,10 +116,13 @@ def calculate_microclimate_for_element(
         surface_heat_effect=round(surface_heat_effect, 3),
         vegetation_cooling_effect=round(vegetation_cooling_effect, 3),
         wind_cooling_effect=round(wind_cooling_effect, 3),
+        material_heat_retention=round(material_heat_retention, 3),
+        evaporative_cooling_effect=round(evaporative_cooling_effect, 3),
     )
 
     return {
         **asdict(result),
+        "material_detail": material,
         "radiation_detail": radiation,
         "wind_detail": wind,
     }

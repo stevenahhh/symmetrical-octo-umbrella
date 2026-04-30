@@ -106,6 +106,9 @@ def run_pipeline_for_element(
             "surface_heat_effect":       micro_result.get("surface_heat_effect"),
             "vegetation_cooling_effect": micro_result.get("vegetation_cooling_effect"),
             "wind_cooling_effect":       micro_result.get("wind_cooling_effect"),
+            "material_heat_retention":   micro_result.get("material_heat_retention"),
+            "evaporative_cooling_effect": micro_result.get("evaporative_cooling_effect"),
+            "material_detail":           micro_result.get("material_detail"),
             "radiation_detail":          micro_result.get("radiation_detail"),
             "wind_detail":               micro_result.get("wind_detail"),
         }

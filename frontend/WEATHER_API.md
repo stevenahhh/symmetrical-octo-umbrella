@@ -31,6 +31,12 @@ GET http://localhost:8000/microclimate/elements/BLD_E1/popup
   "element_type": "building",
   "timestamp": "20260429T1200",
 
+  "data_note": {
+    "assumption_level": "estimated",
+    "material_source": "estimated_surface_library_v1",
+    "message": "현재 재질/복사 정보는 추정 기반 시뮬레이션 값이며, 추후 실측/정밀 모델로 교체될 수 있습니다."
+  },
+
   "thermal": {
     "local_temp": 34.8,
     "feels_like": 39.1,
@@ -45,8 +51,18 @@ GET http://localhost:8000/microclimate/elements/BLD_E1/popup
   "factors": {
     "shade": { "level": "낮음", "value": 0.143 },
     "vegetation": { "level": "낮음", "value": 0.073 },
-    "wind": { "level": "보통", "value": 0.631 },
-    "radiation": { "level": "보통", "value": 0.537 }
+    "wind":       { "level": "보통", "value": 0.631 },
+    "radiation":  { "level": "보통", "value": 0.537 },
+    "material_heat": { "level": "높음", "value": 0.71 }
+  },
+
+  "material": {
+    "surface_type": "concrete",
+    "albedo": 0.22,
+    "surface_emissivity": 0.91,
+    "thermal_conductivity": 1.35,
+    "volumetric_heat_capacity": 2050000,
+    "moisture_availability": 0.04
   },
 
   "delta": {
@@ -73,6 +89,11 @@ GET http://localhost:8000/microclimate/elements/BLD_E1/popup
 ---
 
 ## 2. 응답 필드 상세 설명
+
+### `data_note` — 현재 데이터의 성격
+
+현재 복사/재질 정보는 **실측이 아닌 추정 기반 시뮬레이션 입력값**일 수 있습니다.
+프론트는 이 값을 사용자에게 그대로 보여줄 수 있지만, 필요 시 "예상치" 또는 "시뮬레이션 값" 배지를 함께 표시하는 것을 권장합니다.
 
 ### `thermal` — 열환경 수치
 
@@ -104,12 +125,13 @@ GET http://localhost:8000/microclimate/elements/BLD_E1/popup
 건물 주변 환경 특성을 4가지로 요약합니다.  
 각 항목은 `level`(텍스트)과 `value`(0~1 원시값) 두 가지를 내려줍니다.
 
-| 인자         | 설명                                | level 낮음 기준 | level 높음 기준 |
-| ------------ | ----------------------------------- | --------------- | --------------- |
-| `shade`      | 그늘 비율 — 높을수록 시원함         | < 0.15          | ≥ 0.35          |
-| `vegetation` | 녹지 비율 — 높을수록 냉각 효과      | < 0.15          | ≥ 0.35          |
-| `wind`       | 통풍 계수 — 높을수록 바람 잘 통함   | < 0.45          | ≥ 0.65          |
-| `radiation`  | 하늘 노출도 — 높을수록 복사 노출 큼 | < 0.45          | ≥ 0.65          |
+| 인자 | 설명 | level 낮음 기준 | level 높음 기준 |
+|---|---|---|---|
+| `shade` | 그늘 비율 — 높을수록 시원함 | < 0.15 | ≥ 0.35 |
+| `vegetation` | 녹지 비율 — 높을수록 냉각 효과 | < 0.15 | ≥ 0.35 |
+| `wind` | 통풍 계수 — 높을수록 바람 잘 통함 | < 0.45 | ≥ 0.65 |
+| `radiation` | 하늘 노출도 — 높을수록 복사 노출 큼 | < 0.45 | ≥ 0.65 |
+| `material_heat` | 재질 열저장 경향 — 높을수록 열이 오래 남음 | < 0.35 | ≥ 0.55 |
 
 `level` 값: `"낮음"` / `"보통"` / `"높음"` / `"매우 높음"` 네 가지입니다.
 
@@ -220,3 +242,17 @@ console.log(
 console.log(data.delta.label); // "기준 기온 대비 +2.8°C"
 console.log(data.reasons.join("\n")); // 원인 설명
 ```
+
+### `material` — 재질/물리 입력 요약
+
+현재 단계에서는 건물/도로 재질이 적용되어 있다고 **가정**한 시뮬레이션 입력입니다.
+향후 실제 재질 데이터가 연결되면 값이 바뀔 수 있습니다.
+
+| 필드 | 설명 |
+|---|---|
+| `surface_type` | 표면 재질 타입 (`asphalt`, `concrete`, `grass`, `glass` 등) |
+| `albedo` | 반사율 |
+| `surface_emissivity` | 표면 방사율 |
+| `thermal_conductivity` | 열전도율 추정치 |
+| `volumetric_heat_capacity` | 체적 열용량 추정치 |
+| `moisture_availability` | 수분 이용 가능도 / 증발냉각 잠재치 |
