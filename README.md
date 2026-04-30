@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ### [바로가기]
 - [Frontend 실행 방법 (Bun)](#frontend-실행-방법-bun)
 - [Weather Backend 실행 방법 (Python)](#weather-backend-실행-방법-python)
@@ -58,10 +57,6 @@
 ---
 
 ## 기존 작업 절차
-=======
-# 작업 전 참고하세요  
-  
->>>>>>> 89cde61 (fix: App.jsx 클릭 에러 수정중,  전체 프로젝트 업데이트)
 절차 등 **branch**를 나눠서 작업할 예정입니다.  
 <br>
 #### **중요!**
