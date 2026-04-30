@@ -117,11 +117,10 @@ def _load_element_features(path: Optional[Path] = None) -> List[Dict[str, Any]]:
     target = path or _FEATURE_FILE
     if target.exists():
         with open(target, encoding="utf-8") as f:
-            data = json.load(f)
-        # JSON 파일이 {"metadata": ..., "features": [...]} 구조인 경우 대응
-        if isinstance(data, dict):
-            return data.get("features", [])
-        return data
+            payload = json.load(f)
+            if isinstance(payload, dict):
+                return payload.get("features", [])
+            return payload
 
     # --- fallback: 샘플 데이터 ---
     return [
