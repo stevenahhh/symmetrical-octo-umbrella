@@ -2,11 +2,13 @@
   "metadata": {
     "project": "campus_digital_twin",
     "layer": "weather_microclimate",
-    "description": "weather/에너지환경 도메인 전용 element별 미기후 feature 스키마. 값은 추후 현장조사/GIS/문헌 기반으로 채움.",
+    "description": "weather/에너지환경 도메인 전용 element별 미기후 feature 스키마. 현재 값은 추정 기반 시뮬레이션용이며, 추후 현장조사/GIS/문헌/재질 DB 기반으로 교체한다.",
     "join_key": "element_id",
     "notes": [
       "공통 geometry/name/type은 common_elements.json을 기준으로 JOIN한다.",
-      "microclimate 값은 현재 null이며, 추후 재질/외벽/녹지/통풍/차광 특성으로 보완한다."
+      "현재 microclimate 및 material 값은 fake/estimated data 성격의 시뮬레이션 입력이다.",
+      "복사/물리 모델은 추정 재질 특성(surface emissivity, conductivity, heat storage 등)을 사용하며, 실제 구현 시 실측/재질 데이터로 교체한다.",
+      "기존 프론트/API 호환을 위해 기존 필드는 유지하고, 신규 재질 필드는 additive로 확장한다."
     ]
   },
   "features": [

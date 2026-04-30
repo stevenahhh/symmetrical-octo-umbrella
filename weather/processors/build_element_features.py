@@ -24,6 +24,10 @@ class ElementFeature:
 
     surface_type: str   # asphalt / concrete / mixed
     albedo: float
+    surface_emissivity: float
+    thermal_conductivity: float
+    volumetric_heat_capacity: float
+    moisture_availability: float
 
     vegetation_ratio: float
     shade_factor: float
@@ -31,7 +35,12 @@ class ElementFeature:
     building_density: float
 
     facade_reflectivity: float
+    facade_emissivity: float
+    heat_storage_factor: float
+    facade_heat_storage_factor: float
     sky_view_factor: float
+    material_source: str
+    assumption_level: str
 
 
 # =========================
@@ -42,32 +51,59 @@ BASE_FEATURES: Dict[str, Dict[str, Any]] = {
     "road": {
         "surface_type": "asphalt",
         "albedo": 0.12,
+        "surface_emissivity": 0.94,
+        "thermal_conductivity": 0.75,
+        "volumetric_heat_capacity": 1950000.0,
+        "moisture_availability": 0.02,
         "vegetation_ratio": 0.05,
         "shade_factor": 0.15,
         "ventilation_factor": 0.75,
         "building_density": 0.30,
         "facade_reflectivity": 0.20,
+        "facade_emissivity": 0.91,
+        "heat_storage_factor": 0.88,
+        "facade_heat_storage_factor": 0.82,
         "sky_view_factor": 0.75,
+        "material_source": "estimated_surface_library_v1",
+        "assumption_level": "estimated",
     },
     "crosswalk": {
         "surface_type": "concrete",
         "albedo": 0.30,
+        "surface_emissivity": 0.91,
+        "thermal_conductivity": 1.35,
+        "volumetric_heat_capacity": 2050000.0,
+        "moisture_availability": 0.04,
         "vegetation_ratio": 0.08,
         "shade_factor": 0.20,
         "ventilation_factor": 0.70,
         "building_density": 0.35,
         "facade_reflectivity": 0.20,
+        "facade_emissivity": 0.89,
+        "heat_storage_factor": 0.72,
+        "facade_heat_storage_factor": 0.7,
         "sky_view_factor": 0.70,
+        "material_source": "estimated_surface_library_v1",
+        "assumption_level": "estimated",
     },
     "intersection": {
         "surface_type": "asphalt",
         "albedo": 0.12,
+        "surface_emissivity": 0.94,
+        "thermal_conductivity": 0.75,
+        "volumetric_heat_capacity": 1950000.0,
+        "moisture_availability": 0.02,
         "vegetation_ratio": 0.03,
         "shade_factor": 0.10,
         "ventilation_factor": 0.85,
         "building_density": 0.25,
         "facade_reflectivity": 0.15,
+        "facade_emissivity": 0.9,
+        "heat_storage_factor": 0.84,
+        "facade_heat_storage_factor": 0.78,
         "sky_view_factor": 0.85,
+        "material_source": "estimated_surface_library_v1",
+        "assumption_level": "estimated",
     },
 }
 
@@ -153,6 +189,10 @@ def apply_text_rules(base: Dict[str, Any], name: str, description: str) -> Dict[
     if _contains_any(text, ["횡단보도", "보도"]):
         f["surface_type"] = "concrete"
         f["albedo"] = 0.30
+        f["surface_emissivity"] = 0.91
+        f["thermal_conductivity"] = 1.35
+        f["volumetric_heat_capacity"] = 2050000.0
+        f["moisture_availability"] = max(f["moisture_availability"], 0.04)
         f["vegetation_ratio"] += 0.03
 
     if _contains_any(text, ["교차로", "사거리", "삼거리", "교차점"]):
@@ -178,6 +218,9 @@ def apply_text_rules(base: Dict[str, Any], name: str, description: str) -> Dict[
     if _contains_any(text, ["주차장"]):
         f["surface_type"] = "asphalt"
         f["albedo"] = 0.12
+        f["surface_emissivity"] = 0.94
+        f["thermal_conductivity"] = 0.75
+        f["volumetric_heat_capacity"] = 1950000.0
         f["vegetation_ratio"] -= 0.03
         f["shade_factor"] -= 0.03
         f["sky_view_factor"] += 0.05
@@ -189,6 +232,7 @@ def apply_text_rules(base: Dict[str, Any], name: str, description: str) -> Dict[
         f["vegetation_ratio"] += 0.10
         f["shade_factor"] += 0.05
         f["building_density"] -= 0.05
+        f["moisture_availability"] += 0.08
 
     # -------------------------
     # 5-7. 값 정리
@@ -199,7 +243,11 @@ def apply_text_rules(base: Dict[str, Any], name: str, description: str) -> Dict[
     f["ventilation_factor"] = clamp(f["ventilation_factor"])
     f["building_density"] = clamp(f["building_density"])
     f["facade_reflectivity"] = clamp(f["facade_reflectivity"])
+    f["facade_emissivity"] = clamp(f["facade_emissivity"])
+    f["heat_storage_factor"] = clamp(f["heat_storage_factor"])
+    f["facade_heat_storage_factor"] = clamp(f["facade_heat_storage_factor"])
     f["sky_view_factor"] = clamp(f["sky_view_factor"])
+    f["moisture_availability"] = clamp(f["moisture_availability"])
 
     return f
 
@@ -219,12 +267,21 @@ def build_element_feature(raw: RawElement) -> ElementFeature:
         element_type=element_type,
         surface_type=adjusted["surface_type"],
         albedo=adjusted["albedo"],
+        surface_emissivity=adjusted["surface_emissivity"],
+        thermal_conductivity=adjusted["thermal_conductivity"],
+        volumetric_heat_capacity=adjusted["volumetric_heat_capacity"],
+        moisture_availability=adjusted["moisture_availability"],
         vegetation_ratio=adjusted["vegetation_ratio"],
         shade_factor=adjusted["shade_factor"],
         ventilation_factor=adjusted["ventilation_factor"],
         building_density=adjusted["building_density"],
         facade_reflectivity=adjusted["facade_reflectivity"],
+        facade_emissivity=adjusted["facade_emissivity"],
+        heat_storage_factor=adjusted["heat_storage_factor"],
+        facade_heat_storage_factor=adjusted["facade_heat_storage_factor"],
         sky_view_factor=adjusted["sky_view_factor"],
+        material_source=adjusted["material_source"],
+        assumption_level=adjusted["assumption_level"],
     )
 
 

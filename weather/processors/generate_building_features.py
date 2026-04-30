@@ -20,6 +20,7 @@ import random
 import sys
 from copy import deepcopy
 from pathlib import Path
+from typing import Any
 
 
 # =========================================================
@@ -30,7 +31,7 @@ def clamp(v: float, lo: float = 0.0, hi: float = 1.0) -> float:
     return round(max(lo, min(hi, v)), 3)
 
 
-def contains(text: str, keywords: list) -> bool:
+def contains(text: str, keywords: list[str]) -> bool:
     return any(k in text for k in keywords)
 
 
@@ -46,92 +47,173 @@ ARCHETYPES = {
     "academic": {
         "surface_type": "concrete",
         "albedo": 0.25,
+        "surface_emissivity": 0.91,
+        "thermal_conductivity": 1.35,
+        "volumetric_heat_capacity": 2050000.0,
+        "moisture_availability": 0.04,
         "vegetation_ratio": 0.12,
         "shade_factor": 0.28,
         "ventilation_factor": 0.70,
         "building_density": 0.42,
         "facade_reflectivity": 0.22,
+        "facade_emissivity": 0.89,
+        "heat_storage_factor": 0.8,
+        "facade_heat_storage_factor": 0.78,
         "sky_view_factor": 0.65,
+        "material_source": "estimated_surface_library_v1",
+        "assumption_level": "estimated",
     },
     "engineering": {
         "surface_type": "concrete",
         "albedo": 0.22,
+        "surface_emissivity": 0.91,
+        "thermal_conductivity": 1.45,
+        "volumetric_heat_capacity": 2150000.0,
+        "moisture_availability": 0.03,
         "vegetation_ratio": 0.06,
         "shade_factor": 0.38,
         "ventilation_factor": 0.65,
         "building_density": 0.62,
         "facade_reflectivity": 0.28,
+        "facade_emissivity": 0.88,
+        "heat_storage_factor": 0.86,
+        "facade_heat_storage_factor": 0.84,
         "sky_view_factor": 0.52,
+        "material_source": "estimated_surface_library_v1",
+        "assumption_level": "estimated",
     },
     "dormitory": {
         "surface_type": "concrete",
         "albedo": 0.24,
+        "surface_emissivity": 0.91,
+        "thermal_conductivity": 1.30,
+        "volumetric_heat_capacity": 2050000.0,
+        "moisture_availability": 0.04,
         "vegetation_ratio": 0.18,
         "shade_factor": 0.32,
         "ventilation_factor": 0.62,
         "building_density": 0.55,
         "facade_reflectivity": 0.20,
+        "facade_emissivity": 0.89,
+        "heat_storage_factor": 0.8,
+        "facade_heat_storage_factor": 0.76,
         "sky_view_factor": 0.58,
+        "material_source": "estimated_surface_library_v1",
+        "assumption_level": "estimated",
     },
     "library_memorial": {
         "surface_type": "concrete",
         "albedo": 0.30,
+        "surface_emissivity": 0.90,
+        "thermal_conductivity": 1.45,
+        "volumetric_heat_capacity": 2200000.0,
+        "moisture_availability": 0.03,
         "vegetation_ratio": 0.14,
         "shade_factor": 0.22,
         "ventilation_factor": 0.72,
         "building_density": 0.38,
         "facade_reflectivity": 0.28,
+        "facade_emissivity": 0.88,
+        "heat_storage_factor": 0.82,
+        "facade_heat_storage_factor": 0.8,
         "sky_view_factor": 0.68,
+        "material_source": "estimated_surface_library_v1",
+        "assumption_level": "estimated",
     },
     "life_science": {
         "surface_type": "concrete",
         "albedo": 0.23,
+        "surface_emissivity": 0.92,
+        "thermal_conductivity": 1.10,
+        "volumetric_heat_capacity": 2100000.0,
+        "moisture_availability": 0.10,
         "vegetation_ratio": 0.30,
         "shade_factor": 0.22,
         "ventilation_factor": 0.78,
         "building_density": 0.30,
         "facade_reflectivity": 0.18,
+        "facade_emissivity": 0.89,
+        "heat_storage_factor": 0.7,
+        "facade_heat_storage_factor": 0.68,
         "sky_view_factor": 0.72,
+        "material_source": "estimated_surface_library_v1",
+        "assumption_level": "estimated",
     },
     "greenhouse": {
         "surface_type": "glass",
         "albedo": 0.18,
+        "surface_emissivity": 0.90,
+        "thermal_conductivity": 0.96,
+        "volumetric_heat_capacity": 1550000.0,
+        "moisture_availability": 0.18,
         "vegetation_ratio": 0.75,
         "shade_factor": 0.40,
         "ventilation_factor": 0.90,
         "building_density": 0.12,
         "facade_reflectivity": 0.30,
+        "facade_emissivity": 0.84,
+        "heat_storage_factor": 0.52,
+        "facade_heat_storage_factor": 0.58,
         "sky_view_factor": 0.78,
+        "material_source": "estimated_surface_library_v1",
+        "assumption_level": "estimated",
     },
     "gymnasium": {
         "surface_type": "concrete",
         "albedo": 0.22,
+        "surface_emissivity": 0.91,
+        "thermal_conductivity": 1.25,
+        "volumetric_heat_capacity": 2150000.0,
+        "moisture_availability": 0.03,
         "vegetation_ratio": 0.10,
         "shade_factor": 0.15,
         "ventilation_factor": 0.80,
         "building_density": 0.20,
         "facade_reflectivity": 0.18,
+        "facade_emissivity": 0.88,
+        "heat_storage_factor": 0.78,
+        "facade_heat_storage_factor": 0.72,
         "sky_view_factor": 0.80,
+        "material_source": "estimated_surface_library_v1",
+        "assumption_level": "estimated",
     },
     "open_facility": {
         "surface_type": "grass",
         "albedo": 0.18,
+        "surface_emissivity": 0.97,
+        "thermal_conductivity": 0.45,
+        "volumetric_heat_capacity": 2600000.0,
+        "moisture_availability": 0.72,
         "vegetation_ratio": 0.45,
         "shade_factor": 0.05,
         "ventilation_factor": 0.95,
         "building_density": 0.05,
         "facade_reflectivity": 0.05,
+        "facade_emissivity": 0.95,
+        "heat_storage_factor": 0.38,
+        "facade_heat_storage_factor": 0.42,
         "sky_view_factor": 0.95,
+        "material_source": "estimated_surface_library_v1",
+        "assumption_level": "estimated",
     },
     "support": {
         "surface_type": "concrete",
         "albedo": 0.22,
+        "surface_emissivity": 0.91,
+        "thermal_conductivity": 1.20,
+        "volumetric_heat_capacity": 2000000.0,
+        "moisture_availability": 0.04,
         "vegetation_ratio": 0.10,
         "shade_factor": 0.25,
         "ventilation_factor": 0.70,
         "building_density": 0.40,
         "facade_reflectivity": 0.18,
+        "facade_emissivity": 0.88,
+        "heat_storage_factor": 0.76,
+        "facade_heat_storage_factor": 0.7,
         "sky_view_factor": 0.65,
+        "material_source": "estimated_surface_library_v1",
+        "assumption_level": "estimated",
     },
 }
 
@@ -191,22 +273,25 @@ def select_archetype(element_id: str, name: str, element_type: str) -> str:
 # 4. 건물명 키워드 보정
 # =========================================================
 
-def apply_name_overrides(f: dict, name: str) -> dict:
+def apply_name_overrides(f: dict[str, Any], name: str) -> dict[str, Any]:
     f = dict(f)
 
     # 유리 커튼월 (국제관, 미래창조, 산학협력, 창업보육)
     if contains(name, ["국제문화", "미래창조", "산학협력", "창업보육"]):
         f["facade_reflectivity"] = clamp(f["facade_reflectivity"] + 0.08)
         f["albedo"] = clamp(f["albedo"] + 0.04)
+        f["facade_emissivity"] = clamp(f["facade_emissivity"] - 0.03)
 
     # 오래된 석재 건물 (대학본부, 박물관)
     if contains(name, ["대학본부", "박물관"]):
         f["albedo"] = clamp(f["albedo"] + 0.05)
         f["facade_reflectivity"] = clamp(f["facade_reflectivity"] - 0.02)
+        f["heat_storage_factor"] = clamp(f["heat_storage_factor"] + 0.05)
 
     # 녹지 특화 (농업, 생명대)
     if contains(name, ["친환경농업", "생명산업"]):
         f["vegetation_ratio"] = clamp(f["vegetation_ratio"] + 0.08)
+        f["moisture_availability"] = clamp(f["moisture_availability"] + 0.08)
 
     # 호관 건물 (1호관, 2호관, 3호관 → 고밀도)
     if contains(name, ["1호관", "2호관", "3호관"]):
@@ -236,14 +321,14 @@ def generate_building_feature(
     zone_id: str,
     element_type: str,
     add_noise: bool = True,
-) -> dict:
+) -> dict[str, Any]:
     arch = select_archetype(element_id, name, element_type)
     f = deepcopy(ARCHETYPES[arch])
 
     # zone 보정
     for key, delta in ZONE_ADJ.get(zone_id, {}).items():
         if key in f and isinstance(f[key], float):
-            f[key] = clamp(f[key] + delta)
+            f[key] = clamp(float(f[key]) + float(delta))
 
     # 건물명 보정
     f = apply_name_overrides(f, name)
@@ -251,7 +336,9 @@ def generate_building_feature(
     # 노이즈
     if add_noise:
         for k in ["vegetation_ratio", "shade_factor", "ventilation_factor",
-                  "building_density", "facade_reflectivity", "sky_view_factor"]:
+                  "building_density", "facade_reflectivity", "sky_view_factor",
+                  "surface_emissivity", "facade_emissivity", "moisture_availability",
+                  "heat_storage_factor", "facade_heat_storage_factor"]:
             if k in f and isinstance(f[k], float):
                 f[k] = clamp(f[k] + noise())
 
