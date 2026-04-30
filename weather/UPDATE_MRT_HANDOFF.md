@@ -38,7 +38,7 @@
 
 ### 2) Material profile layer added
 - 파일: `weather/processors/materials.py`
-- 목적:
+- 목적:alrl
   - `surface_type` 기반 기본 재질 프로파일 제공
   - 누락된 재질 입력을 추정값으로 보완
   - 나중에 실제 재질 DB 또는 GIS 속성으로 교체 가능한 단일 진입점 역할
