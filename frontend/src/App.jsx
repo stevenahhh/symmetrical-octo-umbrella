@@ -145,6 +145,20 @@ function getSystemTheme() {
     : "light";
 }
 
+function formatWeatherTimestamp(timestamp) {
+  if (!timestamp || typeof timestamp !== "string") return "-";
+
+  const match = timestamp.match(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})$/);
+  if (!match) return timestamp;
+
+  return `${match[4]}:${match[5]}`;
+}
+
+function formatNumber(value, suffix = "", digits = 1) {
+  if (value === null || value === undefined || Number.isNaN(Number(value))) return "-";
+  return `${Number(value).toFixed(digits)}${suffix}`;
+}
+
 /* --------------------------------------------------------------
    ★ 건물 팝업 컴포넌트
 -------------------------------------------------------------- */
@@ -715,6 +729,17 @@ export default function App() {
       maySpecificYield: solarRadiation,
     };
   }, [currentData, efficiency, roofRatio, solarRadiation]);
+
+  const weatherTimeline = useMemo(() => {
+    if (!Array.isArray(weatherData?.weather_timeline)) return [];
+    return weatherData.weather_timeline.slice(0, 3);
+  }, [weatherData]);
+
+  const riskyElementItems = useMemo(() => {
+    const items = weatherData?.element_environment?.items;
+    if (!Array.isArray(items)) return [];
+    return items.slice(0, 4);
+  }, [weatherData]);
 
   const confirmedCount = trafficData.filter((d) => d.status === "확정").length;
   const aiFastTrack = trafficData.filter(
@@ -1456,6 +1481,89 @@ export default function App() {
                         </div>
                       )}
                     </div>
+                  </div>
+
+                  <div className="bg-white p-3 shadow-sm">
+                    <div className="mb-2 flex items-center justify-between">
+                      <h3 className="flex items-center gap-1.5 text-xs font-black text-slate-900">
+                        <Clock3 size={15} className="text-blue-500" /> 1~3시간 날씨 예측
+                      </h3>
+                      <span className="bg-blue-50 px-2 py-1 text-[9px] font-black text-blue-600">
+                        KMA + 일사 추정
+                      </span>
+                    </div>
+
+                    {weatherTimeline.length > 0 ? (
+                      <div className="grid grid-cols-3 gap-1.5">
+                        {weatherTimeline.map((item) => (
+                          <div key={`${item.timestamp}-${item.lead_hour}`} className="bg-slate-50 px-2 py-2 shadow-sm">
+                            <div className="mb-1 flex items-center justify-between text-[9px] font-black text-slate-400">
+                              <span>+{item.lead_hour}h</span>
+                              <span>{formatWeatherTimestamp(item.timestamp)}</span>
+                            </div>
+                            <div className="text-lg font-black text-slate-900">
+                              {formatNumber(item.temperature, "°", 0)}
+                            </div>
+                            <div className="mt-1 space-y-0.5 text-[9px] font-bold text-slate-500">
+                              <div className="flex justify-between gap-1">
+                                <span>강수</span>
+                                <span>{formatNumber(item.precipitation_amount, "mm", 1)} / {item.precipitation_probability ?? "-"}%</span>
+                              </div>
+                              <div className="flex justify-between gap-1">
+                                <span>풍속</span>
+                                <span>{formatNumber(item.wind_speed, "m/s", 1)}</span>
+                              </div>
+                              <div className="flex justify-between gap-1">
+                                <span>일사</span>
+                                <span>{formatNumber(item.solar_radiation, "W", 0)}</span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="bg-slate-50 px-3 py-3 text-xs font-semibold text-slate-400">
+                        예측 타임라인 데이터가 없습니다.
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="bg-white p-3 shadow-sm">
+                    <div className="mb-2 flex items-center justify-between">
+                      <h3 className="flex items-center gap-1.5 text-xs font-black text-slate-900">
+                        <AlertTriangle size={15} className="text-orange-500" /> 위험 구역 Top
+                      </h3>
+                      <span className="bg-orange-50 px-2 py-1 text-[9px] font-black text-orange-600">
+                        element summary
+                      </span>
+                    </div>
+
+                    {riskyElementItems.length > 0 ? (
+                      <div className="space-y-1.5">
+                        {riskyElementItems.map((item) => (
+                          <div key={`${item.element_id}-${item.timestamp}-${item.weather_ref?.lead_hour}`} className="flex items-center justify-between gap-2 bg-slate-50 px-3 py-2 shadow-sm">
+                            <div className="min-w-0">
+                              <div className="truncate text-[11px] font-black text-slate-800">
+                                {item.element_id}
+                                <span className="ml-1 text-[9px] font-bold text-slate-400">
+                                  +{item.weather_ref?.lead_hour ?? "-"}h
+                                </span>
+                              </div>
+                              <div className="mt-0.5 text-[9px] font-bold text-slate-500">
+                                UTCI {formatNumber(item.utci, "°", 1)} · 체감 {formatNumber(item.feels_like, "°", 1)}
+                              </div>
+                            </div>
+                            <div className={`shrink-0 px-2 py-1 text-[9px] font-black ${item.risk_score >= 3 ? "bg-red-100 text-red-600" : item.risk_score >= 2 ? "bg-orange-100 text-orange-600" : "bg-emerald-100 text-emerald-600"}`}>
+                              {item.risk_level ?? "-"}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="bg-slate-50 px-3 py-3 text-xs font-semibold text-slate-400">
+                        위험 구역 요약 데이터가 없습니다.
+                      </div>
+                    )}
                   </div>
 
                   <div className="bg-white p-3 shadow-sm">
