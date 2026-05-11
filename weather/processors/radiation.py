@@ -271,6 +271,10 @@ def calculate_radiation_from_dict(weather: dict[str, Any], microclimate: dict[st
     base_moisture = float(microclimate.get("moisture_availability", 0.1))
     wet_surface_boost = 0.18 if precipitation_type != 0 else 0.0
 
+    albedo = microclimate.get("albedo")
+    if albedo is None:
+        albedo = 0.15
+
     radiation_input = RadiationInput(
         temperature=weather.get("temperature", 25.0),
         solar_radiation=weather.get("solar_radiation", 0.0),
@@ -279,7 +283,7 @@ def calculate_radiation_from_dict(weather: dict[str, Any], microclimate: dict[st
         humidity=weather.get("humidity", 50.0),
         shade_factor=microclimate.get("shade_factor", 0.0),
         sky_view_factor=microclimate.get("sky_view_factor", 1.0),
-        albedo=microclimate.get("albedo", 0.15),
+        albedo=albedo,
         facade_reflectivity=microclimate.get("facade_reflectivity", 0.0),
         surface_emissivity=microclimate.get("surface_emissivity", microclimate.get("emissivity", 0.92)),
         thermal_conductivity=microclimate.get("thermal_conductivity", 1.0),
@@ -288,7 +292,7 @@ def calculate_radiation_from_dict(weather: dict[str, Any], microclimate: dict[st
         facade_emissivity=microclimate.get("facade_emissivity", 0.9),
         heat_storage_factor=microclimate.get("heat_storage_factor", 0.7),
         facade_heat_storage_factor=microclimate.get("facade_heat_storage_factor", 0.65),
-        solar_absorptivity=microclimate.get("solar_absorptivity", 1.0 - microclimate.get("albedo", 0.15)),
+        solar_absorptivity=microclimate.get("solar_absorptivity", 1.0 - albedo),
         material_source=microclimate.get("material_source", "estimated_surface_library_v1"),
         assumption_level=microclimate.get("assumption_level", "estimated"),
         surface_type=microclimate.get("surface_type", "concrete"),

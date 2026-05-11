@@ -37,8 +37,10 @@ from domain.environment import build_environment_result
 from domain.zones import ZONES
 
 # 신규 element 기반 파이프라인
-from processors.pipeline import run_pipeline_all, run_pipeline_for_element, aggregate_by_zone
+from processors.element_environment import build_element_environment_timeline, summarize_element_environment
+from processors.pipeline import aggregate_by_zone, run_pipeline_all, run_pipeline_for_element
 from processors.popup_formatter import format_popup_response
+from processors.weather_timeline import build_weather_timeline
 
 
 # =========================================================
@@ -189,6 +191,8 @@ def root():
             "legacy_zone": [
                 "/environment/current",
                 "/environment/full",
+                "/environment/elements/timeline",
+                "/environment/elements/{element_id}/timeline",
             ],
         },
     }
@@ -394,11 +398,35 @@ def get_heatmap():
 # 기존: zone 기반 엔드포인트 (하위 호환)
 # =========================================================
 
-def _build_zone_environment():
-    weather = fetch_kma_current()
+def _build_zone_environment(weather: Optional[Dict[str, Any]] = None):
+    weather = dict(weather or fetch_kma_current())
     air_quality = fetch_air_quality()
     weather.update(air_quality)
     return build_environment_result(weather, ZONES)
+
+
+def _build_environment_timeline_bundle(element_id: Optional[str] = None) -> Dict[str, Any]:
+    current_weather = fetch_kma_current()
+    forecast_rows = fetch_kma_forecast(limit=None)
+    weather_timeline = build_weather_timeline(forecast_rows, current_weather)
+
+    features = _load_element_features()
+    if element_id is not None:
+        features = [feature for feature in features if feature.get("element_id") == element_id]
+        if not features:
+            raise HTTPException(
+                status_code=404,
+                detail=f"element_id '{element_id}' 를 찾을 수 없습니다.",
+            )
+
+    element_environment = build_element_environment_timeline(weather_timeline, features)
+    return {
+        "generated_at": current_weather.get("timestamp"),
+        "weather_timeline": weather_timeline,
+        "element_environment": element_environment,
+        "element_summary": summarize_element_environment(element_environment),
+        "element_count": len(features),
+    }
 
 
 @app.get("/environment/current", summary="[기존] zone 기반 현재 환경")
@@ -413,8 +441,53 @@ def get_environment_current():
 @app.get("/environment/full", summary="[기존] zone 기반 환경 + 예보")
 def get_environment_full():
     try:
-        result   = _build_zone_environment()
+        current_weather = fetch_kma_current()
+        result = _build_zone_environment(current_weather)
         forecast = fetch_kma_forecast()
-        return JSONResponse(content={**result, "forecast": forecast})
+        weather_timeline = build_weather_timeline(forecast, current_weather)
+        element_environment = build_element_environment_timeline(weather_timeline, _load_element_features())
+        return JSONResponse(content={
+            **result,
+            "forecast": forecast,
+            "weather_timeline": weather_timeline,
+            "element_environment": summarize_element_environment(element_environment),
+        })
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/environment/elements/timeline", summary="element 단위 시간별 local environment")
+def get_environment_elements_timeline():
+    try:
+        payload = _build_environment_timeline_bundle()
+        return JSONResponse(content={
+            "generated_at": payload["generated_at"],
+            "element_count": payload["element_count"],
+            "weather_timeline": payload["weather_timeline"],
+            "element_environment": payload["element_environment"],
+        })
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/environment/elements/{element_id}/timeline", summary="단일 element 시간별 local environment")
+def get_environment_element_timeline(element_id: str):
+    try:
+        payload = _build_environment_timeline_bundle(element_id=element_id)
+        element_rows = payload["element_environment"]
+        return JSONResponse(content={
+            "generated_at": payload["generated_at"],
+            "weather_timeline": payload["weather_timeline"],
+            "element": {
+                "element_id": element_id,
+                "zone_id": element_rows[0].get("zone_id") if element_rows else None,
+                "element_type": element_rows[0].get("element_type") if element_rows else None,
+                "timeline": element_rows,
+            },
+        })
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
