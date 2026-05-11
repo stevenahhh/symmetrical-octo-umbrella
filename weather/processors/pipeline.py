@@ -30,6 +30,13 @@ from processors.microclimate import calculate_microclimate_for_element
 from processors.thermal_index import calculate_thermal_index_from_microclimate
 
 
+RISK_ORDER = {"낮음": 0, "주의": 1, "높음": 2, "매우 높음": 3, "위험": 4}
+
+
+def risk_level_to_score(risk_level: str) -> int:
+    return RISK_ORDER.get(risk_level, 0)
+
+
 # =========================================================
 # 단일 element 파이프라인
 # =========================================================
@@ -169,8 +176,6 @@ def aggregate_by_zone(
         ...
     }
     """
-    _RISK_ORDER = {"낮음": 0, "주의": 1, "높음": 2, "매우 높음": 3, "위험": 4}
-
     zones: Dict[str, Any] = {}
 
     for elem in element_results:
@@ -195,7 +200,7 @@ def aggregate_by_zone(
         z["_sum_wbgt"]      += elem["wbgt"]
         z["elements"].append(elem["element_id"])
 
-        risk_ord = _RISK_ORDER.get(elem["risk_level"], 0)
+        risk_ord = risk_level_to_score(elem["risk_level"])
         if risk_ord > z["_max_risk_ord"]:
             z["_max_risk_ord"]  = risk_ord
             z["max_risk_level"] = elem["risk_level"]
