@@ -169,6 +169,14 @@ export function CityModel({
     return buildLabelAnchors(scene);
   }, [scene]);
 
+  const center = useMemo(() => {
+    if (labelAnchors.length === 0) return new THREE.Vector3(0, 0, 0);
+    const c = new THREE.Vector3();
+    labelAnchors.forEach(anchor => c.add(new THREE.Vector3(...anchor.position)));
+    c.divideScalar(labelAnchors.length);
+    return c;
+  }, [labelAnchors]);
+
   useFrame(() => {
     const controls = controlsRef?.current;
 
@@ -243,7 +251,7 @@ export function CityModel({
   };
 
   return (
-    <group>
+    <group position={[-center.x, 0, -center.z]}>
       <primitive
         object={scene}
         {...props}
@@ -273,8 +281,8 @@ export function CityModel({
               <div
                 className={`rounded-[10px] border px-3 py-1 text-[11px] font-black whitespace-nowrap shadow-[0_10px_24px_rgba(15,23,42,0.35)] ${
                   isSelected
-                    ? "border-pink-200 bg-pink-500/90 text-white"
-                    : "border-white/70 bg-slate-900/80 text-white"
+                    ? "border-[var(--colors-primary)] bg-[var(--colors-surface-1)] text-[var(--colors-primary)]"
+                    : "border-[var(--colors-hairline)] bg-[var(--colors-surface-1)] text-[var(--colors-ink)]"
                 }`}
               >
                 {anchor.displayName}
