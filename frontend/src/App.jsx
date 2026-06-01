@@ -17,7 +17,9 @@ import {
   Wind,
   Moon,
   Monitor,
-  X
+  X,
+  ChevronDown,
+  ChevronUp
 } from "lucide-react";
 import { CityModel } from "./CityModel";
 import trafficData from "./utils/trafficData.json";
@@ -147,6 +149,26 @@ export default function App() {
   const [popupData, setPopupData] = useState(null);
   const [popupLoading, setPopupLoading] = useState(false);
   const [popupError, setPopupError] = useState(null);
+  const [isSimulatorExpanded, setIsSimulatorExpanded] = useState(false);
+
+  const [carStats, setCarStats] = useState({ entered: 0, exited: 0, current: 0 });
+
+  useEffect(() => {
+    const fetchCarStats = async () => {
+      try {
+        const res = await fetch("http://127.0.0.1:8000/api/stats");
+        if (res.ok) {
+          const data = await res.json();
+          setCarStats(data);
+        }
+      } catch (err) {
+        // Silently ignore errors if backend is not running
+      }
+    };
+    fetchCarStats();
+    const intervalId = setInterval(fetchCarStats, 1000);
+    return () => clearInterval(intervalId);
+  }, []);
 
   const refreshWeather = useCallback(() => {
     const apiUrl = import.meta.env.VITE_API_URL ?? "http://127.0.0.1:8000";
@@ -450,6 +472,21 @@ export default function App() {
                 />
               </div>
 
+              <div className="grid grid-cols-3 gap-2">
+                <div className="rounded-lg border border-[var(--colors-hairline)] bg-[var(--colors-surface-2)] p-3 flex flex-col justify-center items-center">
+                  <div className="text-[11px] font-medium text-[var(--colors-ink-subtle)] mb-1">D4 누적 입차</div>
+                  <div className="text-xl font-bold text-emerald-500">{carStats.entered}</div>
+                </div>
+                <div className="rounded-lg border border-[var(--colors-hairline)] bg-[var(--colors-surface-2)] p-3 flex flex-col justify-center items-center">
+                  <div className="text-[11px] font-medium text-[var(--colors-ink-subtle)] mb-1">D4 누적 출차</div>
+                  <div className="text-xl font-bold text-rose-500">{carStats.exited}</div>
+                </div>
+                <div className="rounded-lg border border-[var(--colors-hairline)] bg-[var(--colors-surface-2)] p-3 flex flex-col justify-center items-center">
+                  <div className="text-[11px] font-medium text-[var(--colors-ink-subtle)] mb-1">D4 현재 차량</div>
+                  <div className="text-xl font-bold text-blue-500">{carStats.current}</div>
+                </div>
+              </div>
+
               <div>
                 <div className="mb-3 text-sm font-medium text-[var(--colors-ink-subtle)]">최근 접수 로그</div>
                 <div className="space-y-2">
@@ -552,13 +589,19 @@ export default function App() {
 
           <div className="pointer-events-auto">
             <FloatingPanel className="overflow-hidden px-0 py-0">
-            <div className="border-b border-[var(--colors-hairline)] px-5 py-4">
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-2 text-base font-medium">
-                  <SlidersHorizontal size={16} className="text-[var(--colors-primary)]" />
-                  환경 시뮬레이터
-                </div>
-                <div className="flex rounded-full border border-[var(--colors-hairline)] bg-[var(--colors-canvas)] p-1 text-sm">
+            <div 
+              className={`px-5 py-4 cursor-pointer hover:bg-[var(--colors-surface-2)] transition-colors flex items-center justify-between gap-4 ${isSimulatorExpanded ? 'border-b border-[var(--colors-hairline)]' : ''}`}
+              onClick={() => setIsSimulatorExpanded(!isSimulatorExpanded)}
+            >
+              <div className="flex items-center gap-2 text-base font-medium">
+                <SlidersHorizontal size={16} className="text-[var(--colors-primary)]" />
+                환경 시뮬레이터
+              </div>
+              <div className="flex items-center gap-3">
+                <div 
+                  className="flex rounded-full border border-[var(--colors-hairline)] bg-[var(--colors-canvas)] p-1 text-sm"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <button
                     type="button"
                     onClick={() => setMode("live")}
@@ -574,9 +617,13 @@ export default function App() {
                     Sim
                   </button>
                 </div>
+                <div className="text-[var(--colors-ink-subtle)] bg-[var(--colors-surface-2)] rounded-full p-1 border border-[var(--colors-hairline)]">
+                  {isSimulatorExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                </div>
               </div>
             </div>
 
+            {isSimulatorExpanded && (
             <div className="space-y-5 px-5 py-4">
               <SliderRow
                 label="온도 오버라이드"
@@ -644,6 +691,7 @@ export default function App() {
                 onChange={(event) => setRoofRatio(Number(event.target.value))}
               />
             </div>
+            )}
             </FloatingPanel>
           </div>
         </div>
