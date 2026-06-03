@@ -17,9 +17,7 @@ import {
   Wind,
   Moon,
   Monitor,
-  X,
-  ChevronDown,
-  ChevronUp
+  X
 } from "lucide-react";
 import { CityModel } from "./CityModel";
 import trafficData from "./utils/trafficData.json";
@@ -144,31 +142,15 @@ export default function App() {
   const [sunMinute, setSunMinute] = useState(() => new Date().getMinutes());
   const [simTemp, setSimTemp] = useState(20);
   const [roofRatio, setRoofRatio] = useState(DEFAULT_ROOF_RATIO);
+  const [activeTab, setActiveTab] = useState("dashboard"); // dashboard, traffic, environment
+  const [trafficTab, setTrafficTab] = useState("safety"); // energy, safety
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isSimulatorOpen, setIsSimulatorOpen] = useState(true);
   const [themeMode, setThemeMode] = useState("system");
   const [popupData, setPopupData] = useState(null);
   const [popupLoading, setPopupLoading] = useState(false);
   const [popupError, setPopupError] = useState(null);
-  const [isSimulatorExpanded, setIsSimulatorExpanded] = useState(false);
-
-  const [carStats, setCarStats] = useState({ entered: 0, exited: 0, current: 0 });
-
-  useEffect(() => {
-    const fetchCarStats = async () => {
-      try {
-        const res = await fetch("http://127.0.0.1:8000/api/stats");
-        if (res.ok) {
-          const data = await res.json();
-          setCarStats(data);
-        }
-      } catch (err) {
-        // Silently ignore errors if backend is not running
-      }
-    };
-    fetchCarStats();
-    const intervalId = setInterval(fetchCarStats, 1000);
-    return () => clearInterval(intervalId);
-  }, []);
+  const [trafficStats, setTrafficStats] = useState({ entered: 0, exited: 0, current_cars: 0, total_spaces: 50, is_running: false });
 
   const refreshWeather = useCallback(() => {
     const apiUrl = import.meta.env.VITE_API_URL ?? "http://127.0.0.1:8000";
@@ -197,6 +179,16 @@ export default function App() {
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    const trafficTimer = setInterval(() => {
+      fetch("http://localhost:8001/api/traffic")
+        .then(res => res.json())
+        .then(data => setTrafficStats(data))
+        .catch(() => {}); // ignore errors if API is not running
+    }, 2000);
+    return () => clearInterval(trafficTimer);
   }, []);
 
   useEffect(() => {
@@ -362,6 +354,12 @@ export default function App() {
             shadow-mapSize-width={2048}
             shadow-mapSize-height={2048}
           />
+          {sunState.visible && (
+            <mesh position={sunVector.map(v => v * 100)}>
+              <sphereGeometry args={[10, 32, 32]} />
+              <meshBasicMaterial color="#ffe87c" />
+            </mesh>
+          )}
           <Sky
             distance={450000}
             sunPosition={sunVector}
@@ -395,314 +393,332 @@ export default function App() {
 
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(1,1,2,0.02)_0%,rgba(1,1,2,0.08)_50%,rgba(1,1,2,0.16)_100%)]" />
 
-      <div className="pointer-events-none absolute inset-0 z-10 p-6">
-        <div className="flex items-start justify-between gap-6">
-          <div className="pointer-events-auto">
-            <FloatingPanel className="min-w-[190px] px-5 py-4">
-              <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--colors-primary)]">
-                  <Clock3 size={16} />
-                </div>
-                <div>
-                  <div className="font-[600] leading-[1.2] tracking-[-0.8px] font-['Linear_Display']">{formattedTime}</div>
-                  <div className="mt-2 flex items-center gap-1 text-sm text-[var(--colors-ink-muted)]">
-                    <CalendarDays size={13} />
-                    {formattedDate}
-                  </div>
-                </div>
-              </div>
-            </FloatingPanel>
+      <div className="pointer-events-none absolute right-0 top-0 bottom-0 z-10 w-[440px]">
+        <div 
+          className="pointer-events-auto h-full w-full border-l border-[var(--colors-hairline)] shadow-2xl flex flex-col"
+          style={{ 
+            backgroundColor: 'color-mix(in srgb, var(--colors-surface-1) 50%, transparent)',
+            backdropFilter: 'blur(16px)'
+          }}
+        >
+          {/* Header & Tabs */}
+          <div className="px-6 pt-8 pb-4">
+            <h2 className="text-xl font-[800] tracking-tight mb-5">스마트 시티 대시보드</h2>
+            <div className="flex bg-[var(--colors-surface-2)] rounded-lg p-1 border border-[var(--colors-hairline)]">
+              {[
+                { id: "dashboard", label: "기본 현황" },
+                { id: "traffic", label: "교통 및 안전" },
+                { id: "environment", label: "환경 제어" }
+              ].map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex-1 py-2 text-sm font-[600] rounded-md transition-colors ${activeTab === tab.id ? "bg-[var(--colors-surface-1)] shadow-sm text-[var(--colors-ink)] border border-[var(--colors-hairline)]" : "text-[var(--colors-ink-subtle)] hover:text-[var(--colors-ink)]"}`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
           </div>
 
-          <div className="pointer-events-auto">
-            <FloatingPanel className="min-w-[220px] px-5 py-4">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <div className="text-sm text-[var(--colors-ink-subtle)]">시스템 상태</div>
-                  <div className="mt-3 flex items-center gap-2 text-base font-medium">
-                    <span className="h-2.5 w-2.5 rounded-full bg-[var(--colors-semantic-success)]" />
+          {/* Content Area */}
+          <div className="flex-1 overflow-y-auto px-6 pb-8 space-y-6">
+            {activeTab === "dashboard" && (
+              <>
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <div className="font-[600] text-3xl leading-[1.2] tracking-[-0.8px] font-['Linear_Display']">{formattedTime}</div>
+                    <div className="mt-1 flex items-center gap-1 text-sm font-medium text-[var(--colors-ink-muted)]">
+                      <CalendarDays size={14} />
+                      {formattedDate}
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsSettingsOpen(true)}
+                      className="flex h-10 w-10 items-center justify-center rounded-lg border border-[var(--colors-hairline)] bg-[var(--colors-surface-1)] text-[var(--colors-ink-muted)] transition hover:text-[var(--colors-ink)] hover:bg-[var(--colors-surface-2)]"
+                    >
+                      <Settings size={18} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={refreshWeather}
+                      disabled={loading}
+                      className="flex h-10 w-10 items-center justify-center rounded-lg border border-[var(--colors-hairline)] bg-[var(--colors-surface-1)] text-[var(--colors-ink-muted)] transition hover:text-[var(--colors-ink)] hover:bg-[var(--colors-surface-2)] disabled:opacity-50"
+                    >
+                      <RefreshCw size={18} className={loading ? "animate-spin" : ""} />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="rounded-lg border border-[var(--colors-hairline)] bg-[var(--colors-surface-2)] p-4 flex justify-between items-center">
+                  <div className="text-sm font-medium text-[var(--colors-ink-subtle)]">시스템 상태</div>
+                  <div className="flex items-center gap-2 text-base font-[700]">
+                    <span className="h-2.5 w-2.5 rounded-full bg-[var(--colors-semantic-success)] shadow-[0_0_8px_var(--colors-semantic-success)]" />
                     {systemStatus}
                   </div>
                 </div>
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setIsSettingsOpen(true)}
-                    className="flex h-10 w-10 items-center justify-center rounded-[8px] border border-[var(--colors-hairline)] bg-[var(--colors-surface-1)] text-[var(--colors-ink-muted)] transition hover:text-[var(--colors-ink)] hover:bg-[var(--colors-surface-2)]"
-                  >
-                    <Settings size={16} />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={refreshWeather}
-                    disabled={loading}
-                    className="flex h-10 w-10 items-center justify-center rounded-[8px] border border-[var(--colors-hairline)] bg-[var(--colors-surface-1)] text-[var(--colors-ink-muted)] transition hover:text-[var(--colors-ink)] hover:bg-[var(--colors-surface-2)] disabled:opacity-50"
-                  >
-                    <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
-                  </button>
-                </div>
-              </div>
-            </FloatingPanel>
-          </div>
-        </div>
 
-        <div className="absolute bottom-6 left-6 pointer-events-auto w-[360px]">
-          <FloatingPanel className="overflow-hidden px-0 py-0">
-            <div className="border-b border-[var(--colors-hairline)] px-5 py-4">
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2 text-base font-medium">
-                  <ShieldAlert size={16} className="text-[var(--colors-primary)]" />
-                  교통 및 안전 모니터링
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="rounded-lg border border-[var(--colors-hairline)] bg-[var(--colors-surface-2)] p-4">
+                    <div className="flex items-center gap-2 text-sm font-medium text-[var(--colors-ink-subtle)]">
+                      <Thermometer size={16} /> 현재 기온
+                    </div>
+                    <div className="mt-3 text-2xl font-semibold tracking-[-0.8px]">
+                      {activeWeather?.temperature ?? "-"}°C
+                    </div>
+                  </div>
+                  <div className="rounded-lg border border-[var(--colors-hairline)] bg-[var(--colors-surface-2)] p-4">
+                    <div className="flex items-center gap-2 text-sm font-medium text-[var(--colors-ink-subtle)]">
+                      <Wind size={16} /> 풍속 / 습도
+                    </div>
+                    <div className="mt-3 text-sm font-semibold text-[var(--colors-ink)]">
+                      {activeWeather?.wind_speed ?? "-"}m/s · {activeWeather?.humidity ?? "-"}%
+                    </div>
+                  </div>
+                  <div className="rounded-lg border border-[var(--colors-hairline)] bg-[var(--colors-surface-2)] p-4">
+                    <div className="flex items-center gap-2 text-sm font-medium text-[var(--colors-ink-subtle)]">
+                      <Cloud size={16} /> 하늘 상태
+                    </div>
+                    <div className="mt-3 text-sm font-semibold text-[var(--colors-ink)]">
+                      {activeWeather?.sky ?? weatherData?.summary?.sky_status ?? "맑음"}
+                    </div>
+                  </div>
+                  <div className="rounded-lg border border-[var(--colors-hairline)] bg-[var(--colors-surface-2)] p-4">
+                    <div className="flex items-center gap-2 text-sm font-medium text-[var(--colors-ink-subtle)]">
+                      <Sun size={16} /> 태양 고도
+                    </div>
+                    <div className="mt-3 text-sm font-semibold text-[var(--colors-ink)]">
+                      {formatNumber((sunState.altitude * 180) / Math.PI, 1)}°
+                    </div>
+                  </div>
+                  <div className="col-span-2 rounded-lg border border-[var(--colors-hairline)] bg-[var(--colors-surface-2)] p-4">
+                    <div className="flex items-center gap-2 text-sm font-medium text-[var(--colors-ink-subtle)]">
+                      <Gauge size={16} /> 대기질
+                    </div>
+                    <div className="mt-3 text-sm font-semibold text-[var(--colors-ink)]">
+                      {weatherData?.summary?.air_quality_status ?? "보통"}
+                    </div>
+                  </div>
                 </div>
-                <div className="flex rounded-full border border-[var(--colors-hairline)] bg-[var(--colors-canvas)] p-1 text-sm">
-                  <span className="rounded-full px-3 py-1 text-[var(--colors-ink-subtle)]">에너지</span>
-                  <span className="rounded-full bg-[var(--colors-surface-2)] px-3 py-1 text-[var(--colors-ink)]">안전</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-4 px-5 py-4">
-              <div className="grid grid-cols-2 gap-3">
-                <MetricCard label="위험 구역 접수" value={`${trafficData.length}건`} hint="최근 24시간 기준" />
-                <MetricCard
-                  label="AI 자동 분류"
-                  value={`${trafficData.filter((item) => item.ai_confidence >= 0.45).length}건`}
-                  hint="우선 처리 대상"
-                  accent
-                />
-              </div>
-
-              <div className="grid grid-cols-3 gap-2">
-                <div className="rounded-lg border border-[var(--colors-hairline)] bg-[var(--colors-surface-2)] p-3 flex flex-col justify-center items-center">
-                  <div className="text-[11px] font-medium text-[var(--colors-ink-subtle)] mb-1">D4 누적 입차</div>
-                  <div className="text-xl font-bold text-emerald-500">{carStats.entered}</div>
-                </div>
-                <div className="rounded-lg border border-[var(--colors-hairline)] bg-[var(--colors-surface-2)] p-3 flex flex-col justify-center items-center">
-                  <div className="text-[11px] font-medium text-[var(--colors-ink-subtle)] mb-1">D4 누적 출차</div>
-                  <div className="text-xl font-bold text-rose-500">{carStats.exited}</div>
-                </div>
-                <div className="rounded-lg border border-[var(--colors-hairline)] bg-[var(--colors-surface-2)] p-3 flex flex-col justify-center items-center">
-                  <div className="text-[11px] font-medium text-[var(--colors-ink-subtle)] mb-1">D4 현재 차량</div>
-                  <div className="text-xl font-bold text-blue-500">{carStats.current}</div>
-                </div>
-              </div>
-
-              <div>
-                <div className="mb-3 text-sm font-medium text-[var(--colors-ink-subtle)]">최근 접수 로그</div>
-                <div className="space-y-2">
-                  {riskReports.map((item) => (
-                    <div
-                      key={item.report_id}
-                      className="rounded-lg border border-[var(--colors-hairline)] bg-[var(--colors-surface-2)] px-4 py-3"
-                    >
-                      <div className="flex items-center justify-between gap-3">
-                        <div>
-                          <div className="text-sm font-medium text-[var(--colors-ink)]">{item.category}</div>
-                          <div className="mt-1 text-sm text-[var(--colors-ink-subtle)]">
-                            {formatShortTime(item.timestamp)}
-                          </div>
-                        </div>
-                        <span className="rounded-full border border-[var(--colors-hairline)] bg-[var(--colors-canvas)] px-2 py-1 text-sm text-[var(--colors-ink-muted)]">
-                          {item.status}
+                {(activeAlerts.length > 0 || weatherTimeline.length > 0) && (
+                  <div className="grid gap-2">
+                    {activeAlerts.map((alert) => (
+                      <div
+                        key={alert.id}
+                        className="flex items-center gap-2 rounded-lg border border-[rgba(94,106,210,0.35)] bg-[rgba(94,106,210,0.14)] px-3 py-2 text-sm font-medium text-[var(--colors-ink)]"
+                      >
+                        <AlertTriangle size={16} className="text-[var(--colors-primary)]" />
+                        {alert.label}
+                      </div>
+                    ))}
+                    {weatherTimeline.map((item, index) => (
+                      <div
+                        key={`${item.fcstTime ?? index}`}
+                        className="flex items-center justify-between rounded-lg border border-[var(--colors-hairline)] bg-[var(--colors-surface-2)] px-3 py-2 text-sm"
+                      >
+                        <span className="font-medium text-[var(--colors-ink-subtle)]">{item.fcstTime ?? `${index + 1}차 예보`}</span>
+                        <span className="font-[700] text-[var(--colors-ink)]">
+                          {item.tmp ?? item.temperature ?? "-"}°C
                         </span>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </FloatingPanel>
-        </div>
-
-        <div className="absolute right-6 bottom-6 pointer-events-none flex w-[400px] flex-col justify-between gap-4">
-          <div className="pointer-events-auto">
-            <FloatingPanel className="px-5 py-4">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="rounded-lg border border-[var(--colors-hairline)] bg-[var(--colors-surface-2)] p-4">
-                  <div className="flex items-center gap-2 text-sm text-[var(--colors-ink-subtle)]">
-                    <Thermometer size={14} /> 현재 기온
+                    ))}
                   </div>
-                  <div className="mt-3 text-2xl font-semibold tracking-[-0.8px]">
-                    {activeWeather?.temperature ?? "-"}°C
-                  </div>
-                </div>
-                <div className="rounded-lg border border-[var(--colors-hairline)] bg-[var(--colors-surface-2)] p-4">
-                  <div className="flex items-center gap-2 text-sm text-[var(--colors-ink-subtle)]">
-                    <Wind size={14} /> 풍속 / 습도
-                  </div>
-                  <div className="mt-3 text-sm font-medium text-[var(--colors-ink)]">
-                    {activeWeather?.wind_speed ?? "-"}m/s · {activeWeather?.humidity ?? "-"}%
-                  </div>
-                </div>
-                <div className="rounded-lg border border-[var(--colors-hairline)] bg-[var(--colors-surface-2)] p-4">
-                  <div className="flex items-center gap-2 text-sm text-[var(--colors-ink-subtle)]">
-                    <Cloud size={14} /> 하늘 상태
-                  </div>
-                  <div className="mt-3 text-sm font-medium text-[var(--colors-ink)]">
-                    {activeWeather?.sky ?? weatherData?.summary?.sky_status ?? "맑음"}
-                  </div>
-                </div>
-                <div className="rounded-lg border border-[var(--colors-hairline)] bg-[var(--colors-surface-2)] p-4">
-                  <div className="flex items-center gap-2 text-sm text-[var(--colors-ink-subtle)]">
-                    <Sun size={14} /> 태양 고도
-                  </div>
-                  <div className="mt-3 text-sm font-medium text-[var(--colors-ink)]">
-                    {formatNumber((sunState.altitude * 180) / Math.PI, 1)}°
-                  </div>
-                </div>
-                <div className="col-span-2 rounded-lg border border-[var(--colors-hairline)] bg-[var(--colors-surface-2)] p-4">
-                  <div className="flex items-center gap-2 text-sm text-[var(--colors-ink-subtle)]">
-                    <Gauge size={14} /> 대기질
-                  </div>
-                  <div className="mt-3 text-sm font-medium text-[var(--colors-ink)]">
-                    {weatherData?.summary?.air_quality_status ?? "보통"}
-                  </div>
-                </div>
-              </div>
-
-              {(activeAlerts.length > 0 || weatherTimeline.length > 0) && (
-                <div className="mt-4 grid gap-2">
-                  {activeAlerts.map((alert) => (
-                    <div
-                      key={alert.id}
-                      className="flex items-center gap-2 rounded-lg border border-[rgba(94,106,210,0.35)] bg-[rgba(94,106,210,0.14)] px-3 py-2 text-sm text-[var(--colors-ink)]"
-                    >
-                      <AlertTriangle size={14} className="text-[var(--colors-primary)]" />
-                      {alert.label}
-                    </div>
-                  ))}
-                  {weatherTimeline.map((item, index) => (
-                    <div
-                      key={`${item.fcstTime ?? index}`}
-                      className="flex items-center justify-between rounded-lg border border-[var(--colors-hairline)] bg-[var(--colors-surface-2)] px-3 py-2 text-sm"
-                    >
-                      <span className="text-[var(--colors-ink-subtle)]">{item.fcstTime ?? `${index + 1}차 예보`}</span>
-                      <span className="font-medium text-[var(--colors-ink)]">
-                        {item.tmp ?? item.temperature ?? "-"}°C
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </FloatingPanel>
-          </div>
-
-          <div className="pointer-events-auto">
-            <FloatingPanel className="overflow-hidden px-0 py-0">
-            <div 
-              className={`px-5 py-4 cursor-pointer hover:bg-[var(--colors-surface-2)] transition-colors flex items-center justify-between gap-4 ${isSimulatorExpanded ? 'border-b border-[var(--colors-hairline)]' : ''}`}
-              onClick={() => setIsSimulatorExpanded(!isSimulatorExpanded)}
-            >
-              <div className="flex items-center gap-2 text-base font-medium">
-                <SlidersHorizontal size={16} className="text-[var(--colors-primary)]" />
-                환경 시뮬레이터
-              </div>
-              <div className="flex items-center gap-3">
-                <div 
-                  className="flex rounded-full border border-[var(--colors-hairline)] bg-[var(--colors-canvas)] p-1 text-sm"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <button
-                    type="button"
-                    onClick={() => setMode("live")}
-                    className={`rounded-full px-3 py-1 ${mode === "live" ? "bg-[var(--colors-surface-2)] text-[var(--colors-ink)]" : "text-[var(--colors-ink-subtle)]"}`}
-                  >
-                    Live
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setMode("simulation")}
-                    className={`rounded-full px-3 py-1 ${mode === "simulation" ? "bg-[var(--colors-primary)] text-white" : "text-[var(--colors-ink-subtle)]"}`}
-                  >
-                    Sim
-                  </button>
-                </div>
-                <div className="text-[var(--colors-ink-subtle)] bg-[var(--colors-surface-2)] rounded-full p-1 border border-[var(--colors-hairline)]">
-                  {isSimulatorExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                </div>
-              </div>
-            </div>
-
-            {isSimulatorExpanded && (
-            <div className="space-y-5 px-5 py-4">
-              <SliderRow
-                label="온도 오버라이드"
-                valueLabel={`${simTemp}°C`}
-                min={-10}
-                max={40}
-                value={simTemp}
-                onChange={(event) => setSimTemp(Number(event.target.value))}
-              />
-              <div className="grid grid-cols-2 gap-4">
-                <SliderRow
-                  label="월"
-                  valueLabel={`${sunMonth}월`}
-                  min={1}
-                  max={12}
-                  value={sunMonth}
-                  onChange={(event) => setSunMonth(Number(event.target.value))}
-                />
-                <SliderRow
-                  label="일"
-                  valueLabel={`${sunDay}일`}
-                  min={1}
-                  max={31}
-                  value={sunDay}
-                  onChange={(event) => setSunDay(Number(event.target.value))}
-                />
-                <SliderRow
-                  label="시"
-                  valueLabel={`${sunHour}시`}
-                  min={0}
-                  max={23}
-                  value={sunHour}
-                  onChange={(event) => setSunHour(Number(event.target.value))}
-                />
-                <SliderRow
-                  label="분"
-                  valueLabel={`${sunMinute}분`}
-                  min={0}
-                  max={59}
-                  value={sunMinute}
-                  onChange={(event) => setSunMinute(Number(event.target.value))}
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <MetricCard
-                  label="월간 예상 발전량"
-                  value={`${formatNumber(solarResult.monthlyOutput, 2)} kWh`}
-                  hint=""
-                  accent
-                />
-                <MetricCard
-                  label="옥상 활용 면적 비율"
-                  value={`${roofRatio}%`}
-                  hint={`${formatNumber(solarResult.moduleArea, 0)}㎡ 활용`}
-                />
-              </div>
-
-              <SliderRow
-                label="옥상 활용 면적 비율"
-                valueLabel={`${roofRatio}%`}
-                min={5}
-                max={80}
-                value={roofRatio}
-                onChange={(event) => setRoofRatio(Number(event.target.value))}
-              />
-            </div>
+                )}
+              </>
             )}
-            </FloatingPanel>
-          </div>
-        </div>
 
-        {error && (
-          <div className="absolute left-1/2 top-[128px] -translate-x-1/2 pointer-events-auto">
-            <FloatingPanel className="px-4 py-3 text-sm text-[var(--colors-ink-muted)]">
-              환경 API 응답이 없어 마지막 로컬 상태로 표시 중입니다. ({error})
-            </FloatingPanel>
+            {activeTab === "traffic" && (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between pb-4 border-b border-[var(--colors-hairline)]/50">
+                  <div className="text-base font-[700] text-[var(--colors-ink)] flex items-center gap-2">
+                    <ShieldAlert size={18} className="text-[var(--colors-primary)]" />
+                    교통 및 안전 모니터링
+                  </div>
+                  <div className="flex rounded-md border border-[var(--colors-hairline)] bg-[var(--colors-canvas)]/50 p-1 text-sm font-[600]">
+                    <button
+                      type="button"
+                      onClick={() => setTrafficTab("energy")}
+                      className={`rounded px-3 py-1.5 transition-colors ${trafficTab === "energy" ? "bg-[var(--colors-surface-2)] shadow-sm text-[var(--colors-ink)] border border-[var(--colors-hairline)]" : "text-[var(--colors-ink-subtle)] hover:text-[var(--colors-ink)]"}`}
+                    >
+                      에너지
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setTrafficTab("safety")}
+                      className={`rounded px-3 py-1.5 transition-colors ${trafficTab === "safety" ? "bg-[var(--colors-surface-2)] shadow-sm text-[var(--colors-ink)] border border-[var(--colors-hairline)]" : "text-[var(--colors-ink-subtle)] hover:text-[var(--colors-ink)]"}`}
+                    >
+                      안전
+                    </button>
+                  </div>
+                </div>
+
+                {trafficTab === "energy" ? (
+                  <div className="flex h-[300px] flex-col items-center justify-center rounded-lg border border-dashed border-[var(--colors-hairline-strong)] bg-[var(--colors-surface-2)]/30 text-sm">
+                    <div className="text-[var(--colors-ink-muted)] mb-2">⚡ 에너지 데이터 연동 대기중...</div>
+                    <div className="text-[12px] text-[var(--colors-ink-subtle)]">환경 제어 탭에서 태양광 시뮬레이션을 확인해 보세요.</div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="grid grid-cols-2 gap-3">
+                  <MetricCard label="위험 구역 접수" value={`${trafficData.length}건`} hint="최근 24시간 기준" />
+                  <MetricCard
+                    label="AI 자동 분류"
+                    value={`${trafficData.filter((item) => item.ai_confidence >= 0.45).length}건`}
+                    hint="우선 처리 대상"
+                    accent
+                  />
+                </div>
+                
+                <div className="pt-1">
+                  <div className="mb-3 text-sm font-[700] text-[var(--colors-ink-subtle)] flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
+                    D4 입출차 현황 (실시간)
+                  </div>
+                  <div className="grid grid-cols-3 gap-3">
+                    <MetricCard label="주차 대수" value={`${trafficStats?.current_cars ?? 0}대`} hint={`총 ${trafficStats?.total_spaces ?? 50}면`} accent />
+                    <MetricCard label="누적 입차" value={`${trafficStats?.entered ?? 0}대`} hint="오늘" />
+                    <MetricCard label="누적 출차" value={`${trafficStats?.exited ?? 0}대`} hint="오늘" />
+                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <div className="mb-3 text-sm font-[700] text-[var(--colors-ink-subtle)] flex items-center gap-2">
+                    <ShieldAlert size={14} />
+                    안전 및 방범 로그
+                  </div>
+                  <div className="space-y-2">
+                    {riskReports.map((item) => (
+                      <div
+                        key={item.report_id}
+                        className="rounded-lg border border-[var(--colors-hairline)] bg-[var(--colors-surface-2)] px-4 py-3"
+                      >
+                        <div className="flex items-center justify-between gap-3">
+                          <div>
+                            <div className="text-sm font-[700] text-[var(--colors-ink)]">{item.category}</div>
+                            <div className="mt-1 text-[13px] font-medium text-[var(--colors-ink-subtle)]">
+                              {formatShortTime(item.timestamp)}
+                            </div>
+                          </div>
+                          <span className="rounded-full border border-[var(--colors-hairline)] bg-[var(--colors-canvas)] px-2 py-1 text-[12px] font-[700] text-[var(--colors-ink-muted)]">
+                            {item.status}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                  </>
+                )}
+              </div>
+            )}
+
+            {activeTab === "environment" && (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between gap-4 pb-4 border-b border-[var(--colors-hairline)]/50">
+                  <div className="flex items-center gap-2 text-base font-[700]">
+                    <SlidersHorizontal size={18} className="text-[var(--colors-primary)]" />
+                    환경 모드 설정
+                  </div>
+                  <div className="flex rounded-md border border-[var(--colors-hairline)] bg-[var(--colors-canvas)] p-1 text-sm font-[600]">
+                    <button
+                      type="button"
+                      onClick={() => setMode("live")}
+                      className={`rounded px-3 py-1.5 transition-colors ${mode === "live" ? "bg-[var(--colors-surface-2)] shadow-sm text-[var(--colors-ink)] border border-[var(--colors-hairline)]" : "text-[var(--colors-ink-subtle)]"}`}
+                    >
+                      Live
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMode("simulation")}
+                      className={`rounded px-3 py-1.5 transition-colors ${mode === "simulation" ? "bg-[var(--colors-primary)] shadow-sm text-white" : "text-[var(--colors-ink-subtle)]"}`}
+                    >
+                      Sim
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="text-sm font-[700] text-[var(--colors-ink-subtle)]">가상 환경 파라미터</div>
+                  <SliderRow
+                    label="온도 조절"
+                    valueLabel={`${simTemp}°C`}
+                    min={-10}
+                    max={40}
+                    value={simTemp}
+                    onChange={(event) => setSimTemp(Number(event.target.value))}
+                  />
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-3 pt-2">
+                    <SliderRow
+                      label="월"
+                      valueLabel={`${sunMonth}월`}
+                      min={1}
+                      max={12}
+                      value={sunMonth}
+                      onChange={(event) => setSunMonth(Number(event.target.value))}
+                    />
+                    <SliderRow
+                      label="일"
+                      valueLabel={`${sunDay}일`}
+                      min={1}
+                      max={31}
+                      value={sunDay}
+                      onChange={(event) => setSunDay(Number(event.target.value))}
+                    />
+                    <SliderRow
+                      label="시"
+                      valueLabel={`${sunHour}시`}
+                      min={0}
+                      max={23}
+                      value={sunHour}
+                      onChange={(event) => setSunHour(Number(event.target.value))}
+                    />
+                    <SliderRow
+                      label="분"
+                      valueLabel={`${sunMinute}분`}
+                      min={0}
+                      max={59}
+                      value={sunMinute}
+                      onChange={(event) => setSunMinute(Number(event.target.value))}
+                    />
+                  </div>
+                </div>
+
+                <div className="pt-5 border-t border-[var(--colors-hairline)]/50 space-y-4">
+                  <div className="text-sm font-[700] text-[var(--colors-ink-subtle)]">태양광 발전 시뮬레이션</div>
+                  <SliderRow
+                    label="옥상 활용 면적 비율"
+                    valueLabel={`${roofRatio}%`}
+                    min={5}
+                    max={80}
+                    value={roofRatio}
+                    onChange={(event) => setRoofRatio(Number(event.target.value))}
+                  />
+                  <div className="grid grid-cols-2 gap-3 pt-2">
+                    <MetricCard
+                      label="월간 예상 발전량"
+                      value={`${formatNumber(solarResult.monthlyOutput, 1)} kWh`}
+                      hint=""
+                      accent
+                    />
+                    <MetricCard
+                      label="적용 모듈 면적"
+                      value={`${formatNumber(solarResult.moduleArea, 0)} ㎡`}
+                      hint="가용 면적 기준"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
-        )}
+          
+          {error && (
+            <div className="m-5 mt-auto p-4 rounded-lg bg-[var(--colors-semantic-danger)]/10 text-sm font-medium text-[var(--colors-semantic-danger)] text-center border border-[var(--colors-semantic-danger)]/20 shadow-lg">
+              기상 API 통신 오류: {error}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Building Info Modal */}
