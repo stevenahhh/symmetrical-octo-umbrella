@@ -4,6 +4,9 @@ import { OrbitControls, Sky } from "@react-three/drei";
 import {
   AlertTriangle,
   CalendarDays,
+  Car,
+  ChevronLeft,
+  ChevronRight,
   Clock3,
   Cloud,
   Gauge,
@@ -17,7 +20,8 @@ import {
   Wind,
   Moon,
   Monitor,
-  X
+  X,
+  Zap,
 } from "lucide-react";
 import { CityModel } from "./CityModel";
 import trafficData from "./utils/trafficData.json";
@@ -142,8 +146,8 @@ export default function App() {
   const [sunMinute, setSunMinute] = useState(() => new Date().getMinutes());
   const [simTemp, setSimTemp] = useState(20);
   const [roofRatio, setRoofRatio] = useState(DEFAULT_ROOF_RATIO);
-  const [activeTab, setActiveTab] = useState("dashboard"); // dashboard, traffic, environment
-  const [trafficTab, setTrafficTab] = useState("safety"); // energy, safety
+  const [activeTab, setActiveTab] = useState("dashboard"); // dashboard, parking, safety, energy, environment
+  const [isPanelOpen, setIsPanelOpen] = useState(true);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isSimulatorOpen, setIsSimulatorOpen] = useState(true);
   const [themeMode, setThemeMode] = useState("system");
@@ -393,27 +397,45 @@ export default function App() {
 
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(1,1,2,0.02)_0%,rgba(1,1,2,0.08)_50%,rgba(1,1,2,0.16)_100%)]" />
 
-      <div className="pointer-events-none absolute right-0 top-0 bottom-0 z-10 w-[440px]">
-        <div 
+      {/* 패널 토글 버튼 */}
+      <button
+        onClick={() => setIsPanelOpen(v => !v)}
+        className="pointer-events-auto absolute z-20 top-1/2 -translate-y-1/2 flex items-center justify-center w-7 h-14 rounded-l-xl border border-r-0 border-[var(--colors-hairline)] shadow-lg transition-right duration-300"
+        style={{
+          right: isPanelOpen ? '440px' : '0px',
+          backgroundColor: 'var(--colors-surface-1)',
+          transition: 'right 0.3s ease',
+        }}
+      >
+        {isPanelOpen ? <ChevronRight size={16} className="text-[var(--colors-ink-subtle)]" /> : <ChevronLeft size={16} className="text-[var(--colors-ink-subtle)]" />}
+      </button>
+
+      <div
+        className="pointer-events-none absolute top-0 bottom-0 z-10 w-[440px]"
+        style={{ right: isPanelOpen ? '0' : '-440px', transition: 'right 0.3s ease' }}
+      >
+        <div
           className="pointer-events-auto h-full w-full border-l border-[var(--colors-hairline)] shadow-2xl flex flex-col"
-          style={{ 
-            backgroundColor: 'color-mix(in srgb, var(--colors-surface-1) 50%, transparent)',
+          style={{
+            backgroundColor: 'color-mix(in srgb, var(--colors-surface-1) 30%, transparent)',
             backdropFilter: 'blur(16px)'
           }}
         >
           {/* Header & Tabs */}
           <div className="px-6 pt-8 pb-4">
             <h2 className="text-xl font-[800] tracking-tight mb-5">스마트 시티 대시보드</h2>
-            <div className="flex bg-[var(--colors-surface-2)] rounded-lg p-1 border border-[var(--colors-hairline)]">
+            <div className="flex rounded-lg p-1 border border-[var(--colors-hairline)] gap-0.5" style={{ backgroundColor: 'color-mix(in srgb, var(--colors-surface-2) 50%, transparent)' }}>
               {[
                 { id: "dashboard", label: "기본 현황" },
-                { id: "traffic", label: "교통 및 안전" },
-                { id: "environment", label: "환경 제어" }
+                { id: "parking", label: "주차" },
+                { id: "safety", label: "안전" },
+                { id: "energy", label: "에너지" },
+                { id: "environment", label: "환경 시뮬" },
               ].map(tab => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex-1 py-2 text-sm font-[600] rounded-md transition-colors ${activeTab === tab.id ? "bg-[var(--colors-surface-1)] shadow-sm text-[var(--colors-ink)] border border-[var(--colors-hairline)]" : "text-[var(--colors-ink-subtle)] hover:text-[var(--colors-ink)]"}`}
+                  className={`flex-1 py-2 text-xs font-[600] rounded-md transition-colors ${activeTab === tab.id ? "bg-[var(--colors-surface-1)] shadow-sm text-[var(--colors-ink)] border border-[var(--colors-hairline)]" : "text-[var(--colors-ink-subtle)] hover:text-[var(--colors-ink)]"}`}
                 >
                   {tab.label}
                 </button>
@@ -529,39 +551,37 @@ export default function App() {
               </>
             )}
 
-            {activeTab === "traffic" && (
+            {activeTab === "parking" && (
               <div className="space-y-6">
-                <div className="flex items-center justify-between pb-4 border-b border-[var(--colors-hairline)]/50">
+                <div className="pb-4 border-b border-[var(--colors-hairline)]/50">
                   <div className="text-base font-[700] text-[var(--colors-ink)] flex items-center gap-2">
-                    <ShieldAlert size={18} className="text-[var(--colors-primary)]" />
-                    교통 및 안전 모니터링
-                  </div>
-                  <div className="flex rounded-md border border-[var(--colors-hairline)] bg-[var(--colors-canvas)]/50 p-1 text-sm font-[600]">
-                    <button
-                      type="button"
-                      onClick={() => setTrafficTab("energy")}
-                      className={`rounded px-3 py-1.5 transition-colors ${trafficTab === "energy" ? "bg-[var(--colors-surface-2)] shadow-sm text-[var(--colors-ink)] border border-[var(--colors-hairline)]" : "text-[var(--colors-ink-subtle)] hover:text-[var(--colors-ink)]"}`}
-                    >
-                      에너지
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setTrafficTab("safety")}
-                      className={`rounded px-3 py-1.5 transition-colors ${trafficTab === "safety" ? "bg-[var(--colors-surface-2)] shadow-sm text-[var(--colors-ink)] border border-[var(--colors-hairline)]" : "text-[var(--colors-ink-subtle)] hover:text-[var(--colors-ink)]"}`}
-                    >
-                      안전
-                    </button>
+                    <Car size={18} className="text-[var(--colors-primary)]" />
+                    D4 입출차 현황
                   </div>
                 </div>
-
-                {trafficTab === "energy" ? (
-                  <div className="flex h-[300px] flex-col items-center justify-center rounded-lg border border-dashed border-[var(--colors-hairline-strong)] bg-[var(--colors-surface-2)]/30 text-sm">
-                    <div className="text-[var(--colors-ink-muted)] mb-2">⚡ 에너지 데이터 연동 대기중...</div>
-                    <div className="text-[12px] text-[var(--colors-ink-subtle)]">환경 제어 탭에서 태양광 시뮬레이션을 확인해 보세요.</div>
+                <div>
+                  <div className="mb-3 text-sm font-[700] text-[var(--colors-ink-subtle)] flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
+                    실시간 주차 현황
                   </div>
-                ) : (
-                  <>
-                    <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-3 gap-3">
+                    <MetricCard label="주차 대수" value={`${trafficStats?.current_cars ?? 0}대`} hint={`총 ${trafficStats?.total_spaces ?? 50}면`} accent />
+                    <MetricCard label="누적 입차" value={`${trafficStats?.entered ?? 0}대`} hint="오늘" />
+                    <MetricCard label="누적 출차" value={`${trafficStats?.exited ?? 0}대`} hint="오늘" />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === "safety" && (
+              <div className="space-y-6">
+                <div className="pb-4 border-b border-[var(--colors-hairline)]/50">
+                  <div className="text-base font-[700] text-[var(--colors-ink)] flex items-center gap-2">
+                    <ShieldAlert size={18} className="text-[var(--colors-primary)]" />
+                    안전 모니터링
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
                   <MetricCard label="위험 구역 접수" value={`${trafficData.length}건`} hint="최근 24시간 기준" />
                   <MetricCard
                     label="AI 자동 분류"
@@ -570,19 +590,6 @@ export default function App() {
                     accent
                   />
                 </div>
-                
-                <div className="pt-1">
-                  <div className="mb-3 text-sm font-[700] text-[var(--colors-ink-subtle)] flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
-                    D4 입출차 현황 (실시간)
-                  </div>
-                  <div className="grid grid-cols-3 gap-3">
-                    <MetricCard label="주차 대수" value={`${trafficStats?.current_cars ?? 0}대`} hint={`총 ${trafficStats?.total_spaces ?? 50}면`} accent />
-                    <MetricCard label="누적 입차" value={`${trafficStats?.entered ?? 0}대`} hint="오늘" />
-                    <MetricCard label="누적 출차" value={`${trafficStats?.exited ?? 0}대`} hint="오늘" />
-                  </div>
-                </div>
-
                 <div className="pt-2">
                   <div className="mb-3 text-sm font-[700] text-[var(--colors-ink-subtle)] flex items-center gap-2">
                     <ShieldAlert size={14} />
@@ -609,8 +616,41 @@ export default function App() {
                     ))}
                   </div>
                 </div>
-                  </>
-                )}
+              </div>
+            )}
+
+            {activeTab === "energy" && (
+              <div className="space-y-6">
+                <div className="pb-4 border-b border-[var(--colors-hairline)]/50">
+                  <div className="text-base font-[700] text-[var(--colors-ink)] flex items-center gap-2">
+                    <Zap size={18} className="text-[var(--colors-primary)]" />
+                    에너지
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <div className="text-sm font-[700] text-[var(--colors-ink-subtle)]">태양광 발전 시뮬레이션</div>
+                  <SliderRow
+                    label="옥상 활용 면적 비율"
+                    valueLabel={`${roofRatio}%`}
+                    min={5}
+                    max={80}
+                    value={roofRatio}
+                    onChange={(event) => setRoofRatio(Number(event.target.value))}
+                  />
+                  <div className="grid grid-cols-2 gap-3 pt-2">
+                    <MetricCard
+                      label="월간 예상 발전량"
+                      value={`${formatNumber(solarResult.monthlyOutput, 1)} kWh`}
+                      hint=""
+                      accent
+                    />
+                    <MetricCard
+                      label="적용 모듈 면적"
+                      value={`${formatNumber(solarResult.moduleArea, 0)} ㎡`}
+                      hint="가용 면적 기준"
+                    />
+                  </div>
+                </div>
               </div>
             )}
 
@@ -619,7 +659,7 @@ export default function App() {
                 <div className="flex items-center justify-between gap-4 pb-4 border-b border-[var(--colors-hairline)]/50">
                   <div className="flex items-center gap-2 text-base font-[700]">
                     <SlidersHorizontal size={18} className="text-[var(--colors-primary)]" />
-                    환경 모드 설정
+                    환경 시뮬레이션
                   </div>
                   <div className="flex rounded-md border border-[var(--colors-hairline)] bg-[var(--colors-canvas)] p-1 text-sm font-[600]">
                     <button
@@ -638,7 +678,6 @@ export default function App() {
                     </button>
                   </div>
                 </div>
-
                 <div className="space-y-4">
                   <div className="text-sm font-[700] text-[var(--colors-ink-subtle)]">가상 환경 파라미터</div>
                   <SliderRow
@@ -681,31 +720,6 @@ export default function App() {
                       max={59}
                       value={sunMinute}
                       onChange={(event) => setSunMinute(Number(event.target.value))}
-                    />
-                  </div>
-                </div>
-
-                <div className="pt-5 border-t border-[var(--colors-hairline)]/50 space-y-4">
-                  <div className="text-sm font-[700] text-[var(--colors-ink-subtle)]">태양광 발전 시뮬레이션</div>
-                  <SliderRow
-                    label="옥상 활용 면적 비율"
-                    valueLabel={`${roofRatio}%`}
-                    min={5}
-                    max={80}
-                    value={roofRatio}
-                    onChange={(event) => setRoofRatio(Number(event.target.value))}
-                  />
-                  <div className="grid grid-cols-2 gap-3 pt-2">
-                    <MetricCard
-                      label="월간 예상 발전량"
-                      value={`${formatNumber(solarResult.monthlyOutput, 1)} kWh`}
-                      hint=""
-                      accent
-                    />
-                    <MetricCard
-                      label="적용 모듈 면적"
-                      value={`${formatNumber(solarResult.moduleArea, 0)} ㎡`}
-                      hint="가용 면적 기준"
                     />
                   </div>
                 </div>
