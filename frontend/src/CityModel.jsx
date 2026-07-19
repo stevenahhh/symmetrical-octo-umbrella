@@ -87,10 +87,13 @@ function buildLabelAnchors(scene) {
     if (box.isEmpty()) return;
 
     const center = box.getCenter(new THREE.Vector3());
+    const size = new THREE.Vector3();
+    box.getSize(size);
     anchors.set(meta.elementId, {
       name: meta.name,
       displayName: ELEMENT_NAME_MAP.get(meta.elementId) || meta.name,
       elementId: meta.elementId,
+      area: Math.max(1, Math.round(size.x * size.z)),
       position: [center.x, box.max.y + 6, center.z],
     });
   });
@@ -271,8 +274,21 @@ export function CityModel({
             position={anchor.position}
             zIndexRange={[120, 0]}
           >
-            <div
-              className="pointer-events-none flex flex-col items-center whitespace-nowrap"
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                if (onSelect) {
+                  onSelect(anchor.name, anchor.area, anchor.position);
+                }
+                if (onBuildingClick) {
+                  onBuildingClick({
+                    name: anchor.elementId,
+                    parent: { name: anchor.elementId },
+                  });
+                }
+              }}
+              className="pointer-events-auto flex flex-col items-center whitespace-nowrap"
               style={{
                 transform: `translate(-50%, calc(-100% - 4px)) scale(${labelScale})`,
                 transformOrigin: "bottom center",
@@ -287,7 +303,7 @@ export function CityModel({
               >
                 {anchor.displayName}
               </div>
-            </div>
+            </button>
           </Html>
         );
       })}

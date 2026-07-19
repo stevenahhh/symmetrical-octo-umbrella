@@ -5,7 +5,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "node --test src/utils/pvMath.test.mjs src/utils/sunPosition.test.mjs"
+    "test": "node --test src/utils/pvMath.test.mjs src/utils/sunPosition.test.mjs src/utils/classroomEnergy.test.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^9.122.0",

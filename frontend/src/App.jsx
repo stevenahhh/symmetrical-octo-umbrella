@@ -21,6 +21,8 @@ import {
   Moon,
   Monitor,
   X,
+  ZoomIn,
+  ZoomOut,
   Zap,
 } from "lucide-react";
 import { CityModel } from "./CityModel";
@@ -30,6 +32,16 @@ import {
   DEFAULT_MAY_SPECIFIC_YIELD,
   DEFAULT_ROOF_RATIO,
 } from "./utils/pvMath.mjs";
+import {
+  CLASSROOMS,
+  SCENARIO_PRESETS,
+  chooseRecommendedScenario,
+  estimateBuildingEnergy,
+  estimateCampusEnergy,
+  formatScheduleLabel,
+} from "./utils/classroomEnergy.mjs";
+import { BuildingSectionView } from "./components/BuildingSectionView";
+import { D4_BUILDING_DATA, D4_BUILDING_ID, D4_ROOMS, isD4ElementId } from "./utils/d4BuildingData.mjs";
 import {
   CAMPUS_LOCATION,
   createSimulationDate,
@@ -131,6 +143,75 @@ function SliderRow({ label, valueLabel, min, max, step = 1, value, onChange }) {
   );
 }
 
+const KOREAN_WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
+
+function getHourValue(date) {
+  return date.getHours() + date.getMinutes() / 60;
+}
+
+function getCurrentRoomStatus(room, date) {
+  const day = KOREAN_WEEKDAYS[date.getDay()];
+  const hour = getHourValue(date);
+  const todayEntries = [...(room?.timetable ?? [])]
+    .filter((entry) => entry.day === day)
+    .sort((a, b) => a.startHour - b.startHour);
+  const activeClass = todayEntries.find(
+    (entry) => hour >= entry.startHour && hour < entry.startHour + entry.durationHours,
+  );
+  const nextClass = todayEntries.find((entry) => hour < entry.startHour);
+  const isNearClass = Boolean(nextClass && nextClass.startHour - hour <= 0.5);
+  const isAlwaysOn = room?.specialType === "server";
+  const isHvacRunning = isAlwaysOn || Boolean(activeClass) || isNearClass;
+
+  if (activeClass) {
+    return {
+      occupancyLabel: "현재 수업 중",
+      occupancyTone: "active",
+      hvacLabel: isHvacRunning ? "냉난방기 가동 중" : "냉난방기 대기",
+      activeClass,
+      nextClass,
+      detail: `${activeClass.subject} · ${activeClass.startHour}:00-${activeClass.startHour + activeClass.durationHours}:00`,
+    };
+  }
+
+  if (isNearClass) {
+    return {
+      occupancyLabel: "수업 준비 중",
+      occupancyTone: "soon",
+      hvacLabel: "냉난방기 예열/예냉 중",
+      activeClass: null,
+      nextClass,
+      detail: `${nextClass.subject} · ${nextClass.startHour}:00 시작`,
+    };
+  }
+
+  if (isAlwaysOn) {
+    return {
+      occupancyLabel: "상시 운영",
+      occupancyTone: "active",
+      hvacLabel: "냉난방기 상시 가동",
+      activeClass: null,
+      nextClass,
+      detail: "서버/장비 보호를 위한 상시 부하",
+    };
+  }
+
+  return {
+    occupancyLabel: "현재 공실",
+    occupancyTone: "idle",
+    hvacLabel: "냉난방기 대기",
+    activeClass: null,
+    nextClass,
+    detail: nextClass ? `${nextClass.subject} · ${nextClass.startHour}:00 예정` : "오늘 남은 수업 없음",
+  };
+}
+
+function getStatusToneClass(tone) {
+  if (tone === "active") return "border-emerald-300/50 bg-emerald-500/12 text-emerald-700";
+  if (tone === "soon") return "border-amber-300/50 bg-amber-500/12 text-amber-700";
+  return "border-slate-300/60 bg-slate-500/10 text-slate-600";
+}
+
 export default function App() {
   const orbitControlsRef = useRef(null);
   const [selectedId, setSelectedId] = useState("");
@@ -146,6 +227,12 @@ export default function App() {
   const [sunMinute, setSunMinute] = useState(() => new Date().getMinutes());
   const [simTemp, setSimTemp] = useState(20);
   const [roofRatio, setRoofRatio] = useState(DEFAULT_ROOF_RATIO);
+  const [energyScenarioId, setEnergyScenarioId] = useState("balanced");
+  const [selectedEnergyRoomId, setSelectedEnergyRoomId] = useState(D4_ROOMS[0].id);
+  const [selectedBuildingId, setSelectedBuildingId] = useState(null);
+  const [buildingViewMode, setBuildingViewMode] = useState("campus");
+  const [isRoomPopupOpen, setIsRoomPopupOpen] = useState(false);
+  const [roomPopupView, setRoomPopupView] = useState("detail");
   const [activeTab, setActiveTab] = useState("dashboard"); // dashboard, parking, safety, energy, environment
   const [isPanelOpen, setIsPanelOpen] = useState(true);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -214,7 +301,14 @@ export default function App() {
     };
   }, [mode, simTemp, weatherData]);
 
+  const energyBuilding = D4_BUILDING_DATA;
+  const isD4Focused = selectedBuildingId === D4_BUILDING_ID;
+
   const currentData = useMemo(() => {
+    if (isD4Focused || activeTab === "energy") {
+      return { roofArea: energyBuilding.roofArea };
+    }
+
     if (DUMMY_DATA[selectedId]) {
       return {
         roofArea: selectedArea > 0 ? selectedArea : DUMMY_DATA[selectedId].roofArea,
@@ -225,7 +319,7 @@ export default function App() {
     return {
       roofArea: selectedArea > 0 ? selectedArea : Math.floor(hash * 1.2) + 500,
     };
-  }, [selectedArea, selectedId]);
+  }, [activeTab, energyBuilding.roofArea, isD4Focused, selectedArea, selectedId]);
 
   const solarResult = useMemo(
     () =>
@@ -235,6 +329,47 @@ export default function App() {
         maySpecificYield: DEFAULT_MAY_SPECIFIC_YIELD,
       }),
     [currentData.roofArea, roofRatio],
+  );
+
+  const energyScenario = SCENARIO_PRESETS[energyScenarioId] ?? SCENARIO_PRESETS.balanced;
+  const energySimulation = useMemo(
+    () =>
+      estimateBuildingEnergy({
+        building: energyBuilding,
+        outdoorTemperature: activeWeather?.temperature ?? simTemp,
+        scenario: energyScenario,
+      }),
+    [activeWeather?.temperature, energyBuilding, energyScenario, simTemp],
+  );
+  const selectedEnergyRoom = useMemo(
+    () =>
+      energySimulation.rooms.find((room) => room.id === selectedEnergyRoomId) ??
+      energySimulation.rooms[0],
+    [energySimulation.rooms, selectedEnergyRoomId],
+  );
+  const selectedRoomStatus = useMemo(
+    () => getCurrentRoomStatus(selectedEnergyRoom, currentTime),
+    [currentTime, selectedEnergyRoom],
+  );
+  const roomUsageById = useMemo(() => {
+    const usage = new Map();
+    energySimulation.rooms.forEach((room) => {
+      const status = getCurrentRoomStatus(room, currentTime);
+      usage.set(room.id, status.occupancyTone === "active" || status.occupancyTone === "soon");
+    });
+    return usage;
+  }, [currentTime, energySimulation.rooms]);
+  const monthlyGridAfterSolar = Math.max(
+    0,
+    energySimulation.monthlyOptimizedKwh - solarResult.monthlyOutput,
+  );
+  const energyRecommendation = useMemo(
+    () =>
+      chooseRecommendedScenario({
+        rooms: energyBuilding.rooms,
+        outdoorTemperature: activeWeather?.temperature ?? simTemp,
+      }),
+    [activeWeather?.temperature, energyBuilding.rooms, simTemp],
   );
 
   const activeAlerts = useMemo(() => {
@@ -321,6 +456,23 @@ export default function App() {
       return;
     }
 
+    if (isD4ElementId(elementId)) {
+      setSelectedBuildingId(D4_BUILDING_ID);
+      setBuildingViewMode("section");
+      setSelectedEnergyRoomId((current) =>
+        D4_ROOMS.some((room) => room.id === current) ? current : D4_ROOMS[0].id,
+      );
+      setActiveTab("energy");
+      setIsPanelOpen(false);
+      setIsRoomPopupOpen(false);
+      setRoomPopupView("detail");
+    } else {
+      setSelectedBuildingId(null);
+      setBuildingViewMode("campus");
+      setIsRoomPopupOpen(false);
+      setRoomPopupView("detail");
+    }
+
     const apiUrl = import.meta.env.VITE_API_URL ?? "http://127.0.0.1:8000";
     setPopupLoading(true);
     setPopupError(null);
@@ -340,6 +492,33 @@ export default function App() {
     } finally {
       setPopupLoading(false);
     }
+  }, []);
+
+  const handleSelectD4Room = useCallback((roomId) => {
+    setSelectedBuildingId(D4_BUILDING_ID);
+    setBuildingViewMode("section");
+    setSelectedEnergyRoomId(roomId);
+    setActiveTab("energy");
+    setIsPanelOpen(false);
+    setIsRoomPopupOpen(true);
+    setRoomPopupView("detail");
+  }, []);
+
+  const handleSectionZoom = useCallback((direction) => {
+    const controls = orbitControlsRef.current;
+    const camera = controls?.object;
+    const target = controls?.target;
+    if (!camera || !target) return;
+
+    const offset = camera.position.clone().sub(target);
+    const nextDistance = Math.min(
+      42,
+      Math.max(4, offset.length() * (direction === "in" ? 0.78 : 1.28)),
+    );
+
+    offset.setLength(nextDistance);
+    camera.position.copy(target).add(offset);
+    controls.update();
   }, []);
 
   return (
@@ -373,27 +552,208 @@ export default function App() {
             rayleigh={0.7}
           />
           <Suspense fallback={null}>
-            <CityModel
-              position={[0, 0, 0]}
-              controlsRef={orbitControlsRef}
-              isNight={!sunState.visible}
-              selectedId={selectedId}
-              onSelect={handleSelect}
-              onBuildingClick={handleBuildingClick}
-            />
+            {buildingViewMode === "section" ? (
+              <BuildingSectionView
+                building={energyBuilding}
+                rooms={energySimulation.rooms}
+                roomUsageById={roomUsageById}
+                selectedRoomId={selectedEnergyRoom?.id}
+                onSelectRoom={handleSelectD4Room}
+              />
+            ) : (
+              <CityModel
+                position={[0, 0, 0]}
+                controlsRef={orbitControlsRef}
+                isNight={!sunState.visible}
+                selectedId={selectedId}
+                onSelect={handleSelect}
+                onBuildingClick={handleBuildingClick}
+              />
+            )}
           </Suspense>
           <OrbitControls
             ref={orbitControlsRef}
             enableDamping
             dampingFactor={0.05}
-            minDistance={30}
-            maxDistance={200}
+            enableZoom
+            zoomSpeed={buildingViewMode === "section" ? 1.25 : 1}
+            minDistance={buildingViewMode === "section" ? 4 : 30}
+            maxDistance={buildingViewMode === "section" ? 42 : 200}
             minPolarAngle={Math.PI / 6}
             maxPolarAngle={Math.PI / 2.2}
-            target={[0, 0, 0]}
+            target={buildingViewMode === "section" ? [0, 2.2, 0] : [0, 0, 0]}
           />
         </Canvas>
       </div>
+
+      {buildingViewMode === "section" && (
+        <div className="pointer-events-auto absolute left-6 bottom-6 z-20 flex overflow-hidden rounded-lg border border-[var(--colors-hairline)] bg-[var(--colors-surface-1)] shadow-lg">
+          <button
+            type="button"
+            onClick={() => handleSectionZoom("in")}
+            className="flex h-11 w-11 items-center justify-center border-r border-[var(--colors-hairline)] text-[var(--colors-ink-muted)] transition-colors hover:bg-[var(--colors-surface-2)] hover:text-[var(--colors-ink)]"
+            aria-label="목업 확대"
+            title="목업 확대"
+          >
+            <ZoomIn size={18} />
+          </button>
+          <button
+            type="button"
+            onClick={() => handleSectionZoom("out")}
+            className="flex h-11 w-11 items-center justify-center text-[var(--colors-ink-muted)] transition-colors hover:bg-[var(--colors-surface-2)] hover:text-[var(--colors-ink)]"
+            aria-label="목업 축소"
+            title="목업 축소"
+          >
+            <ZoomOut size={18} />
+          </button>
+        </div>
+      )}
+
+      {buildingViewMode === "section" && isRoomPopupOpen && selectedEnergyRoom && (
+        <div className="pointer-events-auto absolute left-6 top-6 z-30 w-[360px] max-w-[calc(100vw-48px)] rounded-[14px] border border-[var(--colors-hairline)] bg-[var(--colors-surface-1)] p-5 shadow-[0_24px_56px_rgba(0,0,0,0.26)] backdrop-blur-xl">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <div className="text-[12px] font-[800] uppercase tracking-[0.08em] text-[var(--colors-primary)]">
+                Room Detail
+              </div>
+              <div className="mt-1 text-lg font-[900] leading-[1.25] text-[var(--colors-ink)]">
+                {selectedEnergyRoom.name}
+              </div>
+              <div className="mt-1 text-[12px] font-[700] text-[var(--colors-ink-subtle)]">
+                {selectedEnergyRoom.floor}층 {selectedEnergyRoom.roomNumber}호 · {selectedEnergyRoom.side === "left" ? "왼쪽 동" : "오른쪽 동"}
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setIsRoomPopupOpen(false);
+                setRoomPopupView("detail");
+              }}
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-[var(--colors-hairline)] bg-[var(--colors-surface-2)] text-[var(--colors-ink-muted)] transition-colors hover:text-[var(--colors-ink)]"
+              aria-label="강의실 정보 닫기"
+            >
+              <X size={16} />
+            </button>
+          </div>
+
+          {roomPopupView === "detail" ? (
+            <>
+              <div className="mt-4 grid grid-cols-2 gap-2 text-[12px]">
+                <div className={`rounded-md border px-3 py-2 ${getStatusToneClass(selectedRoomStatus.occupancyTone)}`}>
+                  <div className="font-[700] opacity-75">현재 상태</div>
+                  <div className="mt-1 font-[900]">{selectedRoomStatus.occupancyLabel}</div>
+                </div>
+                <div className={`rounded-md border px-3 py-2 ${selectedRoomStatus.hvacLabel.includes("가동") || selectedRoomStatus.hvacLabel.includes("예열") ? "border-sky-300/50 bg-sky-500/12 text-sky-700" : "border-slate-300/60 bg-slate-500/10 text-slate-600"}`}>
+                  <div className="font-[700] opacity-75">냉난방 상태</div>
+                  <div className="mt-1 font-[900]">{selectedRoomStatus.hvacLabel}</div>
+                </div>
+              </div>
+
+              <div className="mt-3 rounded-md bg-[var(--colors-canvas)] px-3 py-2 text-[12px]">
+                <div className="font-[600] text-[var(--colors-ink-subtle)]">현재 수업/다음 일정</div>
+                <div className="mt-1 font-[900] leading-5 text-[var(--colors-ink)]">{selectedRoomStatus.detail}</div>
+              </div>
+
+              <div className="mt-3 grid grid-cols-2 gap-2 text-[12px]">
+                <div className="rounded-md bg-[var(--colors-canvas)] px-3 py-2">
+                  <div className="font-[600] text-[var(--colors-ink-subtle)]">공간 유형</div>
+                  <div className="mt-1 font-[900] text-[var(--colors-ink)]">{selectedEnergyRoom.specialLabel}</div>
+                </div>
+                <div className="rounded-md bg-[var(--colors-canvas)] px-3 py-2">
+                  <div className="font-[600] text-[var(--colors-ink-subtle)]">규모</div>
+                  <div className="mt-1 font-[900] text-[var(--colors-ink)]">{selectedEnergyRoom.sizeLabel}</div>
+                </div>
+                <div className="rounded-md bg-[var(--colors-canvas)] px-3 py-2">
+                  <div className="font-[600] text-[var(--colors-ink-subtle)]">냉난방기</div>
+                  <div className="mt-1 font-[900] text-[var(--colors-ink)]">{selectedEnergyRoom.airConditioners}대</div>
+                </div>
+                <div className="rounded-md bg-[var(--colors-canvas)] px-3 py-2">
+                  <div className="font-[600] text-[var(--colors-ink-subtle)]">특수 설비</div>
+                  <div className="mt-1 font-[900] text-[var(--colors-ink)]">
+                    {selectedEnergyRoom.hasLargeScreen ? "대형 스크린" : "스크린 없음"}
+                    {selectedEnergyRoom.computerCount ? ` · PC ${selectedEnergyRoom.computerCount}대` : ""}
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-3 rounded-md bg-[var(--colors-canvas)] px-3 py-2 text-[12px]">
+                <div className="font-[600] text-[var(--colors-ink-subtle)]">전력 절감 추정</div>
+                <div className="mt-1 flex items-center justify-between gap-3">
+                  <span className="font-[800] text-[var(--colors-ink)]">
+                    주 {formatNumber(selectedEnergyRoom.weeklySavingsKwh, 1)} kWh 절감
+                  </span>
+                  <span className="font-[800] text-[var(--colors-primary)]">
+                    {formatNumber(selectedEnergyRoom.savingsRate, 1)}%
+                  </span>
+                </div>
+              </div>
+
+              {selectedEnergyRoom.professorTeachingHours > 0 && (
+                <div className="mt-3 rounded-md bg-[var(--colors-canvas)] px-3 py-2 text-[12px]">
+                  <div className="font-[600] text-[var(--colors-ink-subtle)]">교수 시간표 연동</div>
+                  <div className="mt-1 font-[800] text-[var(--colors-ink)]">
+                    주 {selectedEnergyRoom.professorTeachingHours}시간 강의 중 교수실 idle 절감
+                  </div>
+                </div>
+              )}
+
+              <button
+                type="button"
+                onClick={() => setRoomPopupView("schedule")}
+                className="mt-4 w-full rounded-md border border-[var(--colors-hairline)] bg-[var(--colors-surface-2)] px-3 py-2 text-[12px] font-[900] text-[var(--colors-ink)] transition-colors hover:bg-[var(--colors-surface-3)]"
+              >
+                강의실 시간표 보기
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="mt-4 flex items-center justify-between gap-3">
+                <div className="text-sm font-[900] text-[var(--colors-ink)]">강의실 시간표</div>
+                <button
+                  type="button"
+                  onClick={() => setRoomPopupView("detail")}
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-[var(--colors-hairline)] bg-[var(--colors-surface-2)] text-[var(--colors-ink-muted)] transition-colors hover:text-[var(--colors-ink)]"
+                  aria-label="강의실 상세로 돌아가기"
+                  title="강의실 상세로 돌아가기"
+                >
+                  <ChevronLeft size={16} />
+                </button>
+              </div>
+              <div className="mt-3 space-y-2">
+                {selectedEnergyRoom.timetable.length > 0 ? (
+                  selectedEnergyRoom.timetable.map((entry) => (
+                    <div
+                      key={`${entry.day}-${entry.startHour}-${entry.subject}`}
+                      className="rounded-md bg-[var(--colors-canvas)] px-3 py-2 text-[12px]"
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <span className="font-[900] text-[var(--colors-ink)]">{entry.day}</span>
+                        <span className="font-[800] text-[var(--colors-primary)]">
+                          {entry.startHour}:00-{entry.startHour + entry.durationHours}:00
+                        </span>
+                      </div>
+                      <div className="mt-1 font-[800] text-[var(--colors-ink)]">{entry.subject}</div>
+                      {entry.professorId && (
+                        <div className="mt-1 font-[600] text-[var(--colors-ink-subtle)]">
+                          교수 ID: {entry.professorId}
+                        </div>
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  <div className="rounded-md bg-[var(--colors-canvas)] px-3 py-3 text-[12px] font-[800] text-[var(--colors-ink-subtle)]">
+                    등록된 강의 시간표 없음
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+
+          <div className="mt-3 text-[11px] font-[600] leading-5 text-[var(--colors-ink-muted)]">
+            p.{selectedEnergyRoom.sourcePage} · {selectedEnergyRoom.sourceConfidence} · {selectedEnergyRoom.sourceNote}
+          </div>
+        </div>
+      )}
 
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(1,1,2,0.02)_0%,rgba(1,1,2,0.08)_50%,rgba(1,1,2,0.16)_100%)]" />
 
@@ -622,11 +982,134 @@ export default function App() {
             {activeTab === "energy" && (
               <div className="space-y-6">
                 <div className="pb-4 border-b border-[var(--colors-hairline)]/50">
-                  <div className="text-base font-[700] text-[var(--colors-ink)] flex items-center gap-2">
-                    <Zap size={18} className="text-[var(--colors-primary)]" />
-                    에너지
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <div className="text-base font-[700] text-[var(--colors-ink)] flex items-center gap-2">
+                        <Zap size={18} className="text-[var(--colors-primary)]" />
+                        {energyBuilding.displayName} 전력 시뮬레이션
+                      </div>
+                      <div className="mt-1 text-[12px] font-[600] text-[var(--colors-ink-subtle)]">
+                        D4만 먼저 검증 · 내부 구조는 교체 가능한 목업 단면
+                      </div>
+                    </div>
+                    <div className="flex shrink-0 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedBuildingId(D4_BUILDING_ID);
+                          const nextMode = buildingViewMode === "section" ? "overview" : "section";
+                          setBuildingViewMode(nextMode);
+                          setIsPanelOpen(nextMode !== "section");
+                          if (nextMode !== "section") {
+                            setIsRoomPopupOpen(false);
+                          }
+                        }}
+                        className="rounded-md border border-[var(--colors-hairline)] bg-[var(--colors-surface-2)] px-3 py-2 text-[12px] font-[800] text-[var(--colors-ink)] transition-colors hover:bg-[var(--colors-surface-3)]"
+                      >
+                        {buildingViewMode === "section" ? "건물 요약" : "내부 목업"}
+                      </button>
+                      {buildingViewMode !== "campus" && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedBuildingId(null);
+                            setBuildingViewMode("campus");
+                          }}
+                          className="flex h-9 w-9 items-center justify-center rounded-md border border-[var(--colors-hairline)] bg-[var(--colors-surface-2)] text-[var(--colors-ink-muted)] transition-colors hover:text-[var(--colors-ink)]"
+                          aria-label="캠퍼스로 돌아가기"
+                        >
+                          <X size={15} />
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
+
+                <div className="rounded-lg border border-[var(--colors-hairline)] bg-[var(--colors-surface-2)] px-4 py-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <div className="text-sm font-[900] text-[var(--colors-ink)]">건물 전체 요약</div>
+                      <div className="mt-1 text-[12px] font-[600] text-[var(--colors-ink-subtle)]">
+                        {energyBuilding.rooms.length}개 실 · 왼쪽 동 5층 / 오른쪽 동 6층 · {buildingViewMode === "section" ? "목업 단면 보기" : "건물 요약 보기"}
+                      </div>
+                    </div>
+                    <span className="rounded-full border border-[var(--colors-hairline)] bg-[var(--colors-canvas)] px-2 py-1 text-[11px] font-[800] text-[var(--colors-ink-muted)]">
+                      추정 데이터
+                    </span>
+                  </div>
+                  <div className="mt-3 text-[12px] font-[500] leading-5 text-[var(--colors-ink-muted)]">
+                    {energyBuilding.source.note}
+                  </div>
+                </div>
+
+                <div className="rounded-lg border border-[var(--colors-primary)]/40 bg-[var(--colors-surface-2)] p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <div className="text-sm font-[900] text-[var(--colors-ink)]">{energyRecommendation.label}</div>
+                      <div className="mt-1 text-[12px] font-[600] text-[var(--colors-ink-subtle)]">
+                        {energyRecommendation.topRoom?.name} 우선 제어 · 월 {formatNumber(energyRecommendation.expectedMonthlySavingsKwh, 0)} kWh 절감 예상
+                      </div>
+                    </div>
+                    <span className="rounded-full border border-[var(--colors-hairline)] bg-[var(--colors-canvas)] px-2 py-1 text-[11px] font-[800] text-[var(--colors-primary)]">
+                      AI 추천
+                    </span>
+                  </div>
+                  <div className="mt-3 space-y-1">
+                    {energyRecommendation.reasons.map((reason) => (
+                      <div key={reason} className="flex items-start gap-2 text-[12px] font-[600] text-[var(--colors-ink-muted)]">
+                        <span className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--colors-primary)]" />
+                        {reason}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="text-sm font-[700] text-[var(--colors-ink-subtle)]">절감 시나리오</div>
+                    <div className="text-[12px] font-[600] text-[var(--colors-ink-tertiary)]">
+                      실외 {formatNumber(activeWeather?.temperature ?? simTemp, 1)}°C 기준
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 rounded-lg border border-[var(--colors-hairline)] bg-[var(--colors-canvas)] p-1">
+                    {Object.values(SCENARIO_PRESETS).map((scenario) => (
+                      <button
+                        key={scenario.id}
+                        type="button"
+                        onClick={() => setEnergyScenarioId(scenario.id)}
+                        className={`rounded-md px-2 py-2 text-[12px] font-[700] transition-colors ${energyScenarioId === scenario.id ? "border border-[var(--colors-hairline)] bg-[var(--colors-surface-2)] text-[var(--colors-ink)]" : "text-[var(--colors-ink-subtle)] hover:text-[var(--colors-ink)]"}`}
+                      >
+                        {scenario.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <MetricCard
+                    label="월 예상 사용량"
+                    value={`${formatNumber(energySimulation.monthlyBaselineKwh, 0)} kWh`}
+                    hint="강의실 특성 + 시간표 기반"
+                  />
+                  <MetricCard
+                    label="절감 후 사용량"
+                    value={`${formatNumber(energySimulation.monthlyOptimizedKwh, 0)} kWh`}
+                    hint={`${formatNumber(energySimulation.savingsRate, 1)}% 절감`}
+                    accent
+                  />
+                  <MetricCard
+                    label="월 절감량"
+                    value={`${formatNumber(energySimulation.monthlySavingsKwh, 0)} kWh`}
+                    hint="자동 OFF / 완화 운전"
+                    accent
+                  />
+                  <MetricCard
+                    label="피크 부하"
+                    value={`${formatNumber(energySimulation.peakKw, 1)} kW`}
+                    hint="단일 강의실 최대 추정"
+                  />
+                </div>
+
                 <div className="space-y-4">
                   <div className="text-sm font-[700] text-[var(--colors-ink-subtle)]">태양광 발전 시뮬레이션</div>
                   <SliderRow
@@ -650,7 +1133,114 @@ export default function App() {
                       hint="가용 면적 기준"
                     />
                   </div>
+                  <div className="rounded-lg border border-[var(--colors-hairline)] bg-[var(--colors-surface-2)] px-4 py-3">
+                    <div className="flex items-center justify-between gap-3 text-sm">
+                      <span className="font-[700] text-[var(--colors-ink-subtle)]">태양광 반영 후 외부 전력</span>
+                      <span className="font-[800] text-[var(--colors-ink)]">
+                        {formatNumber(monthlyGridAfterSolar, 0)} kWh/월
+                      </span>
+                    </div>
+                    <div className="mt-2 h-2 overflow-hidden rounded-full bg-[var(--colors-canvas)]">
+                      <div
+                        className="h-full rounded-full bg-[var(--colors-primary)]"
+                        style={{
+                          width: `${Math.min(100, (solarResult.monthlyOutput / Math.max(1, energySimulation.monthlyOptimizedKwh)) * 100)}%`,
+                        }}
+                      />
+                    </div>
+                    <div className="mt-2 text-[12px] font-[500] text-[var(--colors-ink-subtle)]">
+                      절감 후 전력의 {formatNumber((solarResult.monthlyOutput / Math.max(1, energySimulation.monthlyOptimizedKwh)) * 100, 1)}%를 태양광으로 상쇄
+                    </div>
+                  </div>
                 </div>
+
+                <div className="space-y-3">
+                  <div className="text-sm font-[700] text-[var(--colors-ink-subtle)]">강의실별 절감 우선순위</div>
+                  <div className="space-y-2">
+                    {energySimulation.rooms.slice(0, 4).map((room) => (
+                      <button
+                        key={room.id}
+                        type="button"
+                        onClick={() => setSelectedEnergyRoomId(room.id)}
+                        className={`w-full rounded-lg border px-4 py-3 text-left transition-colors ${selectedEnergyRoom?.id === room.id ? "border-[var(--colors-primary)] bg-[var(--colors-surface-3)]" : "border-[var(--colors-hairline)] bg-[var(--colors-surface-2)] hover:border-[var(--colors-hairline-strong)]"}`}
+                      >
+                        <div className="flex items-center justify-between gap-3">
+                          <div>
+                            <div className="text-sm font-[800] text-[var(--colors-ink)]">{room.name}</div>
+                            <div className="mt-1 text-[12px] font-[600] text-[var(--colors-ink-subtle)]">
+                              {room.floor}층 {room.roomNumber}호 · {room.sizeLabel} · {room.specialLabel} · 주 {room.classHours}시간
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-sm font-[900] text-[var(--colors-primary)]">
+                              {formatNumber(room.weeklySavingsKwh, 1)} kWh
+                            </div>
+                            <div className="text-[11px] font-[600] text-[var(--colors-ink-tertiary)]">주 절감</div>
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {selectedEnergyRoom && (
+                  <div className="rounded-lg border border-[var(--colors-hairline)] bg-[var(--colors-surface-2)] p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-2 text-sm font-[800] text-[var(--colors-ink)]">
+                        <Clock3 size={15} className="text-[var(--colors-primary)]" />
+                        {selectedEnergyRoom.name} 가정값
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleSelectD4Room(selectedEnergyRoom.id)}
+                        className="rounded-md border border-[var(--colors-hairline)] bg-[var(--colors-canvas)] px-2 py-1 text-[11px] font-[800] text-[var(--colors-ink-muted)] transition-colors hover:text-[var(--colors-ink)]"
+                      >
+                        목업에서 보기
+                      </button>
+                    </div>
+                    <div className="mt-3 grid grid-cols-2 gap-2 text-[12px]">
+                      <div className="rounded-md bg-[var(--colors-canvas)] px-3 py-2">
+                        <div className="font-[600] text-[var(--colors-ink-subtle)]">위치</div>
+                        <div className="mt-1 font-[800] text-[var(--colors-ink)]">
+                          {selectedEnergyRoom.floor}층 {selectedEnergyRoom.roomNumber}호 · {selectedEnergyRoom.side === "left" ? "좌측" : "우측"}
+                        </div>
+                      </div>
+                      <div className="rounded-md bg-[var(--colors-canvas)] px-3 py-2">
+                        <div className="font-[600] text-[var(--colors-ink-subtle)]">강의실 특징</div>
+                        <div className="mt-1 font-[800] text-[var(--colors-ink)]">
+                          {selectedEnergyRoom.sizeLabel}, 냉난방기 {selectedEnergyRoom.airConditioners}대
+                        </div>
+                      </div>
+                      <div className="rounded-md bg-[var(--colors-canvas)] px-3 py-2">
+                        <div className="font-[600] text-[var(--colors-ink-subtle)]">특수 설비</div>
+                        <div className="mt-1 font-[800] text-[var(--colors-ink)]">
+                          {selectedEnergyRoom.hasLargeScreen ? "대형 스크린" : "스크린 없음"} · {selectedEnergyRoom.specialLabel}
+                          {selectedEnergyRoom.computerCount ? ` · PC ${selectedEnergyRoom.computerCount}대` : ""}
+                        </div>
+                      </div>
+                      {selectedEnergyRoom.professorTeachingHours > 0 && (
+                        <div className="col-span-2 rounded-md bg-[var(--colors-canvas)] px-3 py-2">
+                          <div className="font-[600] text-[var(--colors-ink-subtle)]">교수 시간표 연동</div>
+                          <div className="mt-1 font-[800] text-[var(--colors-ink)]">
+                            주 {selectedEnergyRoom.professorTeachingHours}시간 수업 중 교수실 idle 절감
+                          </div>
+                        </div>
+                      )}
+                      <div className="col-span-2 rounded-md bg-[var(--colors-canvas)] px-3 py-2">
+                        <div className="font-[600] text-[var(--colors-ink-subtle)]">대표 시간표</div>
+                        <div className="mt-1 font-[800] text-[var(--colors-ink)]">
+                          {formatScheduleLabel(selectedEnergyRoom.timetable)}
+                        </div>
+                      </div>
+                      <div className="col-span-2 rounded-md bg-[var(--colors-canvas)] px-3 py-2">
+                        <div className="font-[600] text-[var(--colors-ink-subtle)]">목업 출처</div>
+                        <div className="mt-1 font-[700] leading-5 text-[var(--colors-ink)]">
+                          p.{selectedEnergyRoom.sourcePage} · {selectedEnergyRoom.sourceConfidence} · {selectedEnergyRoom.sourceNote}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
