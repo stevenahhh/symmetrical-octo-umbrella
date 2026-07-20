@@ -1,6 +1,4 @@
-import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Sky } from "@react-three/drei";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   AlertTriangle,
   CalendarDays,
@@ -23,7 +21,7 @@ import {
   X,
   Zap,
 } from "lucide-react";
-import { CityModel } from "./CityModel";
+import VWorldRenderer from "./vworld/VWorldRenderer";
 import trafficData from "./utils/trafficData.json";
 import {
   calculateMayPvOutput,
@@ -34,7 +32,6 @@ import {
   CAMPUS_LOCATION,
   createSimulationDate,
   getSunState,
-  getSunVector,
 } from "./utils/sunPosition.mjs";
 
 const DUMMY_DATA = {
@@ -132,7 +129,6 @@ function SliderRow({ label, valueLabel, min, max, step = 1, value, onChange }) {
 }
 
 export default function App() {
-  const orbitControlsRef = useRef(null);
   const [selectedId, setSelectedId] = useState("");
   const [selectedArea, setSelectedArea] = useState(1200);
   const [mode, setMode] = useState("simulation");
@@ -275,11 +271,6 @@ export default function App() {
     [sunSimulationDate],
   );
 
-  const sunVector = useMemo(
-    () => getSunVector({ altitude: sunState.altitude, azimuth: sunState.azimuth }),
-    [sunState.altitude, sunState.azimuth],
-  );
-
   const sceneBackground = sunState.visible ? "#d6e0e6" : "#09111d";
   const systemStatus = loading
     ? "기상 데이터 갱신 중"
@@ -303,20 +294,8 @@ export default function App() {
     weekday: "short",
   });
 
-  const handleSelect = useCallback((name, area) => {
-    setSelectedId(name);
-    setSelectedArea(area);
-    setPopupData(null);
-    setPopupError(null);
-  }, []);
-
-  const handleBuildingClick = useCallback(async (obj) => {
-    const elementId =
-      obj?.parent?.name && obj.parent.name !== "Scene"
-        ? obj.parent.name
-        : obj?.name;
-
-    if (!elementId || !elementId.startsWith("BLD_")) {
+  const fetchPopupData = useCallback(async (elementId) => {
+    if (!elementId?.startsWith("BLD_")) {
       setPopupData(null);
       return;
     }
@@ -342,57 +321,23 @@ export default function App() {
     }
   }, []);
 
+  const handleVWorldSelection = useCallback(
+    ({ elementId, displayName }) => {
+      setSelectedId(displayName);
+      setPopupData(null);
+      setPopupError(null);
+      setSelectedArea(0);
+      fetchPopupData(elementId);
+    },
+    [fetchPopupData],
+  );
+
   return (
     <div className="dashboard-root relative h-screen w-screen overflow-hidden bg-[var(--colors-canvas)] text-[var(--colors-ink)]">
       <div className="absolute inset-0" style={{ background: sceneBackground }} />
 
       <div className="absolute inset-0 z-0">
-        <Canvas camera={{ position: [0, 80, 80], fov: 50 }} shadows>
-          <color attach="background" args={[sceneBackground]} />
-          <fog attach="fog" args={[sceneBackground, 180, 340]} />
-          <ambientLight intensity={sunState.visible ? 1.55 : 0.5} />
-          <directionalLight
-            castShadow
-            intensity={sunState.visible ? 2.2 : 0.35}
-            position={sunVector}
-            shadow-mapSize-width={2048}
-            shadow-mapSize-height={2048}
-          />
-          {sunState.visible && (
-            <mesh position={sunVector.map(v => v * 100)}>
-              <sphereGeometry args={[10, 32, 32]} />
-              <meshBasicMaterial color="#ffe87c" />
-            </mesh>
-          )}
-          <Sky
-            distance={450000}
-            sunPosition={sunVector}
-            inclination={sunState.visible ? 0.52 : 0.08}
-            azimuth={0.25}
-            turbidity={8}
-            rayleigh={0.7}
-          />
-          <Suspense fallback={null}>
-            <CityModel
-              position={[0, 0, 0]}
-              controlsRef={orbitControlsRef}
-              isNight={!sunState.visible}
-              selectedId={selectedId}
-              onSelect={handleSelect}
-              onBuildingClick={handleBuildingClick}
-            />
-          </Suspense>
-          <OrbitControls
-            ref={orbitControlsRef}
-            enableDamping
-            dampingFactor={0.05}
-            minDistance={30}
-            maxDistance={200}
-            minPolarAngle={Math.PI / 6}
-            maxPolarAngle={Math.PI / 2.2}
-            target={[0, 0, 0]}
-          />
-        </Canvas>
+        <VWorldRenderer onSelection={handleVWorldSelection} />
       </div>
 
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(1,1,2,0.02)_0%,rgba(1,1,2,0.08)_50%,rgba(1,1,2,0.16)_100%)]" />
