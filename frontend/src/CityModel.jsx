@@ -250,6 +250,19 @@ export function CityModel({
     document.body.style.cursor = "pointer";
   };
 
+  const handleLabelClick = (anchor) => {
+    if (onSelect) {
+      onSelect(anchor.name, 1200, anchor.position);
+    }
+
+    if (onBuildingClick) {
+      onBuildingClick({
+        name: anchor.elementId,
+        parent: { name: anchor.elementId },
+      });
+    }
+  };
+
   return (
     <group position={[-center.x, 0, -center.z]}>
       <primitive
@@ -272,13 +285,15 @@ export function CityModel({
             zIndexRange={[120, 0]}
           >
             <div
-              className="pointer-events-none flex flex-col items-center whitespace-nowrap"
+              className="pointer-events-auto flex flex-col items-center whitespace-nowrap"
               style={{
                 transform: `translate(-50%, calc(-100% - 4px)) scale(${labelScale})`,
                 transformOrigin: "bottom center",
               }}
             >
-              <div
+              <button
+                type="button"
+                onClick={() => handleLabelClick(anchor)}
                 className={`rounded-[10px] border px-3 py-1 text-[11px] font-black whitespace-nowrap shadow-[0_10px_24px_rgba(15,23,42,0.35)] ${
                   isSelected
                     ? "border-[var(--colors-primary)] bg-[var(--colors-surface-1)] text-[var(--colors-primary)]"
@@ -286,7 +301,7 @@ export function CityModel({
                 }`}
               >
                 {anchor.displayName}
-              </div>
+              </button>
             </div>
           </Html>
         );
