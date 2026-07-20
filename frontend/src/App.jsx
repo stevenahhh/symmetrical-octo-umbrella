@@ -21,10 +21,16 @@ import {
   Moon,
   Monitor,
   X,
+  ZoomIn,
+  ZoomOut,
   Zap,
 } from "lucide-react";
 import { CityModel } from "./CityModel";
+import { BuildingSectionView } from "./components/BuildingSectionView";
+import { D4RoomPopup } from "./components/D4RoomPopup";
 import trafficData from "./utils/trafficData.json";
+import { D4_BUILDING_DATA, D4_ROOMS, isD4ElementId } from "./utils/d4BuildingData.mjs";
+import { getCurrentRoomStatus, isRoomInUse } from "./utils/d4RoomStatus.mjs";
 import {
   calculateMayPvOutput,
   DEFAULT_MAY_SPECIFIC_YIELD,
@@ -155,6 +161,10 @@ export default function App() {
   const [popupLoading, setPopupLoading] = useState(false);
   const [popupError, setPopupError] = useState(null);
   const [trafficStats, setTrafficStats] = useState({ entered: 0, exited: 0, current_cars: 0, total_spaces: 50, is_running: false });
+  const [buildingViewMode, setBuildingViewMode] = useState("campus");
+  const [selectedEnergyRoomId, setSelectedEnergyRoomId] = useState(D4_ROOMS[0].id);
+  const [isRoomPopupOpen, setIsRoomPopupOpen] = useState(false);
+  const [roomPopupView, setRoomPopupView] = useState("detail");
 
   const refreshWeather = useCallback(() => {
     const apiUrl = import.meta.env.VITE_API_URL ?? "http://127.0.0.1:8000";
@@ -236,6 +246,21 @@ export default function App() {
       }),
     [currentData.roofArea, roofRatio],
   );
+  const selectedEnergyRoom = useMemo(
+    () => D4_ROOMS.find((room) => room.id === selectedEnergyRoomId) ?? D4_ROOMS[0],
+    [selectedEnergyRoomId],
+  );
+  const selectedRoomStatus = useMemo(
+    () => getCurrentRoomStatus(selectedEnergyRoom, currentTime),
+    [currentTime, selectedEnergyRoom],
+  );
+  const roomUsageById = useMemo(() => {
+    const usage = new Map();
+    D4_ROOMS.forEach((room) => {
+      usage.set(room.id, isRoomInUse(room, currentTime));
+    });
+    return usage;
+  }, [currentTime]);
 
   const activeAlerts = useMemo(() => {
     if (!activeWeather) return [];
@@ -310,6 +335,42 @@ export default function App() {
     setPopupError(null);
   }, []);
 
+  const openD4Section = useCallback(() => {
+    setSelectedId("공과대학 3호관");
+    setSelectedArea(1360);
+    setPopupData(null);
+    setPopupError(null);
+    setBuildingViewMode("section");
+    setSelectedEnergyRoomId((current) =>
+      D4_ROOMS.some((room) => room.id === current) ? current : D4_ROOMS[0].id,
+    );
+    setActiveTab("energy");
+    setIsPanelOpen(false);
+    setIsRoomPopupOpen(true);
+    setRoomPopupView("detail");
+  }, []);
+
+  const handleSelectD4Room = useCallback((roomId) => {
+    setSelectedEnergyRoomId(roomId);
+    setActiveTab("energy");
+    setIsPanelOpen(false);
+    setIsRoomPopupOpen(true);
+    setRoomPopupView("detail");
+  }, []);
+
+  const handleSectionZoom = useCallback((direction) => {
+    const controls = orbitControlsRef.current;
+    const camera = controls?.object;
+    const target = controls?.target;
+    if (!camera || !target) return;
+
+    const offset = camera.position.clone().sub(target);
+    const nextDistance = Math.min(42, Math.max(4, offset.length() * (direction === "in" ? 0.78 : 1.28)));
+    offset.setLength(nextDistance);
+    camera.position.copy(target).add(offset);
+    controls.update();
+  }, []);
+
   const handleBuildingClick = useCallback(async (obj) => {
     const elementId =
       obj?.parent?.name && obj.parent.name !== "Scene"
@@ -318,6 +379,11 @@ export default function App() {
 
     if (!elementId || !elementId.startsWith("BLD_")) {
       setPopupData(null);
+      return;
+    }
+
+    if (isD4ElementId(elementId)) {
+      openD4Section();
       return;
     }
 
@@ -340,7 +406,7 @@ export default function App() {
     } finally {
       setPopupLoading(false);
     }
-  }, []);
+  }, [openD4Section]);
 
   return (
     <div className="dashboard-root relative h-screen w-screen overflow-hidden bg-[var(--colors-canvas)] text-[var(--colors-ink)]">
@@ -373,31 +439,95 @@ export default function App() {
             rayleigh={0.7}
           />
           <Suspense fallback={null}>
-            <CityModel
-              position={[0, 0, 0]}
-              controlsRef={orbitControlsRef}
-              isNight={!sunState.visible}
-              selectedId={selectedId}
-              onSelect={handleSelect}
-              onBuildingClick={handleBuildingClick}
-            />
+            {buildingViewMode === "section" ? (
+              <BuildingSectionView
+                building={D4_BUILDING_DATA}
+                rooms={D4_ROOMS}
+                roomUsageById={roomUsageById}
+                selectedRoomId={selectedEnergyRoom?.id}
+                onSelectRoom={handleSelectD4Room}
+              />
+            ) : (
+              <CityModel
+                position={[0, 0, 0]}
+                controlsRef={orbitControlsRef}
+                isNight={!sunState.visible}
+                selectedId={selectedId}
+                onSelect={handleSelect}
+                onBuildingClick={handleBuildingClick}
+              />
+            )}
           </Suspense>
           <OrbitControls
             ref={orbitControlsRef}
             enableDamping
             dampingFactor={0.05}
-            minDistance={30}
-            maxDistance={200}
+            enableZoom
+            zoomSpeed={buildingViewMode === "section" ? 1.25 : 1}
+            minDistance={buildingViewMode === "section" ? 4 : 30}
+            maxDistance={buildingViewMode === "section" ? 42 : 200}
             minPolarAngle={Math.PI / 6}
             maxPolarAngle={Math.PI / 2.2}
-            target={[0, 0, 0]}
+            target={buildingViewMode === "section" ? [0, 2.2, 0] : [0, 0, 0]}
           />
         </Canvas>
       </div>
 
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(1,1,2,0.02)_0%,rgba(1,1,2,0.08)_50%,rgba(1,1,2,0.16)_100%)]" />
 
+      {buildingViewMode === "section" && (
+        <div className="pointer-events-auto absolute left-6 bottom-6 z-20 flex overflow-hidden rounded-lg border border-[var(--colors-hairline)] bg-[var(--colors-surface-1)] shadow-lg">
+          <button
+            type="button"
+            onClick={() => {
+              setBuildingViewMode("campus");
+              setIsPanelOpen(true);
+              setIsRoomPopupOpen(false);
+              setRoomPopupView("detail");
+            }}
+            className="flex h-11 items-center gap-2 border-r border-[var(--colors-hairline)] px-3 text-[12px] font-[800] text-[var(--colors-ink-muted)] transition-colors hover:bg-[var(--colors-surface-2)] hover:text-[var(--colors-ink)]"
+            aria-label="캠퍼스로 돌아가기"
+            title="캠퍼스로 돌아가기"
+          >
+            <ChevronLeft size={16} />
+            캠퍼스
+          </button>
+          <button
+            type="button"
+            onClick={() => handleSectionZoom("in")}
+            className="flex h-11 w-11 items-center justify-center border-r border-[var(--colors-hairline)] text-[var(--colors-ink-muted)] transition-colors hover:bg-[var(--colors-surface-2)] hover:text-[var(--colors-ink)]"
+            aria-label="목업 확대"
+            title="목업 확대"
+          >
+            <ZoomIn size={18} />
+          </button>
+          <button
+            type="button"
+            onClick={() => handleSectionZoom("out")}
+            className="flex h-11 w-11 items-center justify-center text-[var(--colors-ink-muted)] transition-colors hover:bg-[var(--colors-surface-2)] hover:text-[var(--colors-ink)]"
+            aria-label="목업 축소"
+            title="목업 축소"
+          >
+            <ZoomOut size={18} />
+          </button>
+        </div>
+      )}
+
+      {buildingViewMode === "section" && isRoomPopupOpen && (
+        <D4RoomPopup
+          room={selectedEnergyRoom}
+          status={selectedRoomStatus}
+          view={roomPopupView}
+          onChangeView={setRoomPopupView}
+          onClose={() => {
+            setIsRoomPopupOpen(false);
+            setRoomPopupView("detail");
+          }}
+        />
+      )}
+
       {/* 패널 토글 버튼 */}
+      {buildingViewMode === "campus" && (
       <button
         onClick={() => setIsPanelOpen(v => !v)}
         className="pointer-events-auto absolute z-20 top-1/2 -translate-y-1/2 flex items-center justify-center w-7 h-14 rounded-l-xl border border-r-0 border-[var(--colors-hairline)] shadow-lg transition-right duration-300"
@@ -409,10 +539,11 @@ export default function App() {
       >
         {isPanelOpen ? <ChevronRight size={16} className="text-[var(--colors-ink-subtle)]" /> : <ChevronLeft size={16} className="text-[var(--colors-ink-subtle)]" />}
       </button>
+      )}
 
       <div
         className="pointer-events-none absolute top-0 bottom-0 z-10 w-[440px]"
-        style={{ right: isPanelOpen ? '0' : '-440px', transition: 'right 0.3s ease' }}
+        style={{ right: buildingViewMode === "campus" && isPanelOpen ? '0' : '-440px', transition: 'right 0.3s ease' }}
       >
         <div
           className="pointer-events-auto h-full w-full border-l border-[var(--colors-hairline)] shadow-2xl flex flex-col"
@@ -736,7 +867,7 @@ export default function App() {
       </div>
 
       {/* Building Info Modal */}
-      {selectedId && (
+      {buildingViewMode === "campus" && selectedId && (
         <div className="pointer-events-auto absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50">
           <FloatingPanel className="w-[340px] max-h-[80vh] overflow-y-auto px-0 py-0 shadow-2xl">
             {/* Header */}
