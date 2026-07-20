@@ -3,7 +3,10 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
+    "dev:legacy": "vite --host 127.0.0.1 --port 5173",
+    "dev:vworld": "vite --host 127.0.0.1 --port 5173 --open index-vworld.html",
     "build": "vite build",
+    "build:vworld": "vite build --mode vworld --outDir dist-vworld",
     "preview": "vite preview",
     "test": "node --test src/utils/pvMath.test.mjs src/utils/sunPosition.test.mjs"
   },
