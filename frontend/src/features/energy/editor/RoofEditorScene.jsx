@@ -69,7 +69,7 @@ function RoofPlane({ state, center, onSelect, onMove }) {
 
 export function RoofEditorScene({ state, onSelect, onMove }) {
   const center = useMemo(() => roofCenter(state.roof), [state.roof]);
-  return <Canvas camera={{ position: [27, 45, 38], fov: 42 }} shadows aria-label={`${state.roof.buildingId} 옥상 배열 배치 캔버스`}> 
+  return <Canvas camera={{ position: [27, 45, 38], fov: 42 }} shadows aria-label={`${state.roof.buildingId} 옥상 배열 배치 캔버스`}>
     <color attach="background" args={["#07101b"]} />
     <fog attach="fog" args={["#07101b", 55, 105]} />
     <RoofPlane state={state} center={center} onSelect={onSelect} onMove={onMove} />
