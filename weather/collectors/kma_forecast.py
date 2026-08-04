@@ -9,7 +9,7 @@ import requests
 from config import KMA_SERVICE_KEY, KMA_NX, KMA_NY
 
 
-BASE_URL = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst"
+BASE_URL = "https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst"
 KST = timezone(timedelta(hours=9))
 
 SKY_MAP = {
