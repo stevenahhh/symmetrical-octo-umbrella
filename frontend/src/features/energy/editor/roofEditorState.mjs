@@ -66,9 +66,10 @@ function makeArray(state, id, originMeters) {
 
 export function addArray(state) {
   const usedIds = new Set(state.committedArrays.map((item) => item.id));
+  const prefix = `${state.roof.buildingId}-array-`;
   let suffix = 2;
-  while (usedIds.has(`D4-array-${suffix}`)) suffix += 1;
-  const id = `D4-array-${suffix}`;
+  while (usedIds.has(`${prefix}${suffix}`)) suffix += 1;
+  const id = `${prefix}${suffix}`;
   const arrays = [...state.committedArrays, makeArray(state, id, nextOrigin(state))];
   return { ...checkedState(state, arrays), selectedArrayId: id };
 }

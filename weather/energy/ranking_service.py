@@ -109,7 +109,7 @@ def rank_campus(database: Database, request: RankingRequest) -> RankingResult:
                 excluded.append(entry)
                 continue
 
-            violations = validate_geometry(database, scenario.arrays)
+            violations = validate_geometry(database, building.id, scenario.arrays)
             generation = sum(item.generation_energy_kwh for item in scenario.intervals)
             demand_energy = sum(item.predicted_demand_energy_kwh for item in scenario.intervals)
             direct = sum(min(item.generation_energy_kwh, item.predicted_demand_energy_kwh)

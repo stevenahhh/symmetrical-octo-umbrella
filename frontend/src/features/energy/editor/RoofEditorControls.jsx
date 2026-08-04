@@ -2,6 +2,7 @@ import { Plus, Redo2, RotateCcw, Save, Trash2 } from "lucide-react";
 
 const inputClass = "h-10 w-full rounded-md border border-[var(--colors-hairline-strong)] bg-[var(--colors-surface-2)] px-3 text-sm text-[var(--colors-ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--colors-primary)]";
 const buttonClass = "inline-flex min-h-10 items-center justify-center gap-2 rounded-md border border-[var(--colors-hairline-strong)] bg-[var(--colors-surface-2)] px-3 text-xs font-extrabold text-[var(--colors-ink-muted)] transition-colors hover:bg-[var(--colors-surface-3)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--colors-primary)] disabled:cursor-not-allowed disabled:opacity-40";
+const selectedButtonClass = `${buttonClass} border-[var(--colors-primary)] bg-[color-mix(in_srgb,var(--colors-primary)_22%,var(--colors-surface-2))] text-[var(--colors-ink)]`;
 
 function NumberField({ label, value, min, max, step = 1, suffix, onChange }) {
   return <label className="grid gap-1 text-xs font-bold text-[var(--colors-ink-muted)]">
@@ -17,7 +18,10 @@ export function RoofEditorControls({ buildingId = "D4", arrays = [], selectedArr
       <button className={buttonClass} type="button" aria-label="태양광 배열 추가" onClick={onAdd}><Plus size={15} /> 배열 추가</button>
     </div>
 
-    {arrays.length > 1 && <div className="mt-4 flex gap-2 overflow-x-auto" aria-label="배열 선택 목록">{arrays.map((array, index) => <button className={buttonClass} data-active={array.id === selectedArray?.id} type="button" key={array.id} onClick={() => onSelect(array.id)}>배열 {index + 1}</button>)}</div>}
+    {arrays.length > 1 && <div className="mt-4 flex gap-2 overflow-x-auto" aria-label="배열 선택 목록">{arrays.map((array, index) => {
+      const selected = array.id === selectedArray?.id;
+      return <button className={selected ? selectedButtonClass : buttonClass} aria-pressed={selected} type="button" key={array.id} onClick={() => onSelect(array.id)}>배열 {index + 1}</button>;
+    })}</div>}
 
     <dl className="mt-4 grid grid-cols-3 gap-2 text-center">
       <div className="rounded-md bg-[var(--colors-surface-2)] p-2"><dt className="text-[11px] text-[var(--colors-ink-subtle)]">모듈</dt><dd className="mt-1 text-sm font-extrabold">{summary.moduleCount}장</dd></div>
@@ -26,6 +30,8 @@ export function RoofEditorControls({ buildingId = "D4", arrays = [], selectedArr
     </dl>
 
     {selectedArray && <div className="mt-4 grid grid-cols-2 gap-3">
+      <NumberField label="가로 위치" suffix="m" min={0} step={0.1} value={selectedArray.originMeters.xMeters} onChange={(xMeters) => onUpdate({ originMeters: { ...selectedArray.originMeters, xMeters } })} />
+      <NumberField label="세로 위치" suffix="m" min={0} step={0.1} value={selectedArray.originMeters.yMeters} onChange={(yMeters) => onUpdate({ originMeters: { ...selectedArray.originMeters, yMeters } })} />
       <NumberField label="행 수" suffix="행" min={1} max={12} value={selectedArray.rows} onChange={(rows) => onUpdate({ rows })} />
       <NumberField label="열 수" suffix="열" min={1} max={12} value={selectedArray.columns} onChange={(columns) => onUpdate({ columns })} />
       <NumberField label="방위각" suffix="°" min={0} max={359} value={selectedArray.azimuthDeg} onChange={(azimuthDeg) => onUpdate({ azimuthDeg })} />

@@ -10,6 +10,7 @@ const parsed = parseCampusComparison({
   assumptions: { annualization_days: 365, weights: { annualized_yield: .3 }, demand_quality: "predicted", weather_source: "scenario", comparability: "same date and deterministic weather preset only" },
   rankings: [
     { scenario_id: "D4-s", building_id: "D4", building_name: "D4 / 공대 3호관", building_status: "simulated", status: "ranked", rank: 1, score: .71, total_generation_energy_kwh: 40, capacity_kwp: 7.056, exclusion_reason: null, component_scores: { annualized_yield: .8, roof_utilization: .3, self_sufficiency: .2, grid_reduction: .2, constraints: 1 }, metrics: { annualized_kwh_per_kwp: 2070, roof_utilization_ratio: .022, self_sufficiency_ratio: .04, grid_reduction_ratio: .04, constraint_violation_count: 0 } },
+    { scenario_id: "D1-s", building_id: "D1", building_name: "D1 / 창업보육센터", building_status: "simulated", status: "ranked", rank: 2, score: .61, total_generation_energy_kwh: 30, capacity_kwp: 5.292, exclusion_reason: null, component_scores: { annualized_yield: .7, roof_utilization: .2, self_sufficiency: .2, grid_reduction: .2, constraints: 1 }, metrics: { annualized_kwh_per_kwp: 1900, roof_utilization_ratio: .02, self_sufficiency_ratio: .03, grid_reduction_ratio: .03, constraint_violation_count: 0 } },
     { scenario_id: null, building_id: "C1", building_name: "C1 / 도서관", building_status: "incomplete", status: "excluded", rank: null, score: null, total_generation_energy_kwh: null, capacity_kwp: null, exclusion_reason: "missing_roof_metadata", component_scores: null, metrics: null },
   ],
 });
@@ -29,10 +30,12 @@ describe("CampusComparison", () => {
     const open = vi.fn();
     render(<CampusComparison client={client} initialDate="2026-05-18" onOpenRecommendation={open} />);
     expect(await screen.findByText("D4 / 공대 3호관")).toBeTruthy();
-    expect(screen.getByText(/연환산 발전량/)).toBeTruthy();
-    expect(screen.getByText(/옥상 활용/)).toBeTruthy();
-    expect(screen.getByText(/제약 위반/)).toBeTruthy();
+    expect(screen.getAllByText(/연환산 발전량/)).toHaveLength(2);
+    expect(screen.getAllByText(/옥상 활용/)).toHaveLength(2);
+    expect(screen.getAllByText(/제약 위반/)).toHaveLength(2);
     expect(screen.getByText(/옥상 메타데이터/)).toBeTruthy();
+    await user.click(screen.getByRole("button", { name: "D1 / 창업보육센터 배치 편집" }));
+    expect(open).toHaveBeenCalledWith({ scenarioId: "D1-s", buildingId: "D1" });
     await user.click(screen.getByRole("button", { name: "1위 추천을 새 편집 시나리오로 열기" }));
     expect(client.recommend).toHaveBeenCalledWith({ sourceScenarioId: "D4-s", date: "2026-05-18" });
     expect(open).toHaveBeenCalledWith({ scenarioId: "new-s", buildingId: "D4" });

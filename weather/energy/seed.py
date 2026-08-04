@@ -151,8 +151,8 @@ CAMPUS_BUILDINGS = D4_BUILDINGS + (
 
 D4_SEED_COUNTS = {
     "buildings": 5, "rooms": 73, "timetable_events": 126, "load_profiles": 5,
-    "roof_zones": 4, "roof_obstacles": 1, "scenarios": 3,
-    "panel_arrays": 3, "scenario_intervals": 0,
+    "roof_zones": 4, "roof_obstacles": 1, "scenarios": 4,
+    "panel_arrays": 4, "scenario_intervals": 0,
 }
 
 
@@ -198,6 +198,7 @@ def _seed_building(connection: sqlite3.Connection, building: SeedBuilding) -> No
 
 def _seed_comparison_scenarios(connection: sqlite3.Connection) -> None:
     fixtures = (
+        ("D1", 2, 5, 20.0),
         ("D2", 2, 6, 22.0),
         ("D3", 2, 7, 30.0),
     )
@@ -249,5 +250,5 @@ def seed_buildings(
         ids = {building.id for building in buildings}
         if "D4" in ids:
             _seed_d4_fixture(connection)
-        if {"D2", "D3"} <= ids:
+        if {"D1", "D2", "D3"} <= ids:
             _seed_comparison_scenarios(connection)

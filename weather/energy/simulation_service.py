@@ -89,7 +89,7 @@ def recommendation_candidates(source: Scenario, suggested_id: str, database: Dat
             candidate = replace(template, id=f"{suggested_id}-array-1", scenario_id=suggested_id,
                                 origin_x_m=15.5, origin_y_m=10.0, rows=2, columns=columns,
                                 azimuth_deg=180.0, tilt_deg=tilt, orientation="portrait")
-            valid = not validate_geometry(database, (candidate,))
+            valid = not validate_geometry(database, source.building_id, (candidate,))
             score = float(columns * 200 - abs(tilt - 25))
             scores.append({"candidate_id": f"2x{columns}-{int(tilt)}", "module_count": columns * 2,
                            "azimuth_deg": 180.0, "tilt_deg": tilt, "orientation": "portrait",

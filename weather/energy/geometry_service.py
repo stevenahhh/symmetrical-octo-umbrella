@@ -32,16 +32,21 @@ def _overlap(first, second) -> bool:
                 return False
     return True
 
-def validate_geometry(database: Database, arrays: tuple[PanelArray, ...]) -> list[dict]:
+def validate_geometry(database: Database, building_id: str, arrays: tuple[PanelArray, ...]) -> list[dict]:
     violations = []
     footprints = []
     with closing(database.connect()) as connection:
         for array in arrays:
-            zone = connection.execute("SELECT polygon_json, edge_margin_m FROM roof_zones WHERE roof_id=? AND id=?", (array.roof_id, array.roof_zone_id)).fetchone()
+            zone = connection.execute("SELECT building_id, polygon_json, edge_margin_m FROM roof_zones WHERE roof_id=? AND id=?", (array.roof_id, array.roof_zone_id)).fetchone()
             if zone is None:
                 violations.append({"code": "UNKNOWN_ROOF_ZONE", "array_id": array.id,
                     "message_en": "Array references an unknown roof zone.",
                     "message_ko": "\ubc30\uc5f4\uc774 \uc874\uc7ac\ud558\uc9c0 \uc54a\ub294 \uc625\uc0c1 \uad6c\uc5ed\uc744 \ucc38\uc870\ud569\ub2c8\ub2e4."})
+                continue
+            if zone["building_id"] != building_id:
+                violations.append({"code": "ROOF_BUILDING_MISMATCH", "array_id": array.id,
+                    "message_en": "Array roof zone belongs to another building.",
+                    "message_ko": "배열의 옥상 구역이 선택한 건물에 속하지 않습니다."})
                 continue
             polygon = json.loads(zone["polygon_json"])
             zone_bounds = _bounds([(point["xMeters"], point["yMeters"]) for point in polygon])

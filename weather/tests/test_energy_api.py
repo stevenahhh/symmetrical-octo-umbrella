@@ -86,6 +86,16 @@ def test_canonical_routes_reject_invalid_requests_and_api_aliases_are_absent(tmp
         detail = invalid.json()["detail"]
         assert detail["code"] == "invalid_geometry" and detail["message_en"] and detail["message_ko"]
         assert detail["violations"][0]["code"] == "ROOF_EDGE_MARGIN"
+        cross_building = payload(count=1)
+        cross_building["building_id"] = "D3"
+        wrong_roof = api.post("/energy/scenarios", json=cross_building)
+        assert wrong_roof.status_code == 422
+        assert wrong_roof.json()["detail"]["violations"][0]["code"] == "ROOF_BUILDING_MISMATCH"
+        created = api.post("/energy/scenarios", json=payload(count=1)).json()
+        wrong_update = api.put(f"/energy/scenarios/{created['id']}", json=cross_building)
+        assert wrong_update.status_code == 422
+        assert wrong_update.json()["detail"]["violations"][0]["code"] == "ROOF_BUILDING_MISMATCH"
+        assert api.get(f"/energy/scenarios/{created['id']}").json()["building_id"] == "D4"
         assert api.get("/energy/weather/scenarios", params={"date": "2026-02-30"}).status_code == 422
         for path in ("/api/buildings", "/api/buildings/D4/demand", "/api/weather/scenarios",
                      "/api/scenarios", "/api/scenarios/missing", "/api/scenarios/missing/simulate",
@@ -107,7 +117,7 @@ def test_locked_database_is_bounded_and_writes_no_partial_scenario(tmp_path, mon
             connection.rollback()
             connection.close()
         with sqlite3.connect(path) as check:
-            assert check.execute("SELECT count(*) FROM scenarios").fetchone()[0] == 3
+            assert check.execute("SELECT count(*) FROM scenarios").fetchone()[0] == 4
 
 
 def test_literal_energy_building_and_create_update_delete_round_trip(tmp_path, monkeypatch) -> None:
@@ -189,7 +199,7 @@ def test_literal_layout_and_nonfinite_validation_are_structured_422_without_writ
         malformed_date = api.get("/energy/rankings", params={"date": "2026-02-30"}).json()["detail"]
         assert malformed_date["code"] == "request_validation_error"
         with sqlite3.connect(path) as check:
-            assert check.execute("SELECT count(*) FROM scenarios").fetchone()[0] == 3
+            assert check.execute("SELECT count(*) FROM scenarios").fetchone()[0] == 4
 
 
 def test_locked_reads_simulate_recommend_and_rankings_return_503_without_state_change(tmp_path, monkeypatch) -> None:
@@ -277,7 +287,7 @@ def test_campus_seeds_and_explainable_comparable_rankings(tmp_path, monkeypatch)
         }], "obstacles": []}
         assert d3_roof["zones"][0]["polygon_meters"] != api.get("/energy/buildings/D4").json()["roofs"][0]["zones"][0]["polygon_meters"]
 
-        for building_id in ("D2", "D3", "D4"): 
+        for building_id in ("D1", "D2", "D3", "D4"):
             scenarios = api.get(f"/energy/buildings/{building_id}/scenarios").json()
             assert scenarios
             response = api.post(f"/energy/scenarios/{scenarios[0]['id']}/simulate", json={"date": "2026-05-18"})
@@ -289,7 +299,7 @@ def test_campus_seeds_and_explainable_comparable_rankings(tmp_path, monkeypatch)
         assert body["weather_preset"] == "clear"
         assert body["assumptions"]["demand_quality"] == "predicted"
         ranked = [item for item in body["rankings"] if item["status"] == "ranked"]
-        assert len(ranked) >= 3
+        assert len(ranked) >= 4
         assert [item["rank"] for item in ranked] == list(range(1, len(ranked) + 1))
         for item in ranked:
             assert set(item["component_scores"]) == {"annualized_yield", "roof_utilization", "self_sufficiency", "grid_reduction", "constraints"}
@@ -298,7 +308,7 @@ def test_campus_seeds_and_explainable_comparable_rankings(tmp_path, monkeypatch)
         excluded = {item["building_id"]: item for item in body["rankings"] if item["status"] == "excluded"}
         assert excluded["C1"]["exclusion_reason"] == "missing_roof_metadata"
         assert excluded["C1"]["score"] is None and excluded["C1"]["component_scores"] is None
-        assert excluded["D1"]["exclusion_reason"] == "no_scenario"
+        assert "D1" not in excluded
         assert api.get("/energy/rankings", params={"date": "2026-05-18", "weather_preset": "clear"}).json() == body
 
 

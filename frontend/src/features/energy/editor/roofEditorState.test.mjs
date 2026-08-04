@@ -40,6 +40,15 @@ test("new array IDs remain unique after deleting a non-final array", () => {
   assert.deepEqual(state.committedArrays.map((item) => item.id), ["D4-array-2", "D4-array-3"]);
 });
 
+test("new array IDs use the edited building prefix", () => {
+  const document = fixture();
+  document.roofs[0].buildingId = "D3";
+  document.scenarios[0].id = "D3-scenario-campus-baseline";
+  document.scenarios[0].arrays[0].id = "D3-array-baseline";
+  document.scenarios[0].arrays[0].scenarioId = document.scenarios[0].id;
+  assert.equal(addArray(createRoofEditorState(document)).selectedArrayId, "D3-array-2");
+});
+
 test("summary reports module count, panel area, and capacity", () => {
   assert.deepEqual(summarizeLayout(createRoofEditorState(fixture())), { arrayCount: 1, moduleCount: 16, areaSquareMeters: 35.28, capacityKwp: 7.056 });
 });

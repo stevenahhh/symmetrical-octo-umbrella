@@ -6,7 +6,7 @@ import { RoofEditorControls } from "./RoofEditorControls.jsx";
 
 expect.extend({});
 afterEach(cleanup);
-const selectedArray = { rows: 2, columns: 8, azimuthDeg: 180, tiltDeg: 25, orientation: "portrait" };
+const selectedArray = { id: "D4-array-1", originMeters: { xMeters: 10, yMeters: 12 }, rows: 2, columns: 8, azimuthDeg: 180, tiltDeg: 25, orientation: "portrait" };
 const summary = { arrayCount: 1, moduleCount: 16, areaSquareMeters: 35.28, capacityKwp: 7.056 };
 
 describe("RoofEditorControls", () => {
@@ -17,12 +17,23 @@ describe("RoofEditorControls", () => {
     await user.tab();
     expect(document.activeElement).toBe(screen.getByRole("button", { name: "태양광 배열 추가" }));
     fireEvent.change(screen.getByLabelText("열 수"), { target: { value: "6" } });
+    fireEvent.change(screen.getByLabelText("가로 위치"), { target: { value: "14.5" } });
+    fireEvent.change(screen.getByLabelText("세로 위치"), { target: { value: "18" } });
     fireEvent.change(screen.getByLabelText("방위각"), { target: { value: "135" } });
     await user.click(screen.getByRole("button", { name: "가로형" }));
     expect(onUpdate).toHaveBeenCalledWith({ columns: 6 });
+    expect(onUpdate).toHaveBeenCalledWith({ originMeters: { xMeters: 14.5, yMeters: 12 } });
+    expect(onUpdate).toHaveBeenCalledWith({ originMeters: { xMeters: 10, yMeters: 18 } });
     expect(onUpdate).toHaveBeenCalledWith({ azimuthDeg: 135 });
     expect(onUpdate).toHaveBeenCalledWith({ orientation: "landscape" });
     expect(screen.getByText("16장")).toBeTruthy();
+  });
+
+  it("exposes the selected array through a visible and semantic pressed state", () => {
+    const arrays = [selectedArray, { ...selectedArray, id: "D4-array-2" }];
+    render(<RoofEditorControls arrays={arrays} selectedArray={selectedArray} summary={summary} canSave status={{ kind: "idle", message: "" }} violations={[]} onAdd={vi.fn()} onSelect={vi.fn()} onUpdate={vi.fn()} onDelete={vi.fn()} onUndo={vi.fn()} onSave={vi.fn()} canUndo />);
+    expect(screen.getByRole("button", { name: "배열 1" }).getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getByRole("button", { name: "배열 2" }).getAttribute("aria-pressed")).toBe("false");
   });
 
   it("labels a seeded recommendation editor with its matching building", () => {

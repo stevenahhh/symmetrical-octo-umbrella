@@ -113,7 +113,7 @@ def create_scenario(payload: ScenarioCreate, db: Database = Depends(database)):
     now = datetime.now(KST).isoformat()
     arrays = tuple(PanelArray(scenario_id=scenario_id, **item.model_dump()) for item in payload.arrays)
     try:
-        violations = validate_geometry(db, arrays)
+        violations = validate_geometry(db, payload.building_id, arrays)
     except sqlite3.OperationalError as exc:
         raise _database_error(exc) from exc
     if violations:
@@ -137,7 +137,7 @@ def get_scenario(scenario_id: str, db: Database = Depends(database)):
 def run_simulation(scenario_id: str, payload: DateRequest, db: Database = Depends(database)):
     repository = ScenarioRepository(db)
     scenario = _scenario(repository, scenario_id)
-    violations = validate_geometry(db, scenario.arrays)
+    violations = validate_geometry(db, scenario.building_id, scenario.arrays)
     if violations:
         raise _conflict(violations, 422)
     _, result = simulate(db, scenario, payload.date)
@@ -169,7 +169,7 @@ def update_scenario(scenario_id: str, payload: ScenarioCreate,
     if CampusRepository(db).get_building(payload.building_id) is None:
         raise _missing("building_not_found", payload.building_id)
     arrays = tuple(PanelArray(scenario_id=scenario_id, **item.model_dump()) for item in payload.arrays)
-    violations = validate_geometry(db, arrays)
+    violations = validate_geometry(db, payload.building_id, arrays)
     if violations:
         raise _conflict(violations, 422)
     try:
