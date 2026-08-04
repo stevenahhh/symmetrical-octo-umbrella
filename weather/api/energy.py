@@ -111,7 +111,10 @@ def create_scenario(payload: ScenarioCreate, db: Database = Depends(database)):
         raise _missing("building_not_found", payload.building_id)
     scenario_id = f"scenario-{uuid4()}"
     now = datetime.now(KST).isoformat()
-    arrays = tuple(PanelArray(scenario_id=scenario_id, **item.model_dump()) for item in payload.arrays)
+    arrays = tuple(PanelArray(
+        id=f"{scenario_id}-array-{index + 1}", scenario_id=scenario_id,
+        **item.model_dump(exclude={"id"}),
+    ) for index, item in enumerate(payload.arrays))
     try:
         violations = validate_geometry(db, payload.building_id, arrays)
     except sqlite3.OperationalError as exc:

@@ -76,6 +76,15 @@ def test_create_reload_simulate_and_recommend_without_mutation(tmp_path, monkeyp
         assert api.get(f"/energy/scenarios/{suggestion['scenario']['id']}").status_code == 200
 
 
+def test_create_reuses_client_array_labels_without_global_id_collisions(tmp_path, monkeypatch) -> None:
+    with client(tmp_path, monkeypatch) as api:
+        first = api.post("/energy/scenarios", json=payload(count=1))
+        second = api.post("/energy/scenarios", json=payload(count=1))
+        assert first.status_code == 201 and second.status_code == 201
+        assert first.json()["id"] != second.json()["id"]
+        assert first.json()["arrays"][0]["id"] != second.json()["arrays"][0]["id"]
+
+
 def test_canonical_routes_reject_invalid_requests_and_api_aliases_are_absent(tmp_path, monkeypatch) -> None:
     with client(tmp_path, monkeypatch) as api:
         assert api.get("/energy/buildings/missing/demand", params={"date": "2026-05-18"}).status_code == 404
