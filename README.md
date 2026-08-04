@@ -175,6 +175,56 @@ weather/.weather/Scripts/python.exe -m compileall -q weather/api weather/energy
 
 ---
 
+## Frontend 실행 방법 (Bun)
+
+1. **Bun 설치** (설치되어 있지 않은 경우)
+   - Windows (PowerShell):
+     ```powershell
+     powershell -c "irm bun.sh/install.ps1 | iex"
+     ```
+2. **의존성 설치**
+   - `frontend` 디렉토리로 이동 후 설치:
+     ```bash
+     cd frontend
+     bun install
+     ```
+3. **개발 서버 실행**
+   ```bash
+   bun run dev
+   ```
+
+---
+
+## Weather Backend 실행 방법 (Python)
+
+1. **가상환경 생성 및 활성화**
+   - `weather` 디렉토리로 이동:
+     ```bash
+     cd weather
+     ```
+   - 가상환경 생성:
+     ```bash
+     python -m venv venv
+     ```
+   - 활성화 (Windows):
+     ```bash
+     .\venv\Scripts\activate
+     ```
+2. **패키지 설치**
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. **서버 실행**
+   ```bash
+   python main.py
+   ```
+   *또는 FastAPI API 직접 실행:*
+   ```bash
+   uvicorn api.app:app --reload
+   ```
+
+---
+
 ## 기존 작업 절차
 절차 등 **branch**를 나눠서 작업할 예정입니다.  
 <br>
