@@ -12,10 +12,10 @@ export function calculateMayPvOutput({
 }) {
   const safeRoofArea = Number.isFinite(roofArea) ? Math.max(0, roofArea) : 0;
   const usableRoofRatio = Number.isFinite(roofRatio)
-    ? Math.max(0, roofRatio) / 100
+    ? Math.min(Math.max(roofRatio, 0), 100) / 100
     : DEFAULT_ROOF_RATIO / 100;
   const efficiencyRatio = Number.isFinite(moduleEfficiency)
-    ? Math.max(0, moduleEfficiency) / 100
+    ? Math.min(Math.max(moduleEfficiency, 0), 100) / 100
     : DEFAULT_MODULE_EFFICIENCY / 100;
   const systemLossRatio = Number.isFinite(systemLoss)
     ? Math.min(Math.max(systemLoss, 0), 100) / 100
