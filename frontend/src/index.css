@@ -27,6 +27,7 @@
   --colors-brand-secure: #7a7fad;
   --colors-semantic-success: #27a644;
   --colors-semantic-overlay: #000000;
+  --dashboard-panel-width: 440px;
 
   --rounded-xs: 4px;
   --rounded-sm: 6px;
@@ -88,6 +89,13 @@ body {
 .dashboard-root {
   background: var(--colors-canvas);
   color: var(--colors-ink);
+}
+
+@media (max-width: 439px) {
+  :root { --dashboard-panel-width: 100vw; }
+  .dashboard-root select,
+  .dashboard-root input,
+  .dashboard-root button { min-width: 0; }
 }
 
 

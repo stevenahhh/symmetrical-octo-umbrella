@@ -1,4 +1,4 @@
-export const D4_COORDINATE_HIT_TOLERANCE_DEGREES = 0.0001;
+export const D4_COORDINATE_HIT_TOLERANCE_DEGREES = 0.00048;
 
 export function isCoordinateMarkerHit(
   cartographic,

@@ -26,6 +26,7 @@ test("activates a resolved native model as a dashboard selection", () => {
 
   assert.deepEqual(selection, {
     elementId: "BLD_D3",
+    buildingId: "D3",
     displayName: "공과대학 2호관",
   });
   assert.deepEqual(selections, [selection]);
@@ -54,6 +55,7 @@ test("activates D4 through the same dashboard selection shape", () => {
 
   assert.deepEqual(selection, {
     elementId: "BLD_D4",
+    buildingId: "D4",
     displayName: "공과대학 3호관",
   });
   assert.deepEqual(selections, [selection]);

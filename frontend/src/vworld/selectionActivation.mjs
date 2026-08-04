@@ -1,7 +1,7 @@
 import { resolveVWorldBuilding } from "./buildingResolver.mjs";
 
 function createDashboardSelection({ elementId, displayName }) {
-  return { elementId, displayName };
+  return { elementId, buildingId: elementId.replace(/^BLD_/, ""), displayName };
 }
 
 export function activateNativeModelSelection(modelName, onSelection) {
