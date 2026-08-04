@@ -22,25 +22,32 @@ from __future__ import annotations
 
 import json
 import os
+import sqlite3
+import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
+_WEATHER_ROOT = str(Path(__file__).parent.parent)
+if _WEATHER_ROOT not in sys.path:
+    sys.path.insert(0, _WEATHER_ROOT)
+
 # 기존 collectors / domain (zone 기반)
-from collectors.kma_current import fetch_kma_current
-from collectors.air_quality import fetch_air_quality
-from collectors.kma_forecast import fetch_kma_forecast
-from domain.environment import build_environment_result
-from domain.zones import ZONES
+from weather.collectors.kma_current import fetch_kma_current
+from weather.collectors.air_quality import fetch_air_quality
+from weather.collectors.kma_forecast import fetch_kma_forecast
+from weather.domain.environment import build_environment_result
+from weather.domain.zones import ZONES
 
 # 신규 element 기반 파이프라인
-from processors.element_environment import build_element_environment_timeline, summarize_element_environment
-from processors.pipeline import aggregate_by_zone, run_pipeline_all, run_pipeline_for_element
-from processors.popup_formatter import format_popup_response
-from processors.weather_timeline import build_weather_timeline
+from weather.processors.element_environment import build_element_environment_timeline, summarize_element_environment
+from weather.processors.pipeline import aggregate_by_zone, run_pipeline_all, run_pipeline_for_element
+from weather.processors.popup_formatter import format_popup_response
+from weather.processors.weather_timeline import build_weather_timeline
 
 
 # =========================================================
@@ -59,10 +66,13 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=[
+        "http://localhost:5173", "http://127.0.0.1:5173",
+        "http://localhost:4173", "http://127.0.0.1:4173",
+    ],
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Content-Type", "Accept"],
 )
 
 
@@ -491,3 +501,34 @@ def get_environment_element_timeline(element_id: str):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+from weather.api.energy import router as energy_router
+
+app.include_router(energy_router)
+
+
+@app.exception_handler(RequestValidationError)
+async def request_validation_error_handler(_request: Request, exc: RequestValidationError):
+    details = [{"type": item["type"], "location": list(item["loc"]), "message": item["msg"]}
+               for item in exc.errors()]
+    return JSONResponse(status_code=422, content={"detail": {
+        "code": "request_validation_error",
+        "message_en": "The request failed validation.",
+        "message_ko": "\uc694\uccad \uac80\uc99d\uc5d0 \uc2e4\ud328\ud588\uc2b5\ub2c8\ub2e4.",
+        "details": details,
+    }})
+
+
+@app.exception_handler(sqlite3.OperationalError)
+async def sqlite_operational_error_handler(_request: Request, exc: sqlite3.OperationalError):
+    return JSONResponse(status_code=503, content={"detail": {
+        "code": "database_unavailable",
+        "message_en": str(exc),
+        "message_ko": "\ub370\uc774\ud130\ubca0\uc774\uc2a4\ub97c \uc0ac\uc6a9\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4.",
+    }})
+
+
+def create_app() -> FastAPI:
+    """Return the configured app; dependencies read current environment settings."""
+    return app
