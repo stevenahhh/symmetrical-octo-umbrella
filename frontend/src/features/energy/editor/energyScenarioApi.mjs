@@ -46,9 +46,16 @@ async function responseJson(response) {
   return body;
 }
 
-export async function loadEnergyScenario(apiBase, scenarioId, fetchImpl = fetch) {
-  const response = await fetchImpl(`${apiBase}/energy/scenarios/${encodeURIComponent(scenarioId)}`);
-  return fromApiScenario(await responseJson(response));
+function assertScenarioIdentity(scenario, scenarioId, buildingId, code = "INVALID_SCENARIO_CONTRACT") {
+  if (scenario.id !== scenarioId || (buildingId !== undefined && scenario.buildingId !== buildingId)) {
+    throw new EnergyScenarioApiError(code, "요청한 에너지 시나리오와 응답의 식별자가 일치하지 않습니다.");
+  }
+  return scenario;
+}
+
+export async function loadEnergyScenario(apiBase, scenarioId, fetchImpl = fetch, { signal, buildingId } = {}) {
+  const response = await fetchImpl(`${apiBase}/energy/scenarios/${encodeURIComponent(scenarioId)}`, { signal });
+  return assertScenarioIdentity(fromApiScenario(await responseJson(response)), scenarioId, buildingId);
 }
 
 function editorRoof(roof, buildingId) {
@@ -67,16 +74,17 @@ function editorRoof(roof, buildingId) {
   };
 }
 
-export async function loadEnergyEditorDocument(apiBase, buildingId, scenarioId, fetchImpl = fetch) {
+export async function loadEnergyEditorDocument(apiBase, buildingId, scenarioId, fetchImpl = fetch, { signal } = {}) {
   const [buildingResponse, scenarioResponse] = await Promise.all([
-    fetchImpl(`${apiBase}/energy/buildings/${encodeURIComponent(buildingId)}`),
-    fetchImpl(`${apiBase}/energy/scenarios/${encodeURIComponent(scenarioId)}`),
+    fetchImpl(`${apiBase}/energy/buildings/${encodeURIComponent(buildingId)}`, { signal }),
+    fetchImpl(`${apiBase}/energy/scenarios/${encodeURIComponent(scenarioId)}`, { signal }),
   ]);
   const building = await responseJson(buildingResponse);
   const scenario = fromApiScenario(await responseJson(scenarioResponse));
-  if (building.id !== buildingId || scenario.buildingId !== buildingId || !building.roofs?.length) {
+  if (building.id !== buildingId || !building.roofs?.length) {
     throw new EnergyScenarioApiError("INVALID_EDITOR_CONTRACT", "건물 옥상 데이터를 불러올 수 없습니다.");
   }
+  assertScenarioIdentity(scenario, scenarioId, buildingId, "INVALID_EDITOR_CONTRACT");
   return {
     schemaVersion: D4_ROOF_SCENARIO_FIXTURE.schemaVersion,
     coordinateSystem: D4_ROOF_SCENARIO_FIXTURE.coordinateSystem,
@@ -95,8 +103,8 @@ export async function saveEnergyScenario(apiBase, scenarioId, payload, fetchImpl
     building_id: options.buildingId ?? "D4", name: options.name ?? `${options.buildingId ?? "D4"} roof installation`, weather_preset: options.weatherPreset ?? "clear",
     arrays: payload.arrays.map(({ scenario_id: _scenarioId, ...array }) => array),
   };
-  const response = await fetchImpl(`${apiBase}/energy/scenarios/${scenarioId}`, {
-    method: "PUT", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify(body),
+  const response = await fetchImpl(`${apiBase}/energy/scenarios/${encodeURIComponent(scenarioId)}`, {
+    method: "PUT", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify(body), signal: options.signal,
   });
-  return fromApiScenario(await responseJson(response));
+  return assertScenarioIdentity(fromApiScenario(await responseJson(response)), scenarioId, body.building_id);
 }

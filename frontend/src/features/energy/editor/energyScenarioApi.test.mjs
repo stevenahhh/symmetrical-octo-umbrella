@@ -24,6 +24,49 @@ test("save binds exact roof-local fields to PUT /energy and reload restores them
   assert.deepEqual(loaded.arrays, document.scenarios[0].arrays);
 });
 
+test("load rejects scenario and building identities that differ from the requested resources", async () => {
+  await assert.rejects(
+    () => loadEnergyScenario("http://api.test", apiScenario.id, async () => ({
+      ok: true, status: 200, json: async () => ({ ...apiScenario, id: "other-scenario" }),
+    })),
+    (error) => error.code === "INVALID_SCENARIO_CONTRACT",
+  );
+  await assert.rejects(
+    () => loadEnergyScenario("http://api.test", apiScenario.id, async () => ({
+      ok: true, status: 200, json: async () => ({ ...apiScenario, building_id: "D3" }),
+    }), { buildingId: "D4" }),
+    (error) => error.code === "INVALID_SCENARIO_CONTRACT",
+  );
+
+  const building = { id: "D3", roofs: [{ id: "roof", zones: [], obstacles: [] }] };
+  for (const scenario of [
+    { ...apiScenario, id: "other-scenario", building_id: "D3" },
+    { ...apiScenario, id: "D3-scenario", building_id: "D4" },
+  ]) {
+    await assert.rejects(
+      () => loadEnergyEditorDocument("http://api.test", "D3", "D3-scenario", async (url) => ({
+        ok: true, status: 200, json: async () => url.includes("/buildings/") ? building : scenario,
+      })),
+      (error) => error.code === "INVALID_EDITOR_CONTRACT",
+    );
+  }
+});
+
+test("save encodes the requested scenario ID and rejects mismatched response identity", async () => {
+  const scenarioId = "D4/scenario south?revision=2";
+  const payload = toScenarioPayload(D4_ROOF_SCENARIO_FIXTURE.scenarios[0].arrays, D4_ROOF_SCENARIO_FIXTURE.modules[0]);
+  const calls = [];
+  const save = (responseScenario) => saveEnergyScenario("http://api.test", scenarioId, payload, async (url) => {
+    calls.push(url);
+    return { ok: true, status: 200, json: async () => responseScenario };
+  }, { buildingId: "D4" });
+
+  await save({ ...apiScenario, id: scenarioId });
+  assert.equal(calls[0], `http://api.test/energy/scenarios/${encodeURIComponent(scenarioId)}`);
+  await assert.rejects(() => save({ ...apiScenario, id: "other-scenario" }), (error) => error.code === "INVALID_SCENARIO_CONTRACT");
+  await assert.rejects(() => save({ ...apiScenario, id: scenarioId, building_id: "D3" }), (error) => error.code === "INVALID_SCENARIO_CONTRACT");
+});
+
 test("D3 editor geometry comes from the canonical seeded building payload instead of D4", async () => {
   const requests = [];
   const building = {

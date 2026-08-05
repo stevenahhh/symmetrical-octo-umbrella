@@ -56,6 +56,7 @@ export function parseEnergyDashboardPayload(value) {
   const demand = object(payload.demand, "demand");
   const simulation = object(payload.simulation, "simulation");
   if (building.id !== scenario.building_id || building.id !== demand.building_id) fail("building.id", "building references must match");
+  if (scenario.id !== simulation.scenario_id) fail("simulation.scenario_id", "must match scenario.id");
   if (demand.quality !== "predicted" || simulation.demand_quality !== "predicted") fail("demand.quality", "predicted provenance required");
   if (simulation.weather_source !== "scenario") fail("simulation.weather_source", "scenario provenance required");
   if (demand.interval_minutes !== 15 || simulation.interval_minutes !== 15) fail("interval_minutes", "15 required");
@@ -78,7 +79,10 @@ export function parseEnergyDashboardPayload(value) {
   return {
     building: { id: text(building.id, "building.id"), displayName: text(building.display_name, "building.display_name"), timezone: text(building.timezone, "building.timezone"), roomCount: finite(building.room_count, "building.room_count"), roofZoneCount: finite(building.roof_zone_count, "building.roof_zone_count") },
     scenario: { id: text(scenario.id, "scenario.id"), name: text(scenario.name, "scenario.name"), weatherPreset: text(scenario.weather_preset, "scenario.weather_preset"), arrayCount: array(scenario.arrays, "scenario.arrays").length },
-    scenarios: Array.isArray(payload.summaries) ? payload.summaries.map((item, index) => ({ id: text(item.id, `summaries[${index}].id`), label: text(item.name, `summaries[${index}].name`) })) : [{ id: scenario.id, label: scenario.name }],
+    scenarios: Array.isArray(payload.summaries) ? payload.summaries.map((item, index) => {
+      if (item.building_id !== building.id) fail(`summaries[${index}].building_id`, "must match building.id");
+      return { id: text(item.id, `summaries[${index}].id`), label: text(item.name, `summaries[${index}].name`) };
+    }) : [{ id: scenario.id, label: scenario.name }],
     date: String(simulation.date), units: { energy: "kWh", power: "kW", irradiance: "W/m²" },
     provenance: { demandLabel: "가상 예측", irradianceLabel: "시나리오/추정", demandQuality: "predicted", weatherSource: "scenario", calibration: generationAssumption.calibration, model: generationAssumption.model },
     chart: slots, balance, kpis: { predictedDemandEnergyKwh: balance.totals.predictedDemandEnergyKwh, generationEnergyKwh: balance.totals.generationEnergyKwh, directSolarUseEnergyKwh: balance.totals.directSolarUseEnergyKwh, gridImportEnergyKwh: balance.totals.gridImportEnergyKwh, surplusEnergyKwh: balance.totals.surplusEnergyKwh, selfSufficiencyRatio: balance.totals.selfSufficiencyRatio, solarUtilizationRatio: balance.totals.solarUtilizationRatio, savingsKrw: balance.totals.savingsKrw, carbonAvoidedKgCo2e: balance.totals.carbonAvoidedKgCo2e },
@@ -100,6 +104,9 @@ export function createEnergyDashboardClient(apiBase = import.meta.env.VITE_API_U
   const get = (path, signal) => fetchImpl(`${apiBase}${path}`, { headers: { Accept: "application/json" }, signal }).then(json);
   return { async load({ buildingId, date, scenarioId, signal }) {
     const [building, summaries] = await Promise.all([get(`/energy/buildings/${encodeURIComponent(buildingId)}`, signal), get(`/energy/buildings/${encodeURIComponent(buildingId)}/scenarios`, signal)]);
+    if (building?.id !== buildingId) fail("building.id", "must match requested building ID");
+    if (!Array.isArray(summaries)) fail("summaries", "array required");
+    if (summaries.some((item) => item?.building_id !== buildingId)) fail("summaries.building_id", "must match requested building ID");
     if (!summaries.length) return null;
     const selectedId = summaries.some((item) => item.id === scenarioId) ? scenarioId : summaries[0].id;
     const [demand, scenario, simulation] = await Promise.all([
@@ -107,6 +114,11 @@ export function createEnergyDashboardClient(apiBase = import.meta.env.VITE_API_U
       get(`/energy/scenarios/${encodeURIComponent(selectedId)}`, signal),
       fetchImpl(`${apiBase}/energy/scenarios/${encodeURIComponent(selectedId)}/simulate`, { method: "POST", headers: { Accept: "application/json", "Content-Type": "application/json" }, body: JSON.stringify({ date }), signal }).then(json),
     ]);
+    if (scenario?.id !== selectedId) fail("scenario.id", "must match selected scenario ID");
+    if (scenario?.building_id !== buildingId || demand?.building_id !== buildingId) fail("building.id", "response resources must match requested building ID");
+    if (simulation?.scenario_id !== selectedId) fail("simulation.scenario_id", "must match selected scenario ID");
+    if (String(demand?.date) !== String(date)) fail("demand.date", "must match requested date");
+    if (String(simulation?.date) !== String(date)) fail("simulation.date", "must match requested date");
     return { building, summaries, scenario, demand, simulation };
   } };
 }

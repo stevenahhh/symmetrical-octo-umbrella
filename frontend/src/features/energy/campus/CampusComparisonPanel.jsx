@@ -1,6 +1,6 @@
 import { AlertTriangle, ArrowUpRight, Building2, RefreshCw, Sparkles } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { parseCampusComparison } from "./campusComparison.mjs";
+import { parseCampusComparison, parseRecommendationResponse } from "./campusComparison.mjs";
 
 async function json(response) {
   const body = await response.json().catch(() => null);
@@ -11,13 +11,12 @@ async function json(response) {
 export function createCampusComparisonClient(apiBase = import.meta.env.VITE_API_URL ?? "http://127.0.0.1:8000", fetchImpl = fetch) {
   return {
     async load({ date, weatherPreset, signal }) {
-      const response = await fetchImpl(`${apiBase}/energy/rankings?date=${encodeURIComponent(date)}&weather_preset=${encodeURIComponent(weatherPreset)}`, { signal, headers: { Accept: "application/json" } });
-      return parseCampusComparison(await json(response));
+      const response = await fetchImpl(`${apiBase}/energy/rankings?date=${encodeURIComponent(date)}&weather_preset=${encodeURIComponent(weatherPreset)}&representative_only=true`, { signal, headers: { Accept: "application/json" } });
+      return parseCampusComparison(await json(response), { date, weatherPreset });
     },
     async recommend({ sourceScenarioId, date }) {
       const response = await fetchImpl(`${apiBase}/energy/scenarios/${encodeURIComponent(sourceScenarioId)}/recommend`, { method: "POST", headers: { Accept: "application/json", "Content-Type": "application/json" }, body: JSON.stringify({ date }) });
-      const value = await json(response);
-      return { id: value.scenario.id, buildingId: value.scenario.building_id };
+      return parseRecommendationResponse(await json(response), { sourceScenarioId });
     },
   };
 }

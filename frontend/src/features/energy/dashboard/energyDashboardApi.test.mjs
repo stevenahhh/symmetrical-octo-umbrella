@@ -57,6 +57,21 @@ test("parses seeded D3 without fabricating the D4 room breakdown", () => {
   assert.deepEqual(parsed.roomTypes, []);
 });
 
+test("rejects mismatched building and simulation scenario identities", () => {
+  for (const mutate of [
+    (value) => { value.scenario.building_id = "D3"; },
+    (value) => { value.demand.building_id = "D3"; },
+    (value) => { value.simulation.scenario_id = "other-scenario"; },
+  ]) {
+    const value = dashboardPayload();
+    mutate(value);
+    assert.throws(
+      () => parseEnergyDashboardPayload(value),
+      (error) => error.code === "invalid_energy_dashboard_payload",
+    );
+  }
+});
+
 test("rejects malformed and misaligned payloads instead of fabricating zeros", () => {
   const malformed = dashboardPayload();
   malformed.simulation.intervals[4].timestamp = malformed.simulation.intervals[3].timestamp;

@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { focusMapAt } from "./cameraFocus.mjs";
 import { D4_COORDINATE_HIT_TOLERANCE_DEGREES, isCoordinateMarkerHit } from "./coordinateMarkerHit.mjs";
 import { D4_COORDINATE_MARKER } from "./d4CoordinateMarker.mjs";
@@ -10,6 +10,9 @@ import {
 import { applyVWorldSunSimulation } from "./sunSimulation.mjs";
 import { loadVWorldWebGlSdk } from "./webglSdkLoader.mjs";
 import { VWorldCampusStatus } from "./VWorldCampusStatus";
+import { RepresentativePlanOverlayController } from "./RepresentativePlanOverlayController";
+import { CAMPUS_REPRESENTATIVE_BUILDING_IDS } from "./representativePlanOverlay.mjs";
+import { replaceRepresentativePlanObjects } from "./representativePlanVWorld.mjs";
 
 const D4SectionExperience = lazy(() =>
   import("./D4SectionExperience").then((module) => ({
@@ -64,9 +67,24 @@ function createD4CoordinateMarker(vw) {
   marker.create();
 }
 
-export default function VWorldRenderer({ onSelection, simulationDate, editorRequest, onEditorClose }) {
+export default function VWorldRenderer({
+  onSelection,
+  simulationDate,
+  editorRequest,
+  onEditorClose,
+  onPlanSaved,
+  createInstallationPlanDraft,
+  installationPlanRefreshKey,
+  onInstallationPlansChange,
+  onRepresentativeInstallationPlanChange,
+  representativeRefreshKey,
+}) {
   const onSelectionRef = useRef(onSelection);
   const simulationDateRef = useRef(simulationDate);
+  const mapRef = useRef(null);
+  const vwRef = useRef(null);
+  const overlayDataRef = useRef([]);
+  const overlayObjectIdsRef = useRef([]);
   const [isLoading, setIsLoading] = useState(true);
   const [hasLoadError, setHasLoadError] = useState(false);
   const [isD4SectionOpen, setIsD4SectionOpen] = useState(false);
@@ -77,11 +95,22 @@ export default function VWorldRenderer({ onSelection, simulationDate, editorRequ
   }, [onSelection]);
 
   useEffect(() => {
-    if (editorRequest?.scenarioId) {
+    if (editorRequest?.scenarioId || editorRequest?.installationPlanId) {
       setDetailRequest(editorRequest);
       setIsD4SectionOpen(true);
     }
   }, [editorRequest]);
+
+  const handleOverlayDataChange = useCallback((overlays) => {
+    overlayDataRef.current = overlays;
+    if (!mapRef.current || !vwRef.current) return;
+    overlayObjectIdsRef.current = replaceRepresentativePlanObjects({
+      map: mapRef.current,
+      vw: vwRef.current,
+      overlays,
+      previousIds: overlayObjectIdsRef.current,
+    });
+  }, []);
 
   useEffect(() => {
     simulationDateRef.current = simulationDate;
@@ -113,6 +142,10 @@ export default function VWorldRenderer({ onSelection, simulationDate, editorRequ
           map.start();
           globalThis.window[VWORLD_MAP_INSTANCE_KEY] = map;
         }
+        // The SDK map deliberately survives component cleanup. Always bind the
+        // current mount to it so StrictMode/remount overlay callbacks can render.
+        mapRef.current = map;
+        vwRef.current = vw;
         applyVWorldSunSimulation(simulationDateRef.current);
 
         const poiLayer = map.getLayerElement("POI_GROUP");
@@ -120,6 +153,7 @@ export default function VWorldRenderer({ onSelection, simulationDate, editorRequ
 
         createCampusBoundary(vw);
         createD4VWorldModel(vw);
+        handleOverlayDataChange(overlayDataRef.current);
         createD4CoordinateMarker(vw);
 
         handleMapClick = (
@@ -184,6 +218,14 @@ export default function VWorldRenderer({ onSelection, simulationDate, editorRequ
       map.removeObjectById(D4_MARKER_ID);
       map.removeObjectById(CAMPUS_BOUNDARY_ID);
       removeD4VWorldModel(map);
+      overlayObjectIdsRef.current = replaceRepresentativePlanObjects({
+        map,
+        vw: vwRef.current,
+        overlays: [],
+        previousIds: overlayObjectIdsRef.current,
+      });
+      mapRef.current = null;
+      vwRef.current = null;
     };
   }, []);
 
@@ -214,6 +256,19 @@ export default function VWorldRenderer({ onSelection, simulationDate, editorRequ
       )}
       {!isD4SectionOpen && <VWorldCampusStatus onSelection={(selection) => onSelectionRef.current(selection)} />}
       {!isD4SectionOpen && (
+        <RepresentativePlanOverlayController
+          buildingIds={CAMPUS_REPRESENTATIVE_BUILDING_IDS}
+          refreshKey={representativeRefreshKey}
+          onOverlayDataChange={handleOverlayDataChange}
+          onBuildingSelect={(buildingId) => onSelectionRef.current({
+            elementId: `BLD_${buildingId}`,
+            buildingId,
+            displayName: buildingId,
+          })}
+          className="absolute left-6 top-6 z-20"
+        />
+      )}
+      {!isD4SectionOpen && (
         <button
           type="button"
           className="dashboard-ghost-button absolute bottom-6 left-6 z-10 min-h-11 px-4 text-xs font-extrabold shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--colors-primary)]"
@@ -236,7 +291,22 @@ export default function VWorldRenderer({ onSelection, simulationDate, editorRequ
             </div>
           }
         >
-          <D4SectionExperience buildingId={detailRequest?.buildingId ?? "D4"} scenarioId={detailRequest?.scenarioId} startInstallation={Boolean(detailRequest?.scenarioId)} onClose={() => { setIsD4SectionOpen(false); setDetailRequest(null); onEditorClose?.(); }} />
+          <D4SectionExperience
+            buildingId={detailRequest?.buildingId ?? "D4"}
+            scenarioId={detailRequest?.scenarioId}
+            installationPlanId={detailRequest?.installationPlanId}
+            startInstallation={Boolean(detailRequest?.scenarioId || detailRequest?.installationPlanId)}
+            onPlanSaved={onPlanSaved}
+            createInstallationPlanDraft={createInstallationPlanDraft}
+            onPlansChange={onInstallationPlansChange}
+            onRepresentativeChange={onRepresentativeInstallationPlanChange}
+            planRefreshKey={installationPlanRefreshKey}
+            onClose={() => {
+              setIsD4SectionOpen(false);
+              setDetailRequest(null);
+              onEditorClose?.();
+            }}
+          />
         </Suspense>
       )}
     </div>

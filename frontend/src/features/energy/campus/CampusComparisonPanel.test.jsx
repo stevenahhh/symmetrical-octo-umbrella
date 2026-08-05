@@ -1,9 +1,10 @@
 /* @vitest-environment jsdom */
+import React from "react";
 import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { CampusComparison, createCampusComparisonClient } from "./CampusComparisonPanel.jsx";
-import { parseCampusComparison } from "./campusComparison.mjs";
+import { CampusComparisonContractError, parseCampusComparison } from "./campusComparison.mjs";
 
 const parsed = parseCampusComparison({
   date: "2026-05-18", weather_preset: "clear",
@@ -18,10 +19,34 @@ const parsed = parseCampusComparison({
 afterEach(cleanup);
 describe("CampusComparison", () => {
   it("creates recommendation copies through the canonical /energy namespace", async () => {
-    const fetchImpl = vi.fn().mockResolvedValue({ ok: true, status: 201, json: async () => ({ scenario: { id: "copy-s", building_id: "D3" } }) });
+    const fetchImpl = vi.fn().mockResolvedValue({ ok: true, status: 201, json: async () => ({ source_scenario_id: "source/s", scenario: { id: "copy-s", building_id: "D3" } }) });
     const result = await createCampusComparisonClient("http://api.test", fetchImpl).recommend({ sourceScenarioId: "source/s", date: "2026-05-18" });
     expect(fetchImpl).toHaveBeenCalledWith("http://api.test/energy/scenarios/source%2Fs/recommend", expect.objectContaining({ method: "POST" }));
     expect(result).toEqual({ id: "copy-s", buildingId: "D3" });
+  });
+
+  it("rejects ranking responses outside the requested date and weather context", async () => {
+    for (const mismatch of [
+      { date: "2026-05-17", weather_preset: "clear", field: "date" },
+      { date: "2026-05-18", weather_preset: "overcast", field: "weather_preset" },
+    ]) {
+      const fetchImpl = vi.fn().mockResolvedValue({ ok: true, status: 200, json: async () => ({
+        date: mismatch.date,
+        weather_preset: mismatch.weather_preset,
+        assumptions: { annualization_days: 365, weights: {}, demand_quality: "predicted", weather_source: "scenario" },
+        rankings: [],
+      }) });
+      await expect(createCampusComparisonClient("http://api.test", fetchImpl).load({ date: "2026-05-18", weatherPreset: "clear" }))
+        .rejects.toMatchObject({ name: "CampusComparisonContractError", field: mismatch.field });
+    }
+  });
+
+  it("rejects a recommendation copied from a source other than the selected scenario", async () => {
+    const fetchImpl = vi.fn().mockResolvedValue({ ok: true, status: 201, json: async () => ({
+      source_scenario_id: "other-source", scenario: { id: "copy-s", building_id: "D3" },
+    }) });
+    await expect(createCampusComparisonClient("http://api.test", fetchImpl).recommend({ sourceScenarioId: "source-s", date: "2026-05-18" }))
+      .rejects.toBeInstanceOf(CampusComparisonContractError);
   });
 
   it("shows statuses, assumptions and every component, then opens a new recommendation", async () => {

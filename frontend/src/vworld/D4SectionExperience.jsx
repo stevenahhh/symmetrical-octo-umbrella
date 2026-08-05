@@ -1,17 +1,32 @@
 import { OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import { ArrowLeft, Building2, Sun, ZoomIn, ZoomOut } from "lucide-react";
-import { useMemo, useRef, useState } from "react";
+import { ArrowLeft, Building2, List, Sun, ZoomIn, ZoomOut } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { BuildingSectionView } from "../components/BuildingSectionView";
 import { D4RoomPopup } from "../components/D4RoomPopup";
 import { RoofEditor } from "../features/energy/editor/RoofEditor";
+import { InstallationPlanManager } from "../features/energy/installations/InstallationPlanManager";
 import { D4_BUILDING_DATA, D4_ROOMS } from "../utils/d4BuildingData.mjs";
 import { getCurrentRoomStatus, isRoomInUse } from "../utils/d4RoomStatus.mjs";
 
-export function D4SectionExperience({ onClose, buildingId = "D4", scenarioId, startInstallation = false }) {
+export function D4SectionExperience({
+  onClose,
+  buildingId = "D4",
+  scenarioId,
+  installationPlanId,
+  onPlanSaved,
+  createInstallationPlanDraft,
+  onPlansChange,
+  onRepresentativeChange,
+  planRefreshKey,
+  startInstallation = false,
+}) {
   const controlsRef = useRef(null);
   const [experienceMode, setExperienceMode] = useState(startInstallation ? "installation" : "rooms");
+  const [isPlanEditorOpen, setIsPlanEditorOpen] = useState(Boolean(scenarioId || installationPlanId));
+  const [activeInstallationPlanId, setActiveInstallationPlanId] = useState(installationPlanId ?? null);
+  const [localPlanRevision, setLocalPlanRevision] = useState(0);
   const [selectedRoomId, setSelectedRoomId] = useState(D4_ROOMS[0].id);
   const [isPopupOpen, setIsPopupOpen] = useState(true);
   const [popupView, setPopupView] = useState("detail");
@@ -25,6 +40,13 @@ export function D4SectionExperience({ onClose, buildingId = "D4", scenarioId, st
     [currentTime],
   );
   const selectedRoomStatus = getCurrentRoomStatus(selectedRoom, currentTime);
+
+  useEffect(() => {
+    if (!scenarioId && !installationPlanId) return;
+    setExperienceMode("installation");
+    setActiveInstallationPlanId(installationPlanId ?? null);
+    setIsPlanEditorOpen(true);
+  }, [installationPlanId, scenarioId]);
 
   const selectRoom = (roomId) => {
     setSelectedRoomId(roomId);
@@ -60,11 +82,40 @@ export function D4SectionExperience({ onClose, buildingId = "D4", scenarioId, st
           />
           <OrbitControls ref={controlsRef} enableDamping minDistance={4} maxDistance={42} />
         </Canvas>
-      ) : <RoofEditor buildingId={buildingId} scenarioId={scenarioId} />}
+  ) : isPlanEditorOpen ? (
+    <>
+      <RoofEditor
+        key={activeInstallationPlanId ?? scenarioId ?? "default-scenario"}
+        buildingId={buildingId}
+        scenarioId={activeInstallationPlanId ? undefined : scenarioId}
+        installationPlanId={activeInstallationPlanId}
+        onPlanSaved={(plan) => {
+          setLocalPlanRevision((value) => value + 1);
+          onPlanSaved?.(plan);
+        }}
+      />
+      <button type="button" onClick={() => setIsPlanEditorOpen(false)} className="dashboard-ghost-button pointer-events-auto absolute right-4 top-4 z-50 flex min-h-11 items-center gap-2 px-3 text-xs font-extrabold" aria-label="설치 계획 목록으로 돌아가기"><List size={16} /> 계획 목록</button>
+    </>
+  ) : (
+    <div className="absolute inset-0 overflow-y-auto bg-[#07101b] px-4 pb-8 pt-20 sm:px-6">
+      <InstallationPlanManager
+        buildingId={buildingId}
+        refreshKey={`${planRefreshKey ?? ""}:${localPlanRevision}`}
+        createPlanDraft={createInstallationPlanDraft ?? (({ plans }) => ({ name: `${buildingId} 새 설치안 ${plans.length + 1}`, arrays: [] }))}
+        onEditPlan={(plan) => {
+          setActiveInstallationPlanId(plan.id);
+          setIsPlanEditorOpen(true);
+        }}
+        onPlansChange={onPlansChange}
+        onRepresentativeChange={onRepresentativeChange}
+        className="mx-auto max-w-5xl"
+      />
+    </div>
+  )}
 
       <div className="pointer-events-auto absolute left-1/2 top-4 z-50 flex -translate-x-1/2 overflow-hidden rounded-lg border border-[var(--colors-hairline-strong)] bg-[var(--colors-surface-1)] p-1 shadow-lg" role="tablist" aria-label={`${buildingId} 상세 모드`}>
         {buildingId === "D4" && <button type="button" role="tab" aria-selected={experienceMode === "rooms"} onClick={() => setExperienceMode("rooms")} className={`flex h-10 items-center gap-2 rounded-md px-3 text-xs font-extrabold focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--colors-primary)] ${experienceMode === "rooms" ? "bg-[var(--colors-surface-3)] text-[var(--colors-ink)]" : "text-[var(--colors-ink-subtle)]"}`}><Building2 size={16} /> 공간 탐색</button>}
-        <button type="button" role="tab" aria-selected={experienceMode === "installation"} onClick={() => setExperienceMode("installation")} className={`flex h-10 items-center gap-2 rounded-md px-3 text-xs font-extrabold focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--colors-primary)] ${experienceMode === "installation" ? "bg-[var(--colors-primary)] text-white" : "text-[var(--colors-ink-subtle)]"}`}><Sun size={16} /> 태양광 설치</button>
+        <button type="button" role="tab" aria-selected={experienceMode === "installation"} onClick={() => { setExperienceMode("installation"); setIsPlanEditorOpen(false); }} className={`flex h-10 items-center gap-2 rounded-md px-3 text-xs font-extrabold focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--colors-primary)] ${experienceMode === "installation" ? "bg-[var(--colors-primary)] text-white" : "text-[var(--colors-ink-subtle)]"}`}><Sun size={16} /> 태양광 설치</button>
       </div>
 
       <div className={`pointer-events-auto absolute left-4 z-50 flex overflow-hidden rounded-lg border border-[var(--colors-hairline)] bg-[var(--colors-surface-1)] shadow-lg sm:left-6 ${experienceMode === "installation" ? "top-4" : "bottom-4 sm:bottom-6"}`}>

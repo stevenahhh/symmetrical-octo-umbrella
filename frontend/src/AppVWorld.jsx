@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   AlertTriangle,
   CalendarDays,
@@ -24,6 +24,11 @@ import VWorldRenderer from "./vworld/VWorldRenderer";
 import trafficData from "./utils/trafficData.json";
 import { EnergyDashboard } from "./features/energy/dashboard/EnergyDashboard";
 import { CampusComparison } from "./features/energy/campus/CampusComparisonPanel";
+import {
+  createInstallationPlanClient,
+  createPlanDraftFromExisting,
+} from "./features/energy/installations/installationPlanApi.mjs";
+import { BuildingAnalysis } from "./features/energy/analysis";
 import {
   CAMPUS_LOCATION,
   createSimulationDate,
@@ -176,6 +181,12 @@ export default function App() {
   const [selectedId, setSelectedId] = useState("");
   const [selectedBuildingId, setSelectedBuildingId] = useState("D4");
   const [editorRequest, setEditorRequest] = useState(null);
+  const [installationPlans, setInstallationPlans] = useState([]);
+  const [representativePlanId, setRepresentativePlanId] = useState(null);
+  const [installationRefreshKey, setInstallationRefreshKey] = useState(0);
+  const [overlayRefreshKey, setOverlayRefreshKey] = useState(0);
+  const installationLoadGenerationRef = useRef(0);
+  const installationPlanClient = useMemo(() => createInstallationPlanClient(), []);
   const [mode, setMode] = useState("simulation");
   const [weatherData, setWeatherData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -356,6 +367,11 @@ export default function App() {
 
   const handleVWorldSelection = useCallback(
     ({ elementId, buildingId, displayName }) => {
+      if (buildingId !== selectedBuildingId) {
+        installationLoadGenerationRef.current += 1;
+        setInstallationPlans([]);
+        setRepresentativePlanId(null);
+      }
       setSelectedId(displayName);
       setSelectedBuildingId(buildingId);
       setActiveTab("energy");
@@ -363,15 +379,74 @@ export default function App() {
       setPopupError(null);
       fetchPopupData(elementId);
     },
-    [fetchPopupData],
+    [fetchPopupData, selectedBuildingId],
   );
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const requestGeneration = installationLoadGenerationRef.current + 1;
+    installationLoadGenerationRef.current = requestGeneration;
+    let active = true;
+    setInstallationPlans([]);
+    setRepresentativePlanId(null);
+    Promise.all([
+      installationPlanClient.listDetails(selectedBuildingId, { signal: controller.signal }),
+      installationPlanClient.getRepresentative(selectedBuildingId, { signal: controller.signal }),
+    ]).then(([plans, representative]) => {
+      if (!active || installationLoadGenerationRef.current !== requestGeneration) return;
+      setInstallationPlans(plans);
+      setRepresentativePlanId(representative?.installationPlanId ?? null);
+    }).catch((loadError) => {
+      if (!active || installationLoadGenerationRef.current !== requestGeneration || loadError?.name === "AbortError") return;
+      setInstallationPlans([]);
+      setRepresentativePlanId(null);
+    });
+    return () => {
+      active = false;
+      controller.abort();
+    };
+  }, [installationPlanClient, installationRefreshKey, selectedBuildingId]);
+
+  const createInstallationPlanDraft = useCallback(
+    (context) => createPlanDraftFromExisting(context),
+    [],
+  );
+
+  const handleInstallationPlansChange = useCallback((plans) => {
+    installationLoadGenerationRef.current += 1;
+    setInstallationPlans(plans);
+  }, []);
+
+  const handleRepresentativeInstallationPlanChange = useCallback((representative) => {
+    installationLoadGenerationRef.current += 1;
+    setRepresentativePlanId(representative?.installationPlanId ?? null);
+    setOverlayRefreshKey((value) => value + 1);
+  }, []);
 
   return (
     <div className="dashboard-root relative h-screen w-screen overflow-hidden bg-[var(--colors-canvas)] text-[var(--colors-ink)]">
       <div className="absolute inset-0" style={{ background: sceneBackground }} />
 
       <div className="absolute inset-0 z-0">
-        <VWorldRenderer onSelection={handleVWorldSelection} simulationDate={sunSimulationDate} editorRequest={editorRequest} onEditorClose={() => setEditorRequest(null)} />
+      <VWorldRenderer
+        onSelection={handleVWorldSelection}
+        simulationDate={sunSimulationDate}
+        editorRequest={editorRequest}
+        onEditorClose={() => {
+          setEditorRequest(null);
+          setInstallationRefreshKey((value) => value + 1);
+          setOverlayRefreshKey((value) => value + 1);
+        }}
+        onPlanSaved={() => {
+          setInstallationRefreshKey((value) => value + 1);
+          setOverlayRefreshKey((value) => value + 1);
+        }}
+        createInstallationPlanDraft={createInstallationPlanDraft}
+        installationPlanRefreshKey={installationRefreshKey}
+        onInstallationPlansChange={handleInstallationPlansChange}
+        onRepresentativeInstallationPlanChange={handleRepresentativeInstallationPlanChange}
+        representativeRefreshKey={overlayRefreshKey}
+      />
       </div>
 
       <div
@@ -394,9 +469,12 @@ export default function App() {
       {/* 패널 토글 버튼 */}
       <button
         onClick={() => setIsPanelOpen(v => !v)}
+        aria-label={isPanelOpen ? "대시보드 패널 닫기" : "대시보드 패널 열기"}
         className="pointer-events-auto absolute z-20 top-1/2 -translate-y-1/2 flex items-center justify-center w-7 h-14 rounded-l-xl border border-r-0 border-[var(--colors-hairline)] shadow-lg transition-right duration-300"
         style={{
-          right: isPanelOpen ? 'var(--dashboard-panel-width)' : '0px',
+          right: isPanelOpen
+            ? 'min(var(--dashboard-panel-width), calc(100vw - 1.75rem))'
+            : '0px',
           backgroundColor: 'var(--colors-surface-1)',
           transition: 'right 0.3s ease',
         }}
@@ -406,7 +484,11 @@ export default function App() {
 
       <div
         className="pointer-events-none absolute top-0 bottom-0 z-10 w-[var(--dashboard-panel-width)]"
-        style={{ right: isPanelOpen ? '0' : 'calc(-1 * var(--dashboard-panel-width))', transition: 'right 0.3s ease' }}
+        style={{
+          right: isPanelOpen ? '0' : 'calc(-1 * min(var(--dashboard-panel-width), 100vw))',
+          width: 'min(var(--dashboard-panel-width), 100vw)',
+          transition: 'right 0.3s ease',
+        }}
       >
         <div
           className="pointer-events-auto h-full w-full border-l border-[var(--colors-hairline)] shadow-2xl flex flex-col"
@@ -614,7 +696,18 @@ export default function App() {
               </div>
             )}
 
-            {activeTab === "energy" && <div className="space-y-4"><CampusComparison onOpenRecommendation={setEditorRequest} /><EnergyDashboard key={selectedBuildingId} buildingId={selectedBuildingId} /></div>}
+            {activeTab === "energy" && (
+              <div className="space-y-4">
+                <BuildingAnalysis
+                  key={`${selectedBuildingId}:${representativePlanId ?? "none"}`}
+                  buildingId={selectedBuildingId}
+                  plans={installationPlans}
+                  representativePlanId={representativePlanId}
+                />
+                <CampusComparison onOpenRecommendation={setEditorRequest} />
+                <EnergyDashboard key={selectedBuildingId} buildingId={selectedBuildingId} />
+              </div>
+            )}
 
             {activeTab === "environment" && (
               <div className="space-y-6">
