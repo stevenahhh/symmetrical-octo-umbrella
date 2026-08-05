@@ -1,14 +1,27 @@
-import { useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { focusMapAt } from "./cameraFocus.mjs";
 import { D4_COORDINATE_HIT_TOLERANCE_DEGREES, isCoordinateMarkerHit } from "./coordinateMarkerHit.mjs";
 import { D4_COORDINATE_MARKER } from "./d4CoordinateMarker.mjs";
+import { createD4VWorldModel, removeD4VWorldModel } from "./d4VWorldModel.mjs";
 import {
   activateCoordinateMarkerSelection,
   activateNativeModelSelection,
 } from "./selectionActivation.mjs";
+import { applyVWorldSunSimulation } from "./sunSimulation.mjs";
 import { loadVWorldWebGlSdk } from "./webglSdkLoader.mjs";
+import { VWorldCampusStatus } from "./VWorldCampusStatus";
+import { RepresentativePlanOverlayController } from "./RepresentativePlanOverlayController";
+import { CAMPUS_REPRESENTATIVE_BUILDING_IDS } from "./representativePlanOverlay.mjs";
+import { replaceRepresentativePlanObjects } from "./representativePlanVWorld.mjs";
+
+const D4SectionExperience = lazy(() =>
+  import("./D4SectionExperience").then((module) => ({
+    default: module.D4SectionExperience,
+  })),
+);
 
 const VWORLD_MAP_ID = "vmap";
+const VWORLD_MAP_INSTANCE_KEY = "__scnuVWorldMapInstance";
 const CAMPUS_BOUNDARY_ID = "SCNU_CAMPUS_AREA";
 const D4_MARKER_ID = "SCNU_D4_COORDINATE_MARKER";
 const D4_MARKER_IMAGE =
@@ -54,14 +67,55 @@ function createD4CoordinateMarker(vw) {
   marker.create();
 }
 
-export default function VWorldRenderer({ onSelection }) {
+export default function VWorldRenderer({
+  onSelection,
+  simulationDate,
+  editorRequest,
+  onEditorClose,
+  onPlanSaved,
+  createInstallationPlanDraft,
+  installationPlanRefreshKey,
+  onInstallationPlansChange,
+  onRepresentativeInstallationPlanChange,
+  representativeRefreshKey,
+}) {
   const onSelectionRef = useRef(onSelection);
+  const simulationDateRef = useRef(simulationDate);
+  const mapRef = useRef(null);
+  const vwRef = useRef(null);
+  const overlayDataRef = useRef([]);
+  const overlayObjectIdsRef = useRef([]);
   const [isLoading, setIsLoading] = useState(true);
   const [hasLoadError, setHasLoadError] = useState(false);
+  const [isD4SectionOpen, setIsD4SectionOpen] = useState(false);
+  const [detailRequest, setDetailRequest] = useState(null);
 
   useEffect(() => {
     onSelectionRef.current = onSelection;
   }, [onSelection]);
+
+  useEffect(() => {
+    if (editorRequest?.scenarioId || editorRequest?.installationPlanId) {
+      setDetailRequest(editorRequest);
+      setIsD4SectionOpen(true);
+    }
+  }, [editorRequest]);
+
+  const handleOverlayDataChange = useCallback((overlays) => {
+    overlayDataRef.current = overlays;
+    if (!mapRef.current || !vwRef.current) return;
+    overlayObjectIdsRef.current = replaceRepresentativePlanObjects({
+      map: mapRef.current,
+      vw: vwRef.current,
+      overlays,
+      previousIds: overlayObjectIdsRef.current,
+    });
+  }, []);
+
+  useEffect(() => {
+    simulationDateRef.current = simulationDate;
+    applyVWorldSunSimulation(simulationDate);
+  }, [simulationDate]);
 
   useEffect(() => {
     let isDisposed = false;
@@ -73,22 +127,33 @@ export default function VWorldRenderer({ onSelection }) {
         const vw = await loadVWorldWebGlSdk(import.meta.env.VITE_VWORLD_API_KEY);
         if (isDisposed) return;
 
-        map = new vw.Map();
-        map.setOption({
-          mapId: VWORLD_MAP_ID,
-          initPosition: new vw.CameraPosition(
-            new vw.CoordZ(127.4810, 34.9697, 400),
-            new vw.Direction(0, -60, 0),
-          ),
-          logo: false,
-          navigation: false,
-        });
-        map.start();
+        map = globalThis.window[VWORLD_MAP_INSTANCE_KEY];
+        if (!map) {
+          map = new vw.Map();
+          map.setOption({
+            mapId: VWORLD_MAP_ID,
+            initPosition: new vw.CameraPosition(
+              new vw.CoordZ(127.4810, 34.9697, 400),
+              new vw.Direction(0, -60, 0),
+            ),
+            logo: false,
+            navigation: false,
+          });
+          map.start();
+          globalThis.window[VWORLD_MAP_INSTANCE_KEY] = map;
+        }
+        // The SDK map deliberately survives component cleanup. Always bind the
+        // current mount to it so StrictMode/remount overlay callbacks can render.
+        mapRef.current = map;
+        vwRef.current = vw;
+        applyVWorldSunSimulation(simulationDateRef.current);
 
         const poiLayer = map.getLayerElement("POI_GROUP");
         if (poiLayer) poiLayer.hide();
 
         createCampusBoundary(vw);
+        createD4VWorldModel(vw);
+        handleOverlayDataChange(overlayDataRef.current);
         createD4CoordinateMarker(vw);
 
         handleMapClick = (
@@ -122,6 +187,7 @@ export default function VWorldRenderer({ onSelection }) {
               D4_COORDINATE_MARKER,
               onSelectionRef.current,
             );
+            setIsD4SectionOpen(true);
             focusMapAt(map, vw, {
               longitude: D4_COORDINATE_MARKER.longitude,
               latitude: D4_COORDINATE_MARKER.latitude,
@@ -151,6 +217,15 @@ export default function VWorldRenderer({ onSelection }) {
       }
       map.removeObjectById(D4_MARKER_ID);
       map.removeObjectById(CAMPUS_BOUNDARY_ID);
+      removeD4VWorldModel(map);
+      overlayObjectIdsRef.current = replaceRepresentativePlanObjects({
+        map,
+        vw: vwRef.current,
+        overlays: [],
+        previousIds: overlayObjectIdsRef.current,
+      });
+      mapRef.current = null;
+      vwRef.current = null;
     };
   }, []);
 
@@ -178,6 +253,61 @@ export default function VWorldRenderer({ onSelection }) {
             VWorld 지도를 불러오지 못했습니다.
           </div>
         </div>
+      )}
+      {!isD4SectionOpen && <VWorldCampusStatus onSelection={(selection) => onSelectionRef.current(selection)} />}
+      {!isD4SectionOpen && (
+        <RepresentativePlanOverlayController
+          buildingIds={CAMPUS_REPRESENTATIVE_BUILDING_IDS}
+          refreshKey={representativeRefreshKey}
+          onOverlayDataChange={handleOverlayDataChange}
+          onBuildingSelect={(buildingId) => onSelectionRef.current({
+            elementId: `BLD_${buildingId}`,
+            buildingId,
+            displayName: buildingId,
+          })}
+          className="absolute left-6 top-6 z-20"
+        />
+      )}
+      {!isD4SectionOpen && (
+        <button
+          type="button"
+          className="dashboard-ghost-button absolute bottom-6 left-6 z-10 min-h-11 px-4 text-xs font-extrabold shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--colors-primary)]"
+          onClick={() => {
+            activateCoordinateMarkerSelection(D4_COORDINATE_MARKER, onSelectionRef.current);
+            setIsD4SectionOpen(true);
+          }}
+        >
+          D4 공과대학 3호관 상세 보기
+        </button>
+      )}
+      {isD4SectionOpen && (
+        <Suspense
+          fallback={
+            <div
+              className="absolute inset-0 z-30 grid place-items-center bg-slate-950/90 text-sm font-semibold text-slate-100"
+              role="status"
+            >
+              D4 단면 모델을 불러오는 중입니다.
+            </div>
+          }
+        >
+          <D4SectionExperience
+            buildingId={detailRequest?.buildingId ?? "D4"}
+            scenarioId={detailRequest?.scenarioId}
+            installationPlanId={detailRequest?.installationPlanId}
+            startInstallation={Boolean(detailRequest?.scenarioId || detailRequest?.installationPlanId)}
+            onPlanSaved={onPlanSaved}
+            createInstallationPlanDraft={createInstallationPlanDraft}
+            onPlansChange={onInstallationPlansChange}
+            onRepresentativeChange={onRepresentativeInstallationPlanChange}
+            planRefreshKey={installationPlanRefreshKey}
+            onClose={() => {
+              setIsD4SectionOpen(false);
+              setDetailRequest(null);
+              onEditorClose?.();
+            }}
+          />
+        </Suspense>
       )}
     </div>
   );

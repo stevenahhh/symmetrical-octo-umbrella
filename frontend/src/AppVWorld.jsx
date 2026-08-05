@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   AlertTriangle,
   CalendarDays,
@@ -19,25 +19,21 @@ import {
   Moon,
   Monitor,
   X,
-  Zap,
 } from "lucide-react";
 import VWorldRenderer from "./vworld/VWorldRenderer";
 import trafficData from "./utils/trafficData.json";
+import { EnergyDashboard } from "./features/energy/dashboard/EnergyDashboard";
+import { CampusComparison } from "./features/energy/campus/CampusComparisonPanel";
 import {
-  calculateMayPvOutput,
-  DEFAULT_MAY_SPECIFIC_YIELD,
-  DEFAULT_ROOF_RATIO,
-} from "./utils/pvMath.mjs";
+  createInstallationPlanClient,
+  createPlanDraftFromExisting,
+} from "./features/energy/installations/installationPlanApi.mjs";
+import { BuildingAnalysis } from "./features/energy/analysis";
 import {
   CAMPUS_LOCATION,
   createSimulationDate,
   getSunState,
 } from "./utils/sunPosition.mjs";
-
-const DUMMY_DATA = {
-  "학교 건물": { roofArea: 1200 },
-  "부속 건물": { roofArea: 800 },
-};
 
 const ALERT_RULES = [
   {
@@ -82,6 +78,11 @@ function formatShortTime(timestamp) {
   });
 }
 
+function getCompassDirection(degrees) {
+  const directions = ["북", "북동", "동", "남동", "남", "남서", "서", "북서"];
+  return directions[Math.round(degrees / 45) % directions.length];
+}
+
 function FloatingPanel({ className = "", children }) {
   return (
     <section
@@ -108,7 +109,48 @@ function MetricCard({ label, value, hint, accent = false }) {
   );
 }
 
-function SliderRow({ label, valueLabel, min, max, step = 1, value, onChange }) {
+function SliderRow({ label, valueLabel, min, max, step = 1, value, onValueChange }) {
+  const stopVWorldInputHandling = (event) => event.stopPropagation();
+  const updateFromPointer = (event) => {
+    event.stopPropagation();
+    const { left, width } = event.currentTarget.getBoundingClientRect();
+    const ratio = Math.min(1, Math.max(0, (event.clientX - left) / width));
+    const steppedValue = min + Math.round(((max - min) * ratio) / step) * step;
+    onValueChange(Math.min(max, Math.max(min, steppedValue)));
+  };
+  const handlePointerDown = (event) => {
+    event.currentTarget.setPointerCapture?.(event.pointerId);
+    updateFromPointer(event);
+  };
+  const handlePointerMove = (event) => {
+    if (event.currentTarget.hasPointerCapture?.(event.pointerId)) {
+      updateFromPointer(event);
+    }
+  };
+  const handleKeyDown = (event) => {
+    const keyDeltas = {
+      ArrowDown: -step,
+      ArrowLeft: -step,
+      ArrowRight: step,
+      ArrowUp: step,
+      PageDown: -step * 10,
+      PageUp: step * 10,
+    };
+
+    let nextValue = value;
+    if (event.key === "Home") nextValue = min;
+    else if (event.key === "End") nextValue = max;
+    else if (event.key in keyDeltas) nextValue = value + keyDeltas[event.key];
+    else {
+      event.stopPropagation();
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+    onValueChange(Math.min(max, Math.max(min, nextValue)));
+  };
+
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between text-[14px] font-[400] leading-[1.50]">
@@ -121,7 +163,14 @@ function SliderRow({ label, valueLabel, min, max, step = 1, value, onChange }) {
         max={max}
         step={step}
         value={value}
-        onChange={onChange}
+        aria-label={label}
+        onChange={(event) => onValueChange(Number(event.target.value))}
+        onClick={stopVWorldInputHandling}
+        onKeyDown={handleKeyDown}
+        onMouseDown={stopVWorldInputHandling}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onTouchStart={stopVWorldInputHandling}
         className="w-full accent-[var(--colors-primary)] pointer-events-auto"
       />
     </div>
@@ -130,7 +179,14 @@ function SliderRow({ label, valueLabel, min, max, step = 1, value, onChange }) {
 
 export default function App() {
   const [selectedId, setSelectedId] = useState("");
-  const [selectedArea, setSelectedArea] = useState(1200);
+  const [selectedBuildingId, setSelectedBuildingId] = useState("D4");
+  const [editorRequest, setEditorRequest] = useState(null);
+  const [installationPlans, setInstallationPlans] = useState([]);
+  const [representativePlanId, setRepresentativePlanId] = useState(null);
+  const [installationRefreshKey, setInstallationRefreshKey] = useState(0);
+  const [overlayRefreshKey, setOverlayRefreshKey] = useState(0);
+  const installationLoadGenerationRef = useRef(0);
+  const installationPlanClient = useMemo(() => createInstallationPlanClient(), []);
   const [mode, setMode] = useState("simulation");
   const [weatherData, setWeatherData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -141,7 +197,6 @@ export default function App() {
   const [sunHour, setSunHour] = useState(() => new Date().getHours());
   const [sunMinute, setSunMinute] = useState(() => new Date().getMinutes());
   const [simTemp, setSimTemp] = useState(20);
-  const [roofRatio, setRoofRatio] = useState(DEFAULT_ROOF_RATIO);
   const [activeTab, setActiveTab] = useState("dashboard"); // dashboard, parking, safety, energy, environment
   const [isPanelOpen, setIsPanelOpen] = useState(true);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -210,29 +265,6 @@ export default function App() {
     };
   }, [mode, simTemp, weatherData]);
 
-  const currentData = useMemo(() => {
-    if (DUMMY_DATA[selectedId]) {
-      return {
-        roofArea: selectedArea > 0 ? selectedArea : DUMMY_DATA[selectedId].roofArea,
-      };
-    }
-
-    const hash = (selectedId || "").length * 123;
-    return {
-      roofArea: selectedArea > 0 ? selectedArea : Math.floor(hash * 1.2) + 500,
-    };
-  }, [selectedArea, selectedId]);
-
-  const solarResult = useMemo(
-    () =>
-      calculateMayPvOutput({
-        roofArea: currentData.roofArea,
-        roofRatio,
-        maySpecificYield: DEFAULT_MAY_SPECIFIC_YIELD,
-      }),
-    [currentData.roofArea, roofRatio],
-  );
-
   const activeAlerts = useMemo(() => {
     if (!activeWeather) return [];
     return ALERT_RULES.filter((rule) => rule.check(activeWeather));
@@ -272,6 +304,18 @@ export default function App() {
   );
 
   const sceneBackground = sunState.visible ? "#d6e0e6" : "#09111d";
+  const sunAltitudeDegrees = (sunState.altitude * 180) / Math.PI;
+  const sunBearingDegrees = ((sunState.azimuth * 180) / Math.PI + 540) % 360;
+  const sunBearingRadians = (sunBearingDegrees * Math.PI) / 180;
+  const sunGlowX = 50 + Math.sin(sunBearingRadians) * 55;
+  const sunGlowY = 50 - Math.cos(sunBearingRadians) * 55;
+  const sunGlowOpacity = sunState.visible
+    ? Math.min(0.28, 0.12 + Math.max(0, sunAltitudeDegrees) / 300)
+    : 0;
+  const nightOverlayOpacity = Math.min(
+    0.68,
+    Math.max(0, ((6 - sunAltitudeDegrees) / 12) * 0.68),
+  );
   const systemStatus = loading
     ? "기상 데이터 갱신 중"
     : error
@@ -322,32 +366,115 @@ export default function App() {
   }, []);
 
   const handleVWorldSelection = useCallback(
-    ({ elementId, displayName }) => {
+    ({ elementId, buildingId, displayName }) => {
+      if (buildingId !== selectedBuildingId) {
+        installationLoadGenerationRef.current += 1;
+        setInstallationPlans([]);
+        setRepresentativePlanId(null);
+      }
       setSelectedId(displayName);
+      setSelectedBuildingId(buildingId);
+      setActiveTab("energy");
       setPopupData(null);
       setPopupError(null);
-      setSelectedArea(0);
       fetchPopupData(elementId);
     },
-    [fetchPopupData],
+    [fetchPopupData, selectedBuildingId],
   );
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const requestGeneration = installationLoadGenerationRef.current + 1;
+    installationLoadGenerationRef.current = requestGeneration;
+    let active = true;
+    setInstallationPlans([]);
+    setRepresentativePlanId(null);
+    Promise.all([
+      installationPlanClient.listDetails(selectedBuildingId, { signal: controller.signal }),
+      installationPlanClient.getRepresentative(selectedBuildingId, { signal: controller.signal }),
+    ]).then(([plans, representative]) => {
+      if (!active || installationLoadGenerationRef.current !== requestGeneration) return;
+      setInstallationPlans(plans);
+      setRepresentativePlanId(representative?.installationPlanId ?? null);
+    }).catch((loadError) => {
+      if (!active || installationLoadGenerationRef.current !== requestGeneration || loadError?.name === "AbortError") return;
+      setInstallationPlans([]);
+      setRepresentativePlanId(null);
+    });
+    return () => {
+      active = false;
+      controller.abort();
+    };
+  }, [installationPlanClient, installationRefreshKey, selectedBuildingId]);
+
+  const createInstallationPlanDraft = useCallback(
+    (context) => createPlanDraftFromExisting(context),
+    [],
+  );
+
+  const handleInstallationPlansChange = useCallback((plans) => {
+    installationLoadGenerationRef.current += 1;
+    setInstallationPlans(plans);
+  }, []);
+
+  const handleRepresentativeInstallationPlanChange = useCallback((representative) => {
+    installationLoadGenerationRef.current += 1;
+    setRepresentativePlanId(representative?.installationPlanId ?? null);
+    setOverlayRefreshKey((value) => value + 1);
+  }, []);
 
   return (
     <div className="dashboard-root relative h-screen w-screen overflow-hidden bg-[var(--colors-canvas)] text-[var(--colors-ink)]">
       <div className="absolute inset-0" style={{ background: sceneBackground }} />
 
       <div className="absolute inset-0 z-0">
-        <VWorldRenderer onSelection={handleVWorldSelection} />
+      <VWorldRenderer
+        onSelection={handleVWorldSelection}
+        simulationDate={sunSimulationDate}
+        editorRequest={editorRequest}
+        onEditorClose={() => {
+          setEditorRequest(null);
+          setInstallationRefreshKey((value) => value + 1);
+          setOverlayRefreshKey((value) => value + 1);
+        }}
+        onPlanSaved={() => {
+          setInstallationRefreshKey((value) => value + 1);
+          setOverlayRefreshKey((value) => value + 1);
+        }}
+        createInstallationPlanDraft={createInstallationPlanDraft}
+        installationPlanRefreshKey={installationRefreshKey}
+        onInstallationPlansChange={handleInstallationPlansChange}
+        onRepresentativeInstallationPlanChange={handleRepresentativeInstallationPlanChange}
+        representativeRefreshKey={overlayRefreshKey}
+      />
       </div>
+
+      <div
+        className="pointer-events-none absolute bottom-0 left-0 top-0 z-[1] transition-[right,background-color] duration-300"
+        style={{
+          right: isPanelOpen ? "var(--dashboard-panel-width)" : "0px",
+          backgroundColor: `rgba(3, 10, 24, ${nightOverlayOpacity})`,
+        }}
+      />
+      <div
+        className="pointer-events-none absolute bottom-0 left-0 top-0 z-[2] transition-[right,opacity] duration-300"
+        style={{
+          right: isPanelOpen ? "var(--dashboard-panel-width)" : "0px",
+          background: `radial-gradient(circle at ${sunGlowX}% ${sunGlowY}%, rgba(255, 218, 138, ${sunGlowOpacity}) 0%, transparent 42%)`,
+        }}
+      />
 
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(1,1,2,0.02)_0%,rgba(1,1,2,0.08)_50%,rgba(1,1,2,0.16)_100%)]" />
 
       {/* 패널 토글 버튼 */}
       <button
         onClick={() => setIsPanelOpen(v => !v)}
+        aria-label={isPanelOpen ? "대시보드 패널 닫기" : "대시보드 패널 열기"}
         className="pointer-events-auto absolute z-20 top-1/2 -translate-y-1/2 flex items-center justify-center w-7 h-14 rounded-l-xl border border-r-0 border-[var(--colors-hairline)] shadow-lg transition-right duration-300"
         style={{
-          right: isPanelOpen ? '440px' : '0px',
+          right: isPanelOpen
+            ? 'min(var(--dashboard-panel-width), calc(100vw - 1.75rem))'
+            : '0px',
           backgroundColor: 'var(--colors-surface-1)',
           transition: 'right 0.3s ease',
         }}
@@ -356,8 +483,12 @@ export default function App() {
       </button>
 
       <div
-        className="pointer-events-none absolute top-0 bottom-0 z-10 w-[440px]"
-        style={{ right: isPanelOpen ? '0' : '-440px', transition: 'right 0.3s ease' }}
+        className="pointer-events-none absolute top-0 bottom-0 z-10 w-[var(--dashboard-panel-width)]"
+        style={{
+          right: isPanelOpen ? '0' : 'calc(-1 * min(var(--dashboard-panel-width), 100vw))',
+          width: 'min(var(--dashboard-panel-width), 100vw)',
+          transition: 'right 0.3s ease',
+        }}
       >
         <div
           className="pointer-events-auto h-full w-full border-l border-[var(--colors-hairline)] shadow-2xl flex flex-col"
@@ -379,6 +510,7 @@ export default function App() {
               ].map(tab => (
                 <button
                   key={tab.id}
+                  data-qa={`dashboard-tab-${tab.id}`}
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex-1 py-2 text-xs font-[600] rounded-md transition-colors ${activeTab === tab.id ? "bg-[var(--colors-surface-1)] shadow-sm text-[var(--colors-ink)] border border-[var(--colors-hairline)]" : "text-[var(--colors-ink-subtle)] hover:text-[var(--colors-ink)]"}`}
                 >
@@ -565,37 +697,15 @@ export default function App() {
             )}
 
             {activeTab === "energy" && (
-              <div className="space-y-6">
-                <div className="pb-4 border-b border-[var(--colors-hairline)]/50">
-                  <div className="text-base font-[700] text-[var(--colors-ink)] flex items-center gap-2">
-                    <Zap size={18} className="text-[var(--colors-primary)]" />
-                    에너지
-                  </div>
-                </div>
-                <div className="space-y-4">
-                  <div className="text-sm font-[700] text-[var(--colors-ink-subtle)]">태양광 발전 시뮬레이션</div>
-                  <SliderRow
-                    label="옥상 활용 면적 비율"
-                    valueLabel={`${roofRatio}%`}
-                    min={5}
-                    max={80}
-                    value={roofRatio}
-                    onChange={(event) => setRoofRatio(Number(event.target.value))}
-                  />
-                  <div className="grid grid-cols-2 gap-3 pt-2">
-                    <MetricCard
-                      label="월간 예상 발전량"
-                      value={`${formatNumber(solarResult.monthlyOutput, 1)} kWh`}
-                      hint=""
-                      accent
-                    />
-                    <MetricCard
-                      label="적용 모듈 면적"
-                      value={`${formatNumber(solarResult.moduleArea, 0)} ㎡`}
-                      hint="가용 면적 기준"
-                    />
-                  </div>
-                </div>
+              <div className="space-y-4">
+                <BuildingAnalysis
+                  key={`${selectedBuildingId}:${representativePlanId ?? "none"}`}
+                  buildingId={selectedBuildingId}
+                  plans={installationPlans}
+                  representativePlanId={representativePlanId}
+                />
+                <CampusComparison onOpenRecommendation={setEditorRequest} />
+                <EnergyDashboard key={selectedBuildingId} buildingId={selectedBuildingId} />
               </div>
             )}
 
@@ -631,7 +741,7 @@ export default function App() {
                     min={-10}
                     max={40}
                     value={simTemp}
-                    onChange={(event) => setSimTemp(Number(event.target.value))}
+                    onValueChange={setSimTemp}
                   />
                   <div className="grid grid-cols-2 gap-x-4 gap-y-3 pt-2">
                     <SliderRow
@@ -640,7 +750,7 @@ export default function App() {
                       min={1}
                       max={12}
                       value={sunMonth}
-                      onChange={(event) => setSunMonth(Number(event.target.value))}
+                      onValueChange={setSunMonth}
                     />
                     <SliderRow
                       label="일"
@@ -648,7 +758,7 @@ export default function App() {
                       min={1}
                       max={31}
                       value={sunDay}
-                      onChange={(event) => setSunDay(Number(event.target.value))}
+                      onValueChange={setSunDay}
                     />
                     <SliderRow
                       label="시"
@@ -656,7 +766,7 @@ export default function App() {
                       min={0}
                       max={23}
                       value={sunHour}
-                      onChange={(event) => setSunHour(Number(event.target.value))}
+                      onValueChange={setSunHour}
                     />
                     <SliderRow
                       label="분"
@@ -664,8 +774,15 @@ export default function App() {
                       min={0}
                       max={59}
                       value={sunMinute}
-                      onChange={(event) => setSunMinute(Number(event.target.value))}
+                      onValueChange={setSunMinute}
                     />
+                  </div>
+                  <div className="mt-4 flex items-center justify-between rounded-lg border border-[var(--colors-hairline)] bg-[var(--colors-surface-2)] px-3 py-2 text-xs">
+                    <span className="text-[var(--colors-ink-subtle)]">태양 방향</span>
+                    <span className="font-semibold text-[var(--colors-ink)]">
+                      {getCompassDirection(sunBearingDegrees)} {sunBearingDegrees.toFixed(0)}° · 고도{" "}
+                      {sunAltitudeDegrees.toFixed(1)}°
+                    </span>
                   </div>
                 </div>
               </div>
@@ -815,24 +932,10 @@ export default function App() {
               );
             })()}
 
-            {/* Fallback: no popup data and not loading */}
+            {/* Fallback: selected map element has no microclimate response yet. */}
             {!popupData && !popupLoading && !popupError && (
-              <div className="p-5 space-y-4">
-                <div className="flex justify-between text-[14px]">
-                  <span className="text-[var(--colors-ink-subtle)]">옥상 면적</span>
-                  <span className="font-[500] text-[var(--colors-ink)]">{formatNumber(currentData.roofArea, 0)} ㎡</span>
-                </div>
-                <div className="flex justify-between text-[14px]">
-                  <span className="text-[var(--colors-ink-subtle)]">태양광 발전 패널 적용</span>
-                  <span className="font-[500] text-[var(--colors-ink)]">{roofRatio}%</span>
-                </div>
-                <div className="border-t border-[var(--colors-hairline)] pt-4">
-                  <div className="mb-1 text-[12px] text-[var(--colors-ink-subtle)]">예상 발전량 (월)</div>
-                  <div className="text-[24px] font-[600] tracking-[-0.5px] text-[var(--colors-primary)]">
-                    {formatNumber(solarResult.monthlyOutput, 1)}{" "}
-                    <span className="text-[14px] font-[400] text-[var(--colors-ink)]">kWh</span>
-                  </div>
-                </div>
+              <div className="p-5 text-sm leading-6 text-[var(--colors-ink-muted)]">
+                이 건물의 상세 미기후 데이터를 선택해 확인하세요.
               </div>
             )}
           </FloatingPanel>

@@ -25,3 +25,49 @@ test("matches the 171.59 kWh benchmark for 1 kWp before extra loss", () => {
   assert.equal(result.nominalPowerKw, 1);
   assert.ok(Math.abs(result.monthlyOutput - 171.59) < 0.001);
 });
+
+test("clamps percentage inputs to the 0-100 range", () => {
+  const maximum = calculateMayPvOutput({
+    roofArea: 100,
+    roofRatio: 150,
+    moduleEfficiency: 150,
+    systemLoss: -20,
+  });
+  const minimum = calculateMayPvOutput({
+    roofArea: 100,
+    roofRatio: -10,
+    moduleEfficiency: -10,
+    systemLoss: 150,
+  });
+
+  assert.equal(maximum.moduleArea, 100);
+  assert.equal(maximum.nominalPowerKw, 100);
+  assert.equal(maximum.monthlyOutput, 17_159);
+  assert.deepEqual(minimum, {
+    moduleArea: 0,
+    nominalPowerKw: 0,
+    monthlyOutput: 0,
+  });
+});
+
+test("uses safe defaults for non-finite numeric inputs", () => {
+  const result = calculateMayPvOutput({
+    roofArea: 100,
+    roofRatio: Number.NaN,
+    moduleEfficiency: Number.NaN,
+    systemLoss: Number.NaN,
+    maySpecificYield: Number.NaN,
+  });
+  const invalidArea = calculateMayPvOutput({ roofArea: Number.NaN });
+
+  assert.deepEqual(result, {
+    moduleArea: 20,
+    nominalPowerKw: 4,
+    monthlyOutput: 617.724,
+  });
+  assert.deepEqual(invalidArea, {
+    moduleArea: 0,
+    nominalPowerKw: 0,
+    monthlyOutput: 0,
+  });
+});

@@ -1,4 +1,5 @@
-const WEEKDAY_LABELS = ["일", "월", "화", "수", "목", "금", "토"];
+import { WEEKDAY_LABELS } from "../features/energy/domain/contracts.mjs";
+import { findOccupancyEvent } from "../features/energy/domain/demand.mjs";
 
 export function isRoomInUse(room, date) {
   return getCurrentRoomStatus(room, date).isInUse;
@@ -6,9 +7,9 @@ export function isRoomInUse(room, date) {
 
 export function getCurrentRoomStatus(room, date) {
   const weekday = WEEKDAY_LABELS[date.getDay()];
-  const hour = date.getHours();
-  const currentClass = room.timetable.find((item) => item.day === weekday && hour >= item.startHour && hour < item.startHour + item.durationHours);
-  const nextClass = room.timetable.find((item) => item.day === weekday && item.startHour >= hour);
+  const minuteOfDay = date.getHours() * 60 + date.getMinutes();
+  const currentClass = findOccupancyEvent(room, weekday, minuteOfDay);
+  const nextClass = room.timetable.find((event) => event.day === weekday && event.startMinute >= date.getHours() * 60);
   const isAlwaysOn = room.specialType === "server";
   const isInUse = Boolean(currentClass) || isAlwaysOn;
 
@@ -17,7 +18,7 @@ export function getCurrentRoomStatus(room, date) {
     currentClass,
     nextClass,
     hvacRunning: isInUse && room.specialType !== "faculty",
-    statusText: currentClass ? "현재 수업 중" : isAlwaysOn ? "상시 가동" : "현재 공실",
-    hvacText: isInUse && room.specialType !== "faculty" ? "냉난방기 가동 중" : "냉난방기 대기",
+    statusText: currentClass ? "\uD604\uC7AC \uC218\uC5C5 \uC911" : isAlwaysOn ? "\uC0C1\uC2DC \uAC00\uB3D9" : "\uD604\uC7AC \uACF5\uC2E4",
+    hvacText: isInUse && room.specialType !== "faculty" ? "\uB0C9\uB09C\uBC29\uAE30 \uAC00\uB3D9 \uC911" : "\uB0C9\uB09C\uBC29\uAE30 \uB300\uAE30",
   };
 }

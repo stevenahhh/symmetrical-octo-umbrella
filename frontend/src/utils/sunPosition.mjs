@@ -5,21 +5,47 @@ export const CAMPUS_LOCATION = {
   longitude: 127.476,
 };
 
-export function clampDateParts({ month, day, hour, minute }) {
-  const safeMonth = Math.min(Math.max(month, 1), 12);
-  const daysInMonth = new Date(2026, safeMonth, 0).getDate();
+export const SIMULATION_TIME_ZONE = "Asia/Seoul";
+
+const DEFAULT_SIMULATION_YEAR = 2026;
+const SEOUL_UTC_OFFSET_HOURS = 9;
+
+function clampFinite(value, minimum, maximum, fallback = minimum) {
+  return Number.isFinite(value)
+    ? Math.min(Math.max(value, minimum), maximum)
+    : fallback;
+}
+
+export function clampDateParts(
+  { month, day, hour, minute },
+  year = DEFAULT_SIMULATION_YEAR,
+) {
+  const safeYear = Number.isInteger(year) ? year : DEFAULT_SIMULATION_YEAR;
+  const safeMonth = clampFinite(month, 1, 12);
+  const daysInMonth = new Date(Date.UTC(safeYear, safeMonth, 0)).getUTCDate();
 
   return {
     month: safeMonth,
-    day: Math.min(Math.max(day, 1), daysInMonth),
-    hour: Math.min(Math.max(hour, 0), 23),
-    minute: Math.min(Math.max(minute, 0), 59),
+    day: clampFinite(day, 1, daysInMonth),
+    hour: clampFinite(hour, 0, 23),
+    minute: clampFinite(minute, 0, 59),
   };
 }
 
 export function createSimulationDate(parts, year = new Date().getFullYear()) {
-  const { month, day, hour, minute } = clampDateParts(parts);
-  return new Date(year, month - 1, day, hour, minute, 0, 0);
+  const safeYear = Number.isInteger(year) ? year : DEFAULT_SIMULATION_YEAR;
+  const { month, day, hour, minute } = clampDateParts(parts, safeYear);
+  const utcMilliseconds = Date.UTC(
+    safeYear,
+    month - 1,
+    day,
+    hour - SEOUL_UTC_OFFSET_HOURS,
+    minute,
+    0,
+    0,
+  );
+
+  return new Date(utcMilliseconds);
 }
 
 export function getSunState({ date, latitude, longitude }) {
