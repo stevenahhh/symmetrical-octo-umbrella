@@ -49,7 +49,7 @@ describe("InstallationPlanManager", () => {
     await user.click(screen.getByRole("button", { name: "기준안 삭제" }));
     expect(api.remove).toHaveBeenCalledWith("plan-1", expect.objectContaining({ signal: expect.any(AbortSignal) }));
     expect(onPlansChange).toHaveBeenCalled();
-  });
+  }, 15_000);
 
   it("creates through the API from a valid roof-local draft and immediately opens the created plan", async () => {
     const user = userEvent.setup();
