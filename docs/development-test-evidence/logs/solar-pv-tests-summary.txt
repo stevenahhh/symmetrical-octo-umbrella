@@ -1,0 +1,20 @@
+CURATED TEST SUMMARY
+Source run: logs/solar-pv-tests-raw.log
+
+Verified derived values:
+- roofArea 100m², roofRatio 20%, efficiency 20%, loss 10%
+  -> moduleArea 20m²
+  -> nominalPower 4kW
+  -> May calculated output 617.724kWh
+- roofArea 25m², roofRatio 20%, efficiency 20%, loss 0%
+  -> moduleArea 5m²
+  -> nominalPower 1kW
+  -> May calculated output 171.59kWh
+- invalid input 13/50 30:88 -> 12/31 23:59
+- 2026-05-15 09:00 solar altitude 41.69°
+- 2026-05-15 12:00 solar altitude 72.72°
+- 2026-05-15 01:00 solar altitude -35.82°, visible false
+
+Data status:
+PV outputs are calculations from input assumptions, not measured generation.
+

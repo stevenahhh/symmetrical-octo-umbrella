@@ -471,9 +471,9 @@ export default function App() {
       <div className="absolute inset-0" style={{ background: sceneBackground }} />
 
       <div className="absolute inset-0 z-0">
-        <Canvas camera={{ position: [0, 80, 80], fov: 50 }} shadows>
+        <Canvas camera={{ position: [0, 260, 260], fov: 50 }} shadows>
           <color attach="background" args={[sceneBackground]} />
-          <fog attach="fog" args={[sceneBackground, 180, 340]} />
+          <fog attach="fog" args={[sceneBackground, 450, 800]} />
           <ambientLight intensity={sunState.visible ? 1.55 : 0.5} />
           <directionalLight
             castShadow
@@ -513,7 +513,7 @@ export default function App() {
             enableZoom
             zoomSpeed={1}
             minDistance={30}
-            maxDistance={200}
+            maxDistance={520}
             minPolarAngle={Math.PI / 6}
             maxPolarAngle={Math.PI / 2.2}
             target={[0, 0, 0]}
