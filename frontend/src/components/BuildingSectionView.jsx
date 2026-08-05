@@ -67,7 +67,7 @@ export function BuildingSectionView({
         return (
           <group key={floor.id} position={[0, getFloorY(floor.floor), 0]}>
             {building.wings.map((wing) =>
-              floor.floor <= wing.floors ? (
+              (floor.floor === 0 ? wing.hasBasement : floor.floor <= wing.floors) ? (
                 <group key={`${floor.id}-${wing.id}`}>
                   <mesh position={[wing.x, -0.08, 0]} receiveShadow>
                     <boxGeometry args={[wing.width, 0.08, wing.depth]} />

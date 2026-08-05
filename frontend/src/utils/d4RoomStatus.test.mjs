@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { D4_ROOMS } from "./d4BuildingData.mjs";
+import { D4_BUILDING_DATA, D4_ROOMS } from "./d4BuildingData.mjs";
 import { getCurrentRoomStatus } from "./d4RoomStatus.mjs";
 
 test("reports a scheduled D4 classroom as occupied", () => {
@@ -28,4 +28,15 @@ test("keeps the D4 server room in its always-on state", () => {
   assert.equal(status.isInUse, true);
   assert.equal(status.statusText, "상시 가동");
   assert.equal(status.hvacText, "냉난방기 가동 중");
+});
+
+test("provides section geometry and exposes the basement inventory", () => {
+  assert.ok(D4_BUILDING_DATA.floors.some((floor) => floor.floor === 0));
+  assert.ok(D4_ROOMS.some((room) => room.floor === 0));
+  assert.ok(D4_ROOMS.every((room) => (
+    Number.isFinite(room.geometry.x)
+    && Number.isFinite(room.geometry.z)
+    && room.geometry.width > 0
+    && room.geometry.depth > 0
+  )));
 });

@@ -237,7 +237,11 @@ export function formatRoomNumber(roomNumber) {
 export const D4_BUILDING_DATA = {
   id: "D4",
   displayName: "D4 공대 3호관",
-  floors: [1, 2, 3, 4, 5, 6].map((floor) => ({ id: `floor-${floor}`, floor, label: `${floor}층` })),
+  floors: [0, 1, 2, 3, 4, 5, 6].map((floor) => ({
+    id: `floor-${floor}`,
+    floor,
+    label: floor === 0 ? "B1" : `${floor}층`,
+  })),
   // 배열 순서 = 화면 좌→우 배치 순서(실험동 왼쪽, 교수동 오른쪽)와 일치시켜 토글 버튼 순서도 맞춤.
   wings: [
     { id: "left", label: "실험동", floors: 5, x: -2.25, width: 3.25, depth: 4.3, totalFloorAreaSqm: 9860, todayEnergyKwh: 240, hasBasement: false },
@@ -266,6 +270,10 @@ function buildRoomsForWing(wingId, floorDefs) {
   floorDefs.forEach(({ floor, rows }) => {
     rows.forEach((cells, rowIndex) => {
       let offset = 0;
+      const wing = getWingById(wingId);
+      const rowWidth = cells.reduce((sum, cell) => sum + cell.width, 0);
+      const usableWidth = wing.width - 0.32;
+      const horizontalScale = usableWidth / rowWidth;
       cells.forEach((cell) => {
         const index = globalIndex++;
         const { specialType, sizeLabel } = classifyRoom(cell.name);
@@ -291,6 +299,12 @@ function buildRoomsForWing(wingId, floorDefs) {
           weeklySavingsKwh: 18 + ((floor * 13 + index * 7) % 42),
           savingRate: 8 + ((floor + index) % 9),
           timetable: createTimetable(roomId, specialType, floor * 20 + index),
+          geometry: {
+            x: wing.x - usableWidth / 2 + (offset + cell.width / 2) * horizontalScale,
+            z: rowIndex === 0 ? -1.05 : 1.05,
+            width: Math.max(0.22, cell.width * horizontalScale - 0.06),
+            depth: 1.55,
+          },
         });
         offset += cell.width;
       });
