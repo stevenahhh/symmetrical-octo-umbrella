@@ -3,12 +3,21 @@ from __future__ import annotations
 
 import json
 from contextlib import closing
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import date
 from typing import Any
 
 from .geometry_service import validate_geometry
-from .persistence import BuildingSummary, CampusRepository, Database, ScenarioRepository
+from .models import Scenario
+from .persistence import (
+    BuildingSummary,
+    CampusRepository,
+    Database,
+    InstallationPlanRepository,
+    RepresentativePlanRepository,
+    ScenarioRepository,
+)
+from .simulation_service import calculate_simulation
 
 RANKING_WEIGHTS = {
     "annualized_yield": 0.3,
@@ -71,10 +80,17 @@ def _entry(building: BuildingSummary, scenario=None, *, reason=None,
     }
 
 
-def rank_campus(database: Database, request: RankingRequest) -> RankingResult:
+def rank_campus(
+    database: Database,
+    request: RankingRequest,
+    *,
+    representative_only: bool = False,
+) -> RankingResult:
     """Rank comparable persisted scenarios and explain every exclusion."""
     campus = CampusRepository(database)
     repository = ScenarioRepository(database)
+    plan_repository = InstallationPlanRepository(database)
+    representative_repository = RepresentativePlanRepository(database)
     buildings = campus.list_buildings()
     ranked: list[dict[str, Any]] = []
     excluded: list[dict[str, Any]] = []
@@ -86,7 +102,42 @@ def rank_campus(database: Database, request: RankingRequest) -> RankingResult:
         }
 
     for building in buildings:
-        scenarios = repository.list_for_building(building.id)
+        if representative_only:
+            representative = representative_repository.get(building.id)
+            if representative is None:
+                excluded.append(_entry(
+                    building,
+                    reason="no_representative_plan",
+                    building_status="no_scenario",
+                ))
+                continue
+            plan = plan_repository.get(representative.installation_plan_id)
+            if plan is None:
+                excluded.append(_entry(
+                    building,
+                    reason="no_representative_plan",
+                    building_status="no_scenario",
+                ))
+                continue
+            candidate = Scenario(
+                id=plan.id,
+                building_id=plan.building_id,
+                name=plan.name,
+                weather_preset=request.weather_preset,
+                created_at=plan.created_at,
+                updated_at=plan.updated_at,
+                arrays=plan.arrays,
+                intervals=(),
+            )
+            intervals, _ = calculate_simulation(
+                database,
+                candidate,
+                request.date,
+                request.weather_preset,
+            )
+            scenarios = (replace(candidate, intervals=intervals),)
+        else:
+            scenarios = repository.list_for_building(building.id)
         if not roof_areas[building.id]:
             excluded.append(_entry(building, reason="missing_roof_metadata"))
             continue

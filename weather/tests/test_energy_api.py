@@ -103,7 +103,7 @@ def test_canonical_routes_reject_invalid_requests_and_api_aliases_are_absent(tmp
         created = api.post("/energy/scenarios", json=payload(count=1)).json()
         wrong_update = api.put(f"/energy/scenarios/{created['id']}", json=cross_building)
         assert wrong_update.status_code == 422
-        assert wrong_update.json()["detail"]["violations"][0]["code"] == "ROOF_BUILDING_MISMATCH"
+        assert wrong_update.json()["detail"]["code"] == "scenario_building_mismatch"
         assert api.get(f"/energy/scenarios/{created['id']}").json()["building_id"] == "D4"
         assert api.get("/energy/weather/scenarios", params={"date": "2026-02-30"}).status_code == 422
         for path in ("/api/buildings", "/api/buildings/D4/demand", "/api/weather/scenarios",
@@ -154,6 +154,25 @@ def test_literal_energy_building_and_create_update_delete_round_trip(tmp_path, m
         deleted = api.delete(f"/energy/scenarios/{scenario_id}")
         assert deleted.status_code == 204 and not deleted.content
         assert api.get(f"/energy/scenarios/{scenario_id}").status_code == 404
+
+
+def test_legacy_scenario_update_preserves_simulated_intervals(tmp_path, monkeypatch) -> None:
+    with client(tmp_path, monkeypatch) as api:
+        created = api.post("/energy/scenarios", json=payload(count=1)).json()
+        simulated = api.post(
+            f"/energy/scenarios/{created['id']}/simulate", json={"date": "2026-05-18"},
+        )
+        assert simulated.status_code == 200, simulated.text
+        before = api.get(f"/energy/scenarios/{created['id']}").json()["intervals"]
+        assert len(before) == 96
+
+        changed = payload(count=1)
+        changed["name"] = "Renamed without losing simulation"
+        updated = api.put(f"/energy/scenarios/{created['id']}", json=changed)
+
+        assert updated.status_code == 200, updated.text
+        assert updated.json()["intervals"] == before
+        assert api.get(f"/energy/scenarios/{created['id']}").json()["intervals"] == before
 
 
 def test_literal_simulation_is_repeatable_and_rankings_explain_exclusions(tmp_path, monkeypatch) -> None:
@@ -338,6 +357,409 @@ def test_rankings_exclude_unlike_weather_and_recommendation_is_new_editable_copy
         changed["name"] = "independent recommendation edit"
         assert api.put(f"/energy/scenarios/{suggested['id']}", json=changed).status_code == 200
         assert api.get(f"/energy/scenarios/{original['id']}").json()["arrays"] == original["arrays"]
+
+
+def test_installation_plan_representative_and_analysis_run_contract(tmp_path, monkeypatch) -> None:
+    with client(tmp_path, monkeypatch) as api:
+        plan_payload = payload(count=1)
+        plan_payload.pop("weather_preset")
+        first_response = api.post("/energy/installation-plans", json=plan_payload)
+        second_payload = {**plan_payload, "name": "Alternative plan"}
+        second_payload["arrays"] = [{**item, "origin_x_m": 20.0} for item in plan_payload["arrays"]]
+        second_response = api.post("/energy/installation-plans", json=second_payload)
+        assert first_response.status_code == 201, first_response.text
+        assert second_response.status_code == 201, second_response.text
+        first, second = first_response.json(), second_response.json()
+
+        listed = api.get("/energy/buildings/D4/installation-plans")
+        assert listed.status_code == 200
+        assert {item["id"] for item in listed.json()} >= {first["id"], second["id"]}
+        selected = api.put("/energy/buildings/D4/representative-plan", json={
+            "installation_plan_id": first["id"],
+        })
+        assert selected.status_code == 200
+        replaced = api.put("/energy/buildings/D4/representative-plan", json={
+            "installation_plan_id": second["id"],
+        })
+        assert replaced.status_code == 200
+        assert replaced.json()["installation_plan_id"] == second["id"]
+        assert api.delete(f"/energy/installation-plans/{second['id']}").status_code == 409
+
+        scenario_payload = {
+            "building_id": "D4", "name": "Representative comparison",
+            "representative_plan_id": first["id"], "alternative_plan_id": second["id"],
+            "baseline": "no_solar", "conditions": {
+                "demand_source": "predicted", "weather_preset": "overcast",
+                "electricity_price_krw_per_kwh": 160,
+                "carbon_intensity_kg_co2e_per_kwh": 0.45,
+            },
+        }
+        scenario_response = api.post("/energy/analysis-scenarios", json=scenario_payload)
+        assert scenario_response.status_code == 201, scenario_response.text
+        scenario = scenario_response.json()
+        assert api.get(f"/energy/analysis-scenarios/{scenario['id']}").json() == scenario
+
+        assert api.get("/energy/buildings/D4/analysis-scenarios").json() == [scenario]
+        first_run = api.post(f"/energy/analysis-scenarios/{scenario['id']}/runs",
+                             json={"date": "2026-05-18"})
+        changed_scenario = {**scenario_payload, "name": "Updated comparison",
+                            "conditions": {**scenario_payload["conditions"],
+                                           "weather_preset": "clear"}}
+        updated_response = api.put(f"/energy/analysis-scenarios/{scenario['id']}",
+                                   json=changed_scenario)
+        assert updated_response.status_code == 200, updated_response.text
+        second_run = api.post(f"/energy/analysis-scenarios/{scenario['id']}/runs",
+                              json={"date": "2026-05-19"})
+        assert first_run.status_code == 201, first_run.text
+        assert second_run.status_code == 201, second_run.text
+        first_snapshot = first_run.json()
+        assert first_snapshot["id"] != second_run.json()["id"]
+        assert first_snapshot["scenario_snapshot"] == scenario
+        assert second_run.json()["scenario_snapshot"] == updated_response.json()
+        assert first_snapshot["plan_snapshots"]["representative"]["arrays"] == first["arrays"]
+        assert len(first_snapshot["intervals"]) == 96
+        assert all(item["baseline_generation_energy_kwh"] == 0
+                   for item in first_snapshot["intervals"])
+        assert first_snapshot["totals"]["baseline"]["grid_draw_energy_kwh"] == first_snapshot[
+            "totals"]["baseline"]["demand_energy_kwh"]
+        assert first_snapshot["date"] == "2026-05-18"
+        assert api.get("/energy/buildings/D4/representative-plan").json()[
+            "installation_plan_id"] == second["id"]
+        assert api.get(f"/energy/analysis-runs/{first_snapshot['id']}").json() == first_snapshot
+        history = api.get(f"/energy/analysis-scenarios/{scenario['id']}/runs").json()
+        assert [item["id"] for item in history] == [second_run.json()["id"], first_snapshot["id"]]
+
+        assert api.delete("/energy/buildings/D4/representative-plan").status_code == 204
+        referenced_delete = api.delete(f"/energy/installation-plans/{second['id']}")
+        assert referenced_delete.status_code == 409
+        assert referenced_delete.json()["detail"]["code"] == "analysis_scenario_installation_plan"
+        assert api.delete(f"/energy/installation-plans/{first['id']}").status_code == 409
+        assert api.delete(f"/energy/analysis-scenarios/{scenario['id']}").status_code == 204
+        retained_history = api.get(f"/energy/analysis-scenarios/{scenario['id']}/runs")
+        assert retained_history.status_code == 200
+        assert [item["id"] for item in retained_history.json()] == [
+            second_run.json()["id"], first_snapshot["id"],
+        ]
+        assert api.delete(f"/energy/installation-plans/{second['id']}").status_code == 204
+        assert api.delete(f"/energy/installation-plans/{first['id']}").status_code == 204
+        assert api.get(f"/energy/analysis-runs/{first_snapshot['id']}").json() == first_snapshot
+        assert api.put(f"/energy/analysis-runs/{first_snapshot['id']}", json={}).status_code == 405
+        assert api.delete(f"/energy/analysis-runs/{first_snapshot['id']}").status_code == 405
+
+
+def test_building_analysis_history_includes_direct_and_scenario_runs(tmp_path,
+                                                                     monkeypatch) -> None:
+    with client(tmp_path, monkeypatch) as api:
+        direct = api.post("/energy/analysis-runs", json={
+            "installation_plan_id": "D4-scenario-south-2x8",
+            "conditions": {"date": "2026-05-18", "weather_preset": "clear"},
+        })
+        assert direct.status_code == 201, direct.text
+
+        scenario = api.post("/energy/analysis-scenarios", json={
+            "building_id": "D4", "name": "History comparison",
+            "representative_plan_id": "D4-scenario-south-2x8",
+            "alternative_plan_id": None, "baseline": "no_solar",
+            "conditions": {
+                "demand_source": "predicted", "weather_preset": "clear",
+                "electricity_price_krw_per_kwh": 160,
+                "carbon_intensity_kg_co2e_per_kwh": 0.45,
+            },
+        })
+        assert scenario.status_code == 201, scenario.text
+        scenario_run = api.post(
+            f"/energy/analysis-scenarios/{scenario.json()['id']}/runs",
+            json={"date": "2026-05-18"},
+        )
+        assert scenario_run.status_code == 201, scenario_run.text
+
+        history = api.get("/energy/buildings/D4/analysis-runs")
+        assert history.status_code == 200, history.text
+        runs = history.json()
+        assert [item["id"] for item in runs] == [scenario_run.json()["id"], direct.json()["id"]]
+        by_id = {item["id"]: item for item in runs}
+        assert by_id[direct.json()["id"]]["run_type"] == "direct"
+        assert by_id[scenario_run.json()["id"]]["run_type"] == "scenario"
+        assert "installation_plan" in by_id[direct.json()["id"]]
+        assert "analysis_scenario_id" in by_id[scenario_run.json()["id"]]
+
+
+def test_analysis_scenario_rejects_blank_representative_plan_id(tmp_path,
+                                                                 monkeypatch) -> None:
+    with client(tmp_path, monkeypatch) as api:
+        response = api.post("/energy/analysis-scenarios", json={
+            "building_id": "D4", "name": "Invalid definition",
+            "representative_plan_id": "  \t ", "alternative_plan_id": None,
+            "baseline": "no_solar", "conditions": {
+                "demand_source": "predicted", "weather_preset": "clear",
+                "electricity_price_krw_per_kwh": 160,
+                "carbon_intensity_kg_co2e_per_kwh": 0.45,
+            },
+        })
+        assert response.status_code == 422, response.text
+        assert response.json()["detail"]["code"] == "request_validation_error"
+
+
+def test_rankings_can_compare_only_explicit_representative_plans(tmp_path, monkeypatch) -> None:
+    with client(tmp_path, monkeypatch) as api:
+        plan_payload = payload(count=1)
+        plan_payload.pop("weather_preset")
+        plan = api.post("/energy/installation-plans", json=plan_payload).json()
+        selected = api.put("/energy/buildings/D4/representative-plan", json={
+            "installation_plan_id": plan["id"],
+        })
+        assert selected.status_code == 200
+
+        response = api.get("/energy/rankings", params={
+            "date": "2026-05-18",
+            "weather_preset": "clear",
+            "representative_only": "true",
+        })
+        assert response.status_code == 200, response.text
+        entries = response.json()["rankings"]
+        d4 = next(item for item in entries if item["building_id"] == "D4")
+        assert d4["scenario_id"] == plan["id"]
+        assert d4["status"] == "ranked"
+        assert all(
+            item["scenario_id"] in {None, plan["id"]}
+            for item in entries
+        )
+        assert any(
+            item["exclusion_reason"] == "no_representative_plan"
+            for item in entries
+            if item["building_id"] != "D4"
+        )
+
+
+def test_plan_boundaries_normalize_text_and_reject_building_reassignment(tmp_path,
+                                                                         monkeypatch) -> None:
+    with client(tmp_path, monkeypatch) as api:
+        plan_payload = payload(count=1)
+        plan_payload.pop("weather_preset")
+        plan_payload["name"] = "  Trimmed plan  "
+        created = api.post("/energy/installation-plans", json=plan_payload)
+        assert created.status_code == 201, created.text
+        plan = created.json()
+        assert plan["name"] == "Trimmed plan"
+
+        blank = {**plan_payload, "name": "   \t"}
+        assert api.post("/energy/installation-plans", json=blank).status_code == 422
+
+        moved = {**plan_payload, "building_id": "D3", "name": "Moved"}
+        moved_response = api.put(f"/energy/installation-plans/{plan['id']}", json=moved)
+        assert moved_response.status_code == 422
+        assert moved_response.json()["detail"]["code"] == "installation_plan_building_mismatch"
+        assert api.get(f"/energy/installation-plans/{plan['id']}").json()["building_id"] == "D4"
+
+        definition = {
+            "building_id": "D4", "name": "  Trimmed analysis  ",
+            "representative_plan_id": plan["id"], "alternative_plan_id": "  ",
+            "baseline": "no_solar", "conditions": {
+                "demand_source": "predicted", "weather_preset": "clear",
+                "electricity_price_krw_per_kwh": 160,
+                "carbon_intensity_kg_co2e_per_kwh": 0.45,
+            },
+        }
+        saved = api.post("/energy/analysis-scenarios", json=definition)
+        assert saved.status_code == 201, saved.text
+        assert saved.json()["name"] == "Trimmed analysis"
+        assert saved.json()["alternative_plan_id"] is None
+        definition["name"] = "   "
+        assert api.post("/energy/analysis-scenarios", json=definition).status_code == 422
+
+
+def test_analysis_cost_conditions_validate_and_survive_definition_and_run_snapshots(
+    tmp_path, monkeypatch,
+) -> None:
+    with client(tmp_path, monkeypatch) as api:
+        definition = {
+            "building_id": "D4", "name": "Custom assumptions",
+            "representative_plan_id": "D4-scenario-south-2x8",
+            "alternative_plan_id": None, "baseline": "no_solar",
+            "conditions": {
+                "demand_source": "predicted", "weather_preset": "clear",
+                "electricity_price_krw_per_kwh": 275,
+                "carbon_intensity_kg_co2e_per_kwh": 0.61,
+            },
+        }
+        created = api.post("/energy/analysis-scenarios", json=definition)
+        assert created.status_code == 201, created.text
+        assert created.json()["conditions"] == definition["conditions"]
+
+        definition["conditions"] = {**definition["conditions"],
+                                    "electricity_price_krw_per_kwh": 310,
+                                    "carbon_intensity_kg_co2e_per_kwh": 0.72}
+        updated = api.put(
+            f"/energy/analysis-scenarios/{created.json()['id']}", json=definition,
+        )
+        assert updated.status_code == 200, updated.text
+        run = api.post(
+            f"/energy/analysis-scenarios/{created.json()['id']}/runs",
+            json={"date": "2026-05-18"},
+        )
+        assert run.status_code == 201, run.text
+        assert run.json()["scenario_snapshot"]["conditions"] == definition["conditions"]
+        assert api.get(f"/energy/analysis-runs/{run.json()['id']}").json()[
+            "scenario_snapshot"
+        ]["conditions"] == definition["conditions"]
+
+        for field in ("electricity_price_krw_per_kwh",
+                      "carbon_intensity_kg_co2e_per_kwh"):
+            invalid = {**definition, "conditions": {**definition["conditions"], field: -0.01}}
+            assert api.post("/energy/analysis-scenarios", json=invalid).status_code == 422
+
+
+def test_array_and_representative_ids_trim_and_reject_whitespace(tmp_path, monkeypatch) -> None:
+    with client(tmp_path, monkeypatch) as api:
+        create_payload = payload(count=1)
+        create_payload["arrays"][0]["id"] = "  client-array  "
+        created = api.post("/energy/scenarios", json=create_payload)
+        assert created.status_code == 201, created.text
+
+        blank_create = payload(count=1)
+        blank_create["arrays"][0]["id"] = "  \t "
+        assert api.post("/energy/scenarios", json=blank_create).status_code == 422
+
+        trimmed_update = payload(count=1)
+        trimmed_update["arrays"][0]["id"] = "  trimmed-array  "
+        trimmed = api.put(
+            f"/energy/scenarios/{created.json()['id']}", json=trimmed_update,
+        )
+        assert trimmed.status_code == 200, trimmed.text
+        assert trimmed.json()["arrays"][0]["id"] == "trimmed-array"
+
+        invalid_update = payload(count=1)
+        invalid_update["arrays"][0]["id"] = "  \t "
+        response = api.put(f"/energy/scenarios/{created.json()['id']}", json=invalid_update)
+        assert response.status_code == 422, response.text
+        assert response.json()["detail"]["code"] == "request_validation_error"
+
+        representative = api.put("/energy/buildings/D4/representative-plan", json={
+            "installation_plan_id": "  D4-scenario-south-2x8  ",
+        })
+        assert representative.status_code == 200, representative.text
+        assert representative.json()["installation_plan_id"] == "D4-scenario-south-2x8"
+        blank_representative = api.put("/energy/buildings/D4/representative-plan", json={
+            "installation_plan_id": "   ",
+        })
+        assert blank_representative.status_code == 422
+
+
+def test_required_resource_ids_trim_at_api_boundaries(tmp_path, monkeypatch) -> None:
+    with client(tmp_path, monkeypatch) as api:
+        scenario_payload = payload(count=1)
+        scenario_payload["building_id"] = "  D4  "
+        for field in ("roof_id", "roof_zone_id", "module_id"):
+            scenario_payload["arrays"][0][field] = f"  {scenario_payload['arrays'][0][field]}  "
+        scenario = api.post("/energy/scenarios", json=scenario_payload)
+        assert scenario.status_code == 201, scenario.text
+        assert scenario.json()["building_id"] == "D4"
+        assert {
+            field: scenario.json()["arrays"][0][field]
+            for field in ("roof_id", "roof_zone_id", "module_id")
+        } == {
+            "roof_id": "D4-roof-west",
+            "roof_zone_id": "D4-roof-west-main",
+            "module_id": "module-default-441wp",
+        }
+
+        plan_payload = payload(count=1)
+        plan_payload.pop("weather_preset")
+        plan_payload["building_id"] = "  D4  "
+        plan = api.post("/energy/installation-plans", json=plan_payload)
+        assert plan.status_code == 201, plan.text
+        assert plan.json()["building_id"] == "D4"
+
+        definition = {
+            "building_id": "  D4  ", "name": "Trim identifiers",
+            "representative_plan_id": plan.json()["id"], "alternative_plan_id": None,
+            "baseline": "no_solar", "conditions": {
+                "demand_source": "predicted", "weather_preset": "clear",
+            },
+        }
+        analysis_scenario = api.post("/energy/analysis-scenarios", json=definition)
+        assert analysis_scenario.status_code == 201, analysis_scenario.text
+        assert analysis_scenario.json()["building_id"] == "D4"
+
+        run = api.post("/energy/analysis-runs", json={
+            "installation_plan_id": f"  {plan.json()['id']}  ",
+            "conditions": {"date": "2026-05-18", "weather_preset": "clear"},
+        })
+        assert run.status_code == 201, run.text
+        assert run.json()["installation_plan_id"] == plan.json()["id"]
+
+
+def test_required_resource_ids_reject_whitespace_with_structured_422(
+    tmp_path, monkeypatch,
+) -> None:
+    cases = (
+        ("/energy/scenarios", payload(count=1), ("building_id",)),
+        ("/energy/installation-plans",
+         {key: value for key, value in payload(count=1).items() if key != "weather_preset"},
+         ("building_id",)),
+        ("/energy/analysis-scenarios", {
+            "building_id": "D4", "name": "Invalid identifiers",
+            "representative_plan_id": "D4-scenario-south-2x8", "alternative_plan_id": None,
+            "baseline": "no_solar", "conditions": {
+                "demand_source": "predicted", "weather_preset": "clear",
+            },
+        }, ("building_id",)),
+        ("/energy/analysis-runs", {
+            "installation_plan_id": "D4-scenario-south-2x8",
+            "conditions": {"date": "2026-05-18", "weather_preset": "clear"},
+        }, ("installation_plan_id",)),
+    )
+    with client(tmp_path, monkeypatch) as api:
+        for path, valid, field_path in cases:
+            invalid = __import__("copy").deepcopy(valid)
+            target = invalid
+            for key in field_path[:-1]:
+                target = target[key]
+            target[field_path[-1]] = "  \t "
+            response = api.post(path, json=invalid)
+            assert response.status_code == 422, (field_path, response.text)
+            assert response.json()["detail"]["code"] == "request_validation_error"
+
+        for field in ("roof_id", "roof_zone_id", "module_id"):
+            invalid = payload(count=1)
+            invalid["arrays"][0][field] = "  \t "
+            response = api.post("/energy/scenarios", json=invalid)
+            assert response.status_code == 422, (field, response.text)
+            assert response.json()["detail"]["code"] == "request_validation_error"
+
+
+def test_analysis_scenario_update_rejects_building_reassignment(tmp_path, monkeypatch) -> None:
+    with client(tmp_path, monkeypatch) as api:
+        definition = {
+            "building_id": "D4", "name": "Owned by D4",
+            "representative_plan_id": "D4-scenario-south-2x8",
+            "alternative_plan_id": None, "baseline": "no_solar", "conditions": {
+                "demand_source": "predicted", "weather_preset": "clear",
+            },
+        }
+        created = api.post("/energy/analysis-scenarios", json=definition)
+        assert created.status_code == 201, created.text
+        moved = {
+            **definition, "building_id": "D3",
+            "representative_plan_id": "D3-scenario-campus-baseline",
+        }
+        response = api.put(
+            f"/energy/analysis-scenarios/{created.json()['id']}", json=moved,
+        )
+        assert response.status_code == 422, response.text
+        assert response.json()["detail"]["code"] == "analysis_scenario_building_mismatch"
+        assert api.get(f"/energy/analysis-scenarios/{created.json()['id']}").json()[
+            "building_id"
+        ] == "D4"
+
+
+def test_representative_rejects_plan_from_another_building(tmp_path, monkeypatch) -> None:
+    with client(tmp_path, monkeypatch) as api:
+        response = api.put("/energy/buildings/D3/representative-installation-plan", json={
+            "installation_plan_id": "D4-scenario-south-2x8",
+        })
+        assert response.status_code == 422
+        assert response.json()["detail"]["code"] == "installation_plan_building_mismatch"
 
 
 def test_locked_first_request_initialization_is_translated_to_503(tmp_path, monkeypatch) -> None:

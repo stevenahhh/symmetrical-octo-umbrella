@@ -113,8 +113,166 @@ CREATE TABLE IF NOT EXISTS scenario_intervals (
 CREATE INDEX IF NOT EXISTS idx_rooms_building ON rooms(building_id);
 CREATE INDEX IF NOT EXISTS idx_events_room ON timetable_events(room_id);
 CREATE INDEX IF NOT EXISTS idx_arrays_scenario ON panel_arrays(scenario_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_scenarios_building_id_id
+    ON scenarios(building_id, id);
+
+-- Existing scenarios are installation plans. This compatibility view preserves every
+-- legacy row while giving new code an explicit read boundary without dual writes.
+CREATE VIEW IF NOT EXISTS installation_plans AS
+SELECT id, building_id, name, created_at, updated_at FROM scenarios;
+
+CREATE TABLE IF NOT EXISTS building_representative_plans (
+    building_id TEXT PRIMARY KEY REFERENCES buildings(id) ON DELETE CASCADE,
+    installation_plan_id TEXT NOT NULL UNIQUE,
+    selected_at TEXT NOT NULL,
+    FOREIGN KEY(building_id, installation_plan_id)
+        REFERENCES scenarios(building_id, id) ON DELETE RESTRICT
+);
+
+CREATE TABLE IF NOT EXISTS analysis_scenarios (
+    id TEXT PRIMARY KEY CHECK(length(id) > 0),
+    building_id TEXT NOT NULL REFERENCES buildings(id),
+    name TEXT NOT NULL CHECK(length(trim(name)) > 0),
+    representative_plan_id TEXT NOT NULL,
+    alternative_plan_id TEXT,
+    baseline TEXT NOT NULL CHECK(baseline = 'no_solar'),
+    conditions_json TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    CHECK(alternative_plan_id IS NULL OR alternative_plan_id <> representative_plan_id),
+    FOREIGN KEY(building_id, representative_plan_id)
+        REFERENCES scenarios(building_id, id) ON DELETE RESTRICT,
+    FOREIGN KEY(building_id, alternative_plan_id)
+        REFERENCES scenarios(building_id, id) ON DELETE RESTRICT
+);
+CREATE INDEX IF NOT EXISTS idx_analysis_scenarios_building_updated
+    ON analysis_scenarios(building_id, updated_at, id);
+
+CREATE TABLE IF NOT EXISTS analysis_runs (
+    id TEXT PRIMARY KEY CHECK(length(id) > 0),
+    building_id TEXT NOT NULL REFERENCES buildings(id),
+    installation_plan_id TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    plan_snapshot_json TEXT NOT NULL,
+    conditions_json TEXT NOT NULL,
+    result_json TEXT NOT NULL,
+    analysis_scenario_id TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_analysis_runs_building_created
+    ON analysis_runs(building_id, created_at, id);
+CREATE TRIGGER IF NOT EXISTS analysis_runs_no_update
+BEFORE UPDATE ON analysis_runs
+BEGIN
+    SELECT RAISE(ABORT, 'analysis runs are immutable');
+END;
+CREATE TRIGGER IF NOT EXISTS analysis_runs_no_delete
+BEFORE DELETE ON analysis_runs
+BEGIN
+    SELECT RAISE(ABORT, 'analysis runs are immutable');
+END;
 """
 
 
+_ANALYSIS_SCENARIOS_V3_SQL = """
+CREATE TABLE analysis_scenarios (
+    id TEXT PRIMARY KEY CHECK(length(id) > 0),
+    building_id TEXT NOT NULL REFERENCES buildings(id),
+    name TEXT NOT NULL CHECK(length(trim(name)) > 0),
+    representative_plan_id TEXT NOT NULL,
+    alternative_plan_id TEXT,
+    baseline TEXT NOT NULL CHECK(baseline = 'no_solar'),
+    conditions_json TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    CHECK(alternative_plan_id IS NULL OR alternative_plan_id <> representative_plan_id),
+    FOREIGN KEY(building_id, representative_plan_id)
+        REFERENCES scenarios(building_id, id) ON DELETE RESTRICT,
+    FOREIGN KEY(building_id, alternative_plan_id)
+        REFERENCES scenarios(building_id, id) ON DELETE RESTRICT
+)
+"""
+
+
+def _migrate_analysis_scenarios(connection: sqlite3.Connection) -> None:
+    """Rebuild v2 definitions so saved plan references are database-enforced."""
+    foreign_key_columns = {
+        row[3] for row in connection.execute("PRAGMA foreign_key_list(analysis_scenarios)")
+        if row[2] == "scenarios"
+    }
+    if {"representative_plan_id", "alternative_plan_id"} <= foreign_key_columns:
+        return
+    connection.execute("DROP INDEX IF EXISTS idx_analysis_scenarios_building_updated")
+    connection.execute("ALTER TABLE analysis_scenarios RENAME TO analysis_scenarios_v2")
+    connection.execute(_ANALYSIS_SCENARIOS_V3_SQL)
+    connection.execute(
+        "INSERT INTO analysis_scenarios "
+        "(id, building_id, name, representative_plan_id, alternative_plan_id, baseline, "
+        "conditions_json, created_at, updated_at) "
+        "SELECT legacy.id, legacy.building_id, legacy.name, representative.id, "
+        "CASE WHEN alternative.id IS NOT NULL AND alternative.id <> representative.id "
+        "THEN alternative.id ELSE NULL END, legacy.baseline, legacy.conditions_json, "
+        "legacy.created_at, legacy.updated_at "
+        "FROM analysis_scenarios_v2 AS legacy "
+        "JOIN scenarios AS representative "
+        "ON representative.id = legacy.representative_plan_id "
+        "AND representative.building_id = legacy.building_id "
+        "LEFT JOIN scenarios AS alternative "
+        "ON alternative.id = NULLIF(trim(legacy.alternative_plan_id), '') "
+        "AND alternative.building_id = legacy.building_id"
+    )
+    connection.execute("DROP TABLE analysis_scenarios_v2")
+
+
+def _migrate_analysis_cost_conditions(connection: sqlite3.Connection) -> None:
+    """Backfill assumptions in legacy editable definitions and immutable snapshots."""
+    price_path = "$.electricity_price_krw_per_kwh"
+    carbon_path = "$.carbon_intensity_kg_co2e_per_kwh"
+    connection.execute(
+        "UPDATE analysis_scenarios SET conditions_json=json_set(conditions_json, ?, "
+        "COALESCE(json_extract(conditions_json, ?), 160), ?, "
+        "COALESCE(json_extract(conditions_json, ?), 0.45))",
+        (price_path, price_path, carbon_path, carbon_path),
+    )
+    # The migration is the only permitted rewrite of historical snapshots. Remove
+    # and restore the update guard within the surrounding initialization transaction.
+    connection.execute("DROP TRIGGER IF EXISTS analysis_runs_no_update")
+    connection.execute(
+        "UPDATE analysis_runs SET conditions_json=json_set(conditions_json, ?, "
+        "COALESCE(json_extract(conditions_json, ?), 160), ?, "
+        "COALESCE(json_extract(conditions_json, ?), 0.45))",
+        (price_path, price_path, carbon_path, carbon_path),
+    )
+    connection.execute(
+        "UPDATE analysis_runs SET result_json=json_set(result_json, "
+        "'$.scenario_snapshot.conditions.electricity_price_krw_per_kwh', "
+        "COALESCE(json_extract(result_json, "
+        "'$.scenario_snapshot.conditions.electricity_price_krw_per_kwh'), 160), "
+        "'$.scenario_snapshot.conditions.carbon_intensity_kg_co2e_per_kwh', "
+        "COALESCE(json_extract(result_json, "
+        "'$.scenario_snapshot.conditions.carbon_intensity_kg_co2e_per_kwh'), 0.45)) "
+        "WHERE analysis_scenario_id IS NOT NULL"
+    )
+    connection.execute(
+        "CREATE TRIGGER analysis_runs_no_update BEFORE UPDATE ON analysis_runs "
+        "BEGIN SELECT RAISE(ABORT, 'analysis runs are immutable'); END"
+    )
+
+
 def create_schema(connection: sqlite3.Connection) -> None:
+    previous_version = connection.execute("PRAGMA user_version").fetchone()[0]
     connection.executescript(SCHEMA_SQL)
+    columns = {row[1] for row in connection.execute("PRAGMA table_info(analysis_runs)")}
+    if "analysis_scenario_id" not in columns:
+        connection.execute("ALTER TABLE analysis_runs ADD COLUMN analysis_scenario_id TEXT")
+    _migrate_analysis_scenarios(connection)
+    if previous_version < 4:
+        _migrate_analysis_cost_conditions(connection)
+    connection.execute(
+        "CREATE INDEX IF NOT EXISTS idx_analysis_scenarios_building_updated "
+        "ON analysis_scenarios(building_id, updated_at, id)"
+    )
+    connection.execute(
+        "CREATE INDEX IF NOT EXISTS idx_analysis_runs_scenario_created "
+        "ON analysis_runs(analysis_scenario_id, created_at DESC, id DESC)"
+    )
+    connection.execute("PRAGMA user_version = 4")

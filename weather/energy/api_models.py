@@ -1,8 +1,8 @@
 """Pydantic v2 contracts for the campus energy HTTP boundary."""
 from __future__ import annotations
 from datetime import date
-from typing import Literal
-from pydantic import BaseModel, ConfigDict, Field
+from typing import Annotated, Literal
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 class ApiModel(BaseModel):
     model_config = ConfigDict(extra="forbid", from_attributes=True, allow_inf_nan=False)
@@ -65,10 +65,51 @@ class PanelArrayIn(ApiModel):
     module_efficiency_percent: float = Field(ge=0, le=100)
     module_nominal_power_wp: float = Field(gt=0); inter_panel_gap_m: float = Field(ge=0)
 
+    @field_validator("id", "roof_id", "roof_zone_id", "module_id", mode="before")
+    @classmethod
+    def normalize_required_ids(cls, value):
+        return value.strip() if isinstance(value, str) else value
+
 class ScenarioCreate(ApiModel):
     building_id: str = Field(min_length=1); name: str = Field(min_length=1, max_length=120)
     weather_preset: Literal["clear", "partly_cloudy", "overcast"]
     arrays: list[PanelArrayIn] = Field(min_length=1, max_length=20)
+
+    @field_validator("building_id", "name", mode="before")
+    @classmethod
+    def normalize_required_text(cls, value):
+        return value.strip() if isinstance(value, str) else value
+
+class InstallationPlanCreate(ApiModel):
+    building_id: str = Field(min_length=1); name: str = Field(min_length=1, max_length=120)
+    arrays: list[PanelArrayIn] = Field(min_length=1, max_length=20)
+
+    @field_validator("building_id", "name", mode="before")
+    @classmethod
+    def normalize_required_text(cls, value):
+        return value.strip() if isinstance(value, str) else value
+
+class InstallationPlanArrayOut(PanelArrayIn):
+    installation_plan_id: str
+
+class InstallationPlanOut(ApiModel):
+    id: str; building_id: str; name: str; created_at: str; updated_at: str
+    arrays: list[InstallationPlanArrayOut]
+
+class InstallationPlanSummaryOut(ApiModel):
+    id: str; building_id: str; name: str; array_count: int; updated_at: str
+    is_representative: bool
+
+class RepresentativePlanSet(ApiModel):
+    installation_plan_id: str = Field(min_length=1)
+
+    @field_validator("installation_plan_id", mode="before")
+    @classmethod
+    def normalize_installation_plan_id(cls, value):
+        return value.strip() if isinstance(value, str) else value
+
+class RepresentativePlanOut(ApiModel):
+    building_id: str; installation_plan_id: str; selected_at: str
 
 class ScenarioIntervalOut(ApiModel):
     timestamp: str; ambient_temperature_c: float; global_irradiance_w_m2: float
@@ -117,6 +158,102 @@ class SimulationOut(ApiModel):
     demand_quality: Literal["predicted"] = "predicted"; weather_source: Literal["scenario"] = "scenario"
     generation_assumption: GenerationAssumptionOut
     intervals: list[BalanceIntervalOut]; arrays: list[ArraySimulationOut]; totals: SimulationTotalsOut
+
+class AnalysisConditionsIn(ApiModel):
+    date: date
+    weather_preset: Literal["clear", "partly_cloudy", "overcast"]
+
+class AnalysisRunCreate(ApiModel):
+    installation_plan_id: str = Field(min_length=1)
+    conditions: AnalysisConditionsIn
+
+    @field_validator("installation_plan_id", mode="before")
+    @classmethod
+    def normalize_installation_plan_id(cls, value):
+        return value.strip() if isinstance(value, str) else value
+
+class AnalysisConditionsOut(AnalysisConditionsIn):
+    timezone: Literal["Asia/Seoul"]
+    interval_minutes: Literal[15]
+    generation_model: Literal["deterministic-python-v1"]
+    electricity_price_krw_per_kwh: float = Field(default=160, ge=0)
+    carbon_intensity_kg_co2e_per_kwh: float = Field(default=0.45, ge=0)
+
+class DirectAnalysisRunOut(ApiModel):
+    run_type: Literal["direct"]
+    id: str; building_id: str; installation_plan_id: str; created_at: str
+    installation_plan: InstallationPlanOut
+    conditions: AnalysisConditionsOut
+    result: SimulationOut
+
+class AnalysisScenarioConditions(ApiModel):
+    demand_source: Literal["predicted"]
+    weather_preset: Literal["clear", "partly_cloudy", "overcast"]
+    electricity_price_krw_per_kwh: float = Field(default=160, ge=0)
+    carbon_intensity_kg_co2e_per_kwh: float = Field(default=0.45, ge=0)
+
+class AnalysisScenarioCreate(ApiModel):
+    building_id: str = Field(min_length=1)
+    name: str = Field(min_length=1, max_length=120)
+    representative_plan_id: str = Field(min_length=1)
+    alternative_plan_id: str | None = None
+    baseline: Literal["no_solar"]
+    conditions: AnalysisScenarioConditions
+
+    @field_validator("building_id", "name", mode="before")
+    @classmethod
+    def normalize_required_text(cls, value):
+        return value.strip() if isinstance(value, str) else value
+
+    @field_validator("representative_plan_id", mode="before")
+    @classmethod
+    def normalize_representative_plan_id(cls, value):
+        return value.strip() if isinstance(value, str) else value
+
+    @field_validator("alternative_plan_id", mode="before")
+    @classmethod
+    def normalize_optional_plan_id(cls, value):
+        if isinstance(value, str):
+            value = value.strip()
+            return value or None
+        return value
+
+    @model_validator(mode="after")
+    def distinct_plans(self):
+        if self.alternative_plan_id == self.representative_plan_id:
+            raise ValueError("alternative_plan_id must differ from representative_plan_id")
+        return self
+
+class AnalysisScenarioOut(AnalysisScenarioCreate):
+    id: str; created_at: str; updated_at: str
+
+class AnalysisRunIntervalOut(ApiModel):
+    timestamp: str; predicted_demand_energy_kwh: float; global_irradiance_w_m2: float
+    baseline_generation_energy_kwh: float
+    proposed_generation_energy_kwh: float
+    alternative_generation_energy_kwh: float | None
+
+class AnalysisPlanSnapshotsOut(ApiModel):
+    representative: InstallationPlanOut
+    alternative: InstallationPlanOut | None
+
+class CampusRepresentativeAnalysisOut(ApiModel):
+    building_id: str; building_name: str; installation_plan_id: str
+    generation_energy_kwh: float; demand_energy_kwh: float
+
+class AnalysisRunOut(ApiModel):
+    run_type: Literal["scenario"]
+    id: str; analysis_scenario_id: str; building_id: str; created_at: str; date: date
+    scenario_snapshot: AnalysisScenarioOut
+    plan_snapshots: AnalysisPlanSnapshotsOut
+    intervals: list[AnalysisRunIntervalOut]
+    totals: dict[str, SimulationTotalsOut | None]
+    campus_representatives: list[CampusRepresentativeAnalysisOut]
+
+AnalysisRunHistoryOut = Annotated[
+    AnalysisRunOut | DirectAnalysisRunOut,
+    Field(discriminator="run_type"),
+]
 
 class CandidateScoreOut(ApiModel):
     candidate_id: str; module_count: int; azimuth_deg: float; tilt_deg: float

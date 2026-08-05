@@ -8,11 +8,13 @@ from .models import PanelArray, Scenario, ScenarioInterval
 from .persistence import Database, ScenarioRepository
 from .weather_scenarios import build_preset_series
 
-def simulate(database: Database, scenario: Scenario, day: date) -> tuple[Scenario, dict]:
+def calculate_simulation(database: Database, scenario: Scenario, day: date,
+                         weather_preset: str) -> tuple[tuple[ScenarioInterval, ...], dict]:
+    """Calculate a complete result without mutating the source scenario."""
     demand = building_demand(database, scenario.building_id, day)
     if demand is None:
         raise LookupError(scenario.building_id)
-    weather = build_preset_series(day, scenario.weather_preset)
+    weather = build_preset_series(day, weather_preset)
     array_results = []
     generation_by_slot = [0.0] * 96
     for array in scenario.arrays:
@@ -60,8 +62,6 @@ def simulate(database: Database, scenario: Scenario, day: date) -> tuple[Scenari
             predicted_demand_kw=demand_slot["predicted_demand_kw"],
             predicted_demand_energy_kwh=demand_energy, generation_energy_kwh=generation,
             weather_source="scenario", demand_quality="predicted"))
-    updated = replace(scenario, updated_at=datetime.now().astimezone().isoformat(), intervals=tuple(persisted))
-    ScenarioRepository(database).save(updated)
     mapping = {
         "demand_energy_kwh": "predicted_demand_energy_kwh",
         "generation_energy_kwh": "generation_energy_kwh",
@@ -70,7 +70,7 @@ def simulate(database: Database, scenario: Scenario, day: date) -> tuple[Scenari
         "surplus_energy_kwh": "surplus_energy_kwh",
     }
     totals = {output: sum(item[source] for item in intervals) for output, source in mapping.items()}
-    return updated, {
+    return tuple(persisted), {
         "scenario_id": scenario.id, "date": day, "interval_minutes": 15,
         "demand_quality": "predicted", "weather_source": "scenario",
         "generation_assumption": {"type": "simulation-assumption",
@@ -78,6 +78,16 @@ def simulate(database: Database, scenario: Scenario, day: date) -> tuple[Scenari
             "system_loss_fraction": 0.1},
         "intervals": intervals, "arrays": array_results, "totals": totals,
     }
+
+
+def simulate(database: Database, scenario: Scenario, day: date) -> tuple[Scenario, dict]:
+    persisted, result = calculate_simulation(database, scenario, day, scenario.weather_preset)
+    updated = replace(
+        scenario, updated_at=datetime.now().astimezone().isoformat(), intervals=persisted,
+    )
+    ScenarioRepository(database).save(updated)
+    return updated, result
+
 
 def recommendation_candidates(source: Scenario, suggested_id: str, database: Database):
     from .geometry_service import validate_geometry

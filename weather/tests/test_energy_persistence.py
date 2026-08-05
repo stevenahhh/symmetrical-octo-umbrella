@@ -5,8 +5,20 @@ from dataclasses import replace
 
 import pytest
 
-from weather.energy.models import PanelArray, Scenario, ScenarioInterval
-from weather.energy.persistence import Database, ScenarioRepository
+from weather.energy.models import AnalysisScenario, PanelArray, Scenario, ScenarioInterval
+from weather.energy.persistence import (
+    AnalysisRunRepository,
+    AnalysisScenarioBuildingMismatch,
+    AnalysisScenarioPlanConflict,
+    AnalysisScenarioRepository,
+    Database,
+    InstallationPlanBuildingMismatch,
+    InstallationPlanRepository,
+    RepresentativePlanConflict,
+    RepresentativePlanRepository,
+    ScenarioBuildingMismatch,
+    ScenarioRepository,
+)
 from weather.energy.seed import D4_SEED_COUNTS, SeedBuilding, seed_buildings
 
 
@@ -117,6 +129,10 @@ def test_scenario_and_two_arrays_round_trip_without_numeric_drift(tmp_path) -> N
     repository.save(original)
     assert repository.get(original.id) == original
 
+    with pytest.raises(ScenarioBuildingMismatch):
+        repository.save(replace(original, building_id="D3"))
+    assert repository.get(original.id) == original
+
 
 def test_invalid_roof_rolls_back_scenario_arrays_and_intervals(tmp_path) -> None:
     database = Database(tmp_path / "energy.sqlite3")
@@ -144,3 +160,318 @@ def test_invalid_roof_rolls_back_scenario_arrays_and_intervals(tmp_path) -> None
 def test_malformed_models_are_rejected_before_sql(bad_value) -> None:
     with pytest.raises(ValueError):
         bad_value()
+
+
+def test_multiple_installation_plans_and_atomic_representative_replacement(tmp_path) -> None:
+    database = Database(tmp_path / "energy.sqlite3")
+    database.initialize()
+    scenarios = ScenarioRepository(database)
+    plans = InstallationPlanRepository(database)
+    representatives = RepresentativePlanRepository(database)
+    first = replace(scenario(array("plan-one-array")), id="plan-one", arrays=(
+        replace(array("plan-one-array"), scenario_id="plan-one"),
+    ), intervals=())
+    second = replace(first, id="plan-two", name="Second", arrays=(
+        replace(array("plan-two-array"), scenario_id="plan-two", origin_x_m=20.0),
+    ))
+    scenarios.save(first)
+    scenarios.save(second)
+
+    assert {item.id for item in plans.list_for_building("D4")} >= {"plan-one", "plan-two"}
+    representatives.set("D4", first.id, "2026-05-15T12:00:00+09:00")
+    representatives.set("D4", second.id, "2026-05-15T12:01:00+09:00")
+    assert representatives.get("D4").installation_plan_id == second.id
+    with database.connect() as connection:
+        assert connection.execute(
+            "SELECT count(*) FROM building_representative_plans WHERE building_id='D4'"
+        ).fetchone()[0] == 1
+
+    with pytest.raises(RepresentativePlanConflict):
+        plans.delete(second.id)
+    assert representatives.unset("D4") is True
+    assert plans.delete(second.id) is True
+    assert plans.get(first.id).arrays == first.arrays
+
+
+def test_plan_updates_preserve_legacy_intervals_and_reject_building_reassignment(tmp_path) -> None:
+    database = Database(tmp_path / "energy.sqlite3")
+    database.initialize()
+    legacy = scenario(array("legacy-array"))
+    ScenarioRepository(database).save(legacy)
+    plans = InstallationPlanRepository(database)
+    plan = plans.get(legacy.id)
+
+    plans.save(replace(plan, name="Renamed plan"))
+    assert ScenarioRepository(database).get(legacy.id).intervals == legacy.intervals
+
+    with pytest.raises(InstallationPlanBuildingMismatch):
+        plans.save(replace(plan, building_id="D3"))
+    assert plans.get(legacy.id).building_id == "D4"
+
+
+def test_analysis_scenario_plan_references_prevent_plan_deletion(tmp_path) -> None:
+    database = Database(tmp_path / "energy.sqlite3")
+    database.initialize()
+    plans = InstallationPlanRepository(database)
+    definitions = AnalysisScenarioRepository(database)
+    definition = AnalysisScenario(
+        id="analysis-scenario-test", building_id="D4", name="Saved comparison",
+        representative_plan_id="D4-scenario-south-2x8", alternative_plan_id=None,
+        baseline="no_solar", conditions={"weather_preset": "clear"},
+        created_at="2026-05-15T12:00:00+09:00",
+        updated_at="2026-05-15T12:00:00+09:00",
+    )
+    definitions.save(definition)
+
+    with pytest.raises(AnalysisScenarioPlanConflict):
+        plans.delete(definition.representative_plan_id)
+    with database.connect() as connection:
+        with pytest.raises(sqlite3.IntegrityError):
+            connection.execute(
+                "DELETE FROM scenarios WHERE id=?", (definition.representative_plan_id,),
+            )
+    assert definitions.get(definition.id) == definition
+
+
+def test_analysis_scenario_repository_rejects_building_reassignment(tmp_path) -> None:
+    database = Database(tmp_path / "energy.sqlite3")
+    database.initialize()
+    definitions = AnalysisScenarioRepository(database)
+    definition = AnalysisScenario(
+        id="analysis-scenario-owner", building_id="D4", name="Owned by D4",
+        representative_plan_id="D4-scenario-south-2x8", alternative_plan_id=None,
+        baseline="no_solar", conditions={"weather_preset": "clear"},
+        created_at="2026-05-15T12:00:00+09:00",
+        updated_at="2026-05-15T12:00:00+09:00",
+    )
+    definitions.save(definition)
+
+    moved = replace(
+        definition, building_id="D3", representative_plan_id="D3-scenario-campus-baseline",
+        updated_at="2026-05-15T12:01:00+09:00",
+    )
+    with pytest.raises(AnalysisScenarioBuildingMismatch):
+        definitions.save(moved)
+    assert definitions.get(definition.id) == definition
+
+
+def test_analysis_runs_are_append_only_snapshots_independent_of_plan_and_representative(tmp_path) -> None:
+    database = Database(tmp_path / "energy.sqlite3")
+    database.initialize()
+    plans = InstallationPlanRepository(database)
+    representatives = RepresentativePlanRepository(database)
+    runs = AnalysisRunRepository(database)
+    source = plans.get("D4-scenario-south-2x8")
+    representatives.set("D4", source.id, "2026-05-15T12:00:00+09:00")
+    first = runs.create(
+        run_id="analysis-run-one", building_id="D4", installation_plan_id=source.id,
+        created_at="2026-05-15T12:00:00+09:00",
+        plan_snapshot={"id": source.id, "name": source.name, "arrays": [source.arrays[0].to_dict()]},
+        conditions={"date": "2026-05-18", "weather_preset": "clear"},
+        result={"totals": {"generation_energy_kwh": 1.25}},
+    )
+    second = runs.create(
+        run_id="analysis-run-two", building_id="D4", installation_plan_id=source.id,
+        created_at="2026-05-15T12:01:00+09:00", plan_snapshot=first.plan_snapshot,
+        conditions={"date": "2026-05-19", "weather_preset": "overcast"},
+        result={"totals": {"generation_energy_kwh": 0.5}},
+    )
+
+    changed = replace(source, name="Changed later", arrays=(
+        replace(source.arrays[0], columns=4),
+    ))
+    plans.save(changed)
+    assert runs.get(first.id) == first
+    assert [item.id for item in runs.list_for_building("D4")] == [second.id, first.id]
+    assert representatives.get("D4").installation_plan_id == source.id
+    with database.connect() as connection:
+        with pytest.raises(sqlite3.IntegrityError):
+            connection.execute("UPDATE analysis_runs SET result_json='{}' WHERE id=?", (first.id,))
+        with pytest.raises(sqlite3.IntegrityError):
+            connection.execute("DELETE FROM analysis_runs WHERE id=?", (first.id,))
+
+
+def test_v2_migration_drops_dangling_representatives_and_clears_dangling_alternatives(
+    tmp_path,
+) -> None:
+    path = tmp_path / "v2.sqlite3"
+    database = Database(path)
+    database.initialize()
+    valid_plan = "D4-scenario-south-2x8"
+    with database.connect() as connection:
+        with connection:
+            connection.executescript("""
+                DROP TABLE analysis_scenarios;
+                CREATE TABLE analysis_scenarios (
+                    id TEXT PRIMARY KEY, building_id TEXT NOT NULL REFERENCES buildings(id),
+                    name TEXT NOT NULL, representative_plan_id TEXT NOT NULL,
+                    alternative_plan_id TEXT, baseline TEXT NOT NULL,
+                    conditions_json TEXT NOT NULL, created_at TEXT NOT NULL, updated_at TEXT NOT NULL
+                );
+            """)
+            rows = (
+                ("valid", "D4", "Valid", valid_plan, None),
+                ("bad-alternative", "D4", "Clear alternative", valid_plan, "missing-alt"),
+                ("bad-representative", "D4", "Drop definition", "missing-representative", None),
+            )
+            connection.executemany(
+                "INSERT INTO analysis_scenarios VALUES (?,?,?,?,?,'no_solar','{}',?,?)",
+                ((*row, "2026-05-15T12:00:00+09:00", "2026-05-15T12:00:00+09:00")
+                 for row in rows),
+            )
+            connection.execute(
+                "INSERT INTO analysis_runs "
+                "(id, building_id, installation_plan_id, created_at, plan_snapshot_json, "
+                "conditions_json, result_json, analysis_scenario_id) "
+                "VALUES (?,?,?,?,?,?,?,?)",
+                ("orphaned-definition-run", "D4", "missing-representative",
+                 "2026-05-15T12:01:00+09:00", '{"preserved":true}',
+                 '{"weather_preset":"clear"}', '{"generation_energy_kwh":1.25}',
+                 "bad-representative"),
+            )
+            connection.execute("PRAGMA user_version = 2")
+
+    database.initialize()
+    database.initialize()
+
+    with database.connect() as connection:
+        migrated = tuple(connection.execute(
+            "SELECT id, representative_plan_id, alternative_plan_id "
+            "FROM analysis_scenarios ORDER BY id"
+        ))
+        assert [tuple(row) for row in migrated] == [
+            ("bad-alternative", valid_plan, None),
+            ("valid", valid_plan, None),
+        ]
+        preserved_run = connection.execute(
+            "SELECT installation_plan_id, plan_snapshot_json, conditions_json, result_json, "
+            "analysis_scenario_id FROM analysis_runs WHERE id='orphaned-definition-run'"
+        ).fetchone()
+        assert preserved_run[0] == "missing-representative"
+        assert preserved_run[1] == '{"preserved":true}'
+        assert __import__("json").loads(preserved_run[2]) == {
+            "weather_preset": "clear",
+            "electricity_price_krw_per_kwh": 160,
+            "carbon_intensity_kg_co2e_per_kwh": 0.45,
+        }
+        assert __import__("json").loads(preserved_run[3]) == {
+            "generation_energy_kwh": 1.25,
+            "scenario_snapshot": {"conditions": {
+                "electricity_price_krw_per_kwh": 160,
+                "carbon_intensity_kg_co2e_per_kwh": 0.45,
+            }},
+        }
+        assert preserved_run[4] == "bad-representative"
+        with pytest.raises(sqlite3.IntegrityError, match="analysis runs are immutable"):
+            connection.execute(
+                "UPDATE analysis_runs SET result_json='{}' WHERE id='orphaned-definition-run'"
+            )
+        assert connection.execute("PRAGMA foreign_key_check").fetchall() == []
+        assert connection.execute("PRAGMA user_version").fetchone()[0] == 4
+
+
+def test_v3_cost_condition_migration_backfills_editable_and_immutable_snapshots(
+    tmp_path,
+) -> None:
+    path = tmp_path / "v3-costs.sqlite3"
+    database = Database(path)
+    database.initialize()
+    with database.connect() as connection:
+        with connection:
+            connection.execute(
+                "INSERT INTO analysis_scenarios VALUES (?,?,?,?,?,'no_solar',?,?,?)",
+                ("legacy-costs", "D4", "Legacy costs", "D4-scenario-south-2x8", None,
+                 '{"demand_source":"predicted","weather_preset":"clear"}',
+                 "2026-05-15T12:00:00+09:00", "2026-05-15T12:00:00+09:00"),
+            )
+            connection.execute(
+                "INSERT INTO analysis_runs "
+                "(id, building_id, installation_plan_id, created_at, plan_snapshot_json, "
+                "conditions_json, result_json, analysis_scenario_id) VALUES (?,?,?,?,?,?,?,?)",
+                ("legacy-cost-run", "D4", "D4-scenario-south-2x8",
+                 "2026-05-15T12:01:00+09:00", '{}',
+                 '{"demand_source":"predicted","weather_preset":"clear"}',
+                 '{"scenario_snapshot":{"conditions":{"demand_source":"predicted",'
+                 '"weather_preset":"clear"}}}', "legacy-costs"),
+            )
+            connection.execute("PRAGMA user_version = 3")
+
+    database.initialize()
+    definition = AnalysisScenarioRepository(database).get("legacy-costs")
+    run = AnalysisRunRepository(database).get("legacy-cost-run")
+    expected = {
+        "electricity_price_krw_per_kwh": 160,
+        "carbon_intensity_kg_co2e_per_kwh": 0.45,
+    }
+    assert {key: definition.conditions[key] for key in expected} == expected
+    assert {key: run.conditions[key] for key in expected} == expected
+    assert {key: run.result["scenario_snapshot"]["conditions"][key]
+            for key in expected} == expected
+    with database.connect() as connection:
+        assert connection.execute("PRAGMA user_version").fetchone()[0] == 4
+
+
+def test_legacy_scenarios_are_exposed_as_plans_without_data_loss(tmp_path) -> None:
+    path = tmp_path / "legacy.sqlite3"
+    database = Database(path)
+    database.initialize()
+    legacy = scenario(array("legacy-array"))
+    ScenarioRepository(database).save(legacy)
+    with database.connect() as connection:
+        with connection:
+            connection.executescript("""
+                DROP TRIGGER analysis_runs_no_update;
+                DROP TRIGGER analysis_runs_no_delete;
+                DROP TABLE analysis_runs;
+                DROP TABLE analysis_scenarios;
+                CREATE TABLE analysis_scenarios (
+                    id TEXT PRIMARY KEY, building_id TEXT NOT NULL REFERENCES buildings(id),
+                    name TEXT NOT NULL, representative_plan_id TEXT NOT NULL,
+                    alternative_plan_id TEXT, baseline TEXT NOT NULL,
+                    conditions_json TEXT NOT NULL, created_at TEXT NOT NULL, updated_at TEXT NOT NULL
+                );
+                INSERT INTO analysis_scenarios VALUES (
+                    'legacy-analysis', 'D4', 'Legacy analysis', 'scenario-test', NULL,
+                    'no_solar', '{}', '2026-05-15T12:00:00+09:00',
+                    '2026-05-15T12:00:00+09:00'
+                );
+                CREATE TABLE analysis_runs (
+                    id TEXT PRIMARY KEY, building_id TEXT NOT NULL,
+                    installation_plan_id TEXT NOT NULL, created_at TEXT NOT NULL,
+                    plan_snapshot_json TEXT NOT NULL, conditions_json TEXT NOT NULL,
+                    result_json TEXT NOT NULL
+                );
+                INSERT INTO analysis_runs VALUES (
+                    'legacy-run', 'D4', 'scenario-test', '2026-05-15T12:00:00+09:00',
+                    '{}', '{}', '{}'
+                );
+                DROP TABLE building_representative_plans;
+                DROP VIEW installation_plans;
+                DROP INDEX idx_scenarios_building_id_id;
+                PRAGMA user_version = 0;
+            """)
+
+    database.initialize()
+
+    migrated = InstallationPlanRepository(database).get(legacy.id)
+    assert migrated.id == legacy.id
+    assert migrated.arrays == legacy.arrays
+    assert ScenarioRepository(database).get(legacy.id) == legacy
+    with database.connect() as connection:
+        assert connection.execute("PRAGMA user_version").fetchone()[0] >= 3
+        assert connection.execute(
+            "SELECT count(*) FROM scenario_intervals WHERE scenario_id=?", (legacy.id,)
+        ).fetchone()[0] == 1
+        assert connection.execute(
+            "SELECT representative_plan_id FROM analysis_scenarios WHERE id='legacy-analysis'"
+        ).fetchone()[0] == legacy.id
+        foreign_key_columns = {
+            row[3] for row in connection.execute("PRAGMA foreign_key_list(analysis_scenarios)")
+            if row[2] == "scenarios"
+        }
+        assert {"representative_plan_id", "alternative_plan_id"} <= foreign_key_columns
+        columns = {row[1] for row in connection.execute("PRAGMA table_info(analysis_runs)")}
+        assert "analysis_scenario_id" in columns
+        assert connection.execute(
+            "SELECT result_json FROM analysis_runs WHERE id='legacy-run'"
+        ).fetchone()[0] == "{}"
