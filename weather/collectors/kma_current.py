@@ -25,7 +25,7 @@ import requests
 from config import KMA_SERVICE_KEY, KMA_NX, KMA_NY, CAMPUS_LAT, CAMPUS_LON
 
 
-BASE_URL = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst"
+BASE_URL = "https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst"
 
 # 한국 표준시 UTC+9
 KST = timezone(timedelta(hours=9))

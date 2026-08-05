@@ -4,10 +4,10 @@
 
 :root {
   color-scheme: dark;
-  --colors-primary: #5e6ad2;
+  --colors-primary: #3b82f6;
   --colors-on-primary: #ffffff;
-  --colors-primary-hover: #828fff;
-  --colors-primary-focus: #5e69d1;
+  --colors-primary-hover: #60a5fa;
+  --colors-primary-focus: #2563eb;
   --colors-ink: #f7f8f8;
   --colors-ink-muted: #d0d6e0;
   --colors-ink-subtle: #8a8f98;

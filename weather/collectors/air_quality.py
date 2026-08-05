@@ -4,7 +4,7 @@ import requests
 from config import AIRKOREA_SERVICE_KEY, AIR_STATION_NAME
 
 
-BASE_URL = "http://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty"
+BASE_URL = "https://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty"
 
 
 def _parse_float(value):
