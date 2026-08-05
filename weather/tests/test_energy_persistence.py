@@ -291,7 +291,7 @@ def test_analysis_runs_are_append_only_snapshots_independent_of_plan_and_represe
             connection.execute("DELETE FROM analysis_runs WHERE id=?", (first.id,))
 
 
-def test_v2_migration_drops_dangling_representatives_and_clears_dangling_alternatives(
+def test_v2_migration_archives_dangling_references_before_normalizing_definitions(
     tmp_path,
 ) -> None:
     path = tmp_path / "v2.sqlite3"
@@ -342,6 +342,15 @@ def test_v2_migration_drops_dangling_representatives_and_clears_dangling_alterna
         assert [tuple(row) for row in migrated] == [
             ("bad-alternative", valid_plan, None),
             ("valid", valid_plan, None),
+        ]
+        archived = tuple(connection.execute(
+            "SELECT id, representative_plan_id, alternative_plan_id, migration_reason "
+            "FROM analysis_scenario_migration_archive ORDER BY id"
+        ))
+        assert [tuple(row) for row in archived] == [
+            ("bad-alternative", valid_plan, "missing-alt", "missing_alternative_plan"),
+            ("bad-representative", "missing-representative", None,
+             "missing_representative_plan"),
         ]
         preserved_run = connection.execute(
             "SELECT installation_plan_id, plan_snapshot_json, conditions_json, result_json, "

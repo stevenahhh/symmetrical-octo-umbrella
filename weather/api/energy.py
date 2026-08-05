@@ -76,8 +76,9 @@ def _conflict(violations: list[dict], status_code: int = 409) -> HTTPException:
         "message_ko": "\ud328\ub110 \ubc30\uce58\uac00 \uc625\uc0c1 \uae30\ud558 \uc81c\uc57d\uacfc \ucda9\ub3cc\ud569\ub2c8\ub2e4.",
         "violations": violations})
 
-def _database_error(exc: sqlite3.OperationalError) -> HTTPException:
-    return HTTPException(503, {"code": "database_unavailable", "message_en": str(exc),
+def _database_error(_exc: sqlite3.OperationalError) -> HTTPException:
+    return HTTPException(503, {"code": "database_unavailable",
+        "message_en": "The database is temporarily unavailable.",
         "message_ko": "\ub370\uc774\ud130\ubca0\uc774\uc2a4\ub97c \uc0ac\uc6a9\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4."})
 
 def _scenario(repository: ScenarioRepository, scenario_id: str) -> Scenario:
@@ -235,7 +236,8 @@ def update_installation_plan(plan_id: str, payload: InstallationPlanCreate,
             "message_ko": "설치안을 다른 건물로 이동할 수 없습니다."}) from exc
     except sqlite3.IntegrityError as exc:
         raise HTTPException(409, {"code": "installation_plan_update_conflict",
-            "message_en": str(exc), "message_ko": "설치안을 변경할 수 없습니다."}) from exc
+            "message_en": "The installation plan could not be updated because it is in use.",
+            "message_ko": "설치안을 변경할 수 없습니다."}) from exc
     return _plan_payload(updated)
 
 

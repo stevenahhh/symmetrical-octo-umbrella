@@ -192,6 +192,21 @@ CREATE TABLE analysis_scenarios (
 )
 """
 
+_ANALYSIS_SCENARIO_MIGRATION_ARCHIVE_SQL = """
+CREATE TABLE IF NOT EXISTS analysis_scenario_migration_archive (
+    id TEXT PRIMARY KEY,
+    building_id TEXT NOT NULL,
+    name TEXT NOT NULL,
+    representative_plan_id TEXT NOT NULL,
+    alternative_plan_id TEXT,
+    baseline TEXT NOT NULL,
+    conditions_json TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    migration_reason TEXT NOT NULL
+)
+"""
+
 
 def _migrate_analysis_scenarios(connection: sqlite3.Connection) -> None:
     """Rebuild v2 definitions so saved plan references are database-enforced."""
@@ -204,6 +219,28 @@ def _migrate_analysis_scenarios(connection: sqlite3.Connection) -> None:
     connection.execute("DROP INDEX IF EXISTS idx_analysis_scenarios_building_updated")
     connection.execute("ALTER TABLE analysis_scenarios RENAME TO analysis_scenarios_v2")
     connection.execute(_ANALYSIS_SCENARIOS_V3_SQL)
+    connection.execute(_ANALYSIS_SCENARIO_MIGRATION_ARCHIVE_SQL)
+    connection.execute(
+        "INSERT OR REPLACE INTO analysis_scenario_migration_archive "
+        "(id, building_id, name, representative_plan_id, alternative_plan_id, baseline, "
+        "conditions_json, created_at, updated_at, migration_reason) "
+        "SELECT legacy.id, legacy.building_id, legacy.name, legacy.representative_plan_id, "
+        "legacy.alternative_plan_id, legacy.baseline, legacy.conditions_json, "
+        "legacy.created_at, legacy.updated_at, "
+        "CASE WHEN representative.id IS NULL THEN 'missing_representative_plan' "
+        "WHEN alternative.id IS NULL THEN 'missing_alternative_plan' "
+        "ELSE 'duplicate_alternative_plan' END "
+        "FROM analysis_scenarios_v2 AS legacy "
+        "LEFT JOIN scenarios AS representative "
+        "ON representative.id = legacy.representative_plan_id "
+        "AND representative.building_id = legacy.building_id "
+        "LEFT JOIN scenarios AS alternative "
+        "ON alternative.id = NULLIF(trim(legacy.alternative_plan_id), '') "
+        "AND alternative.building_id = legacy.building_id "
+        "WHERE representative.id IS NULL OR "
+        "(NULLIF(trim(legacy.alternative_plan_id), '') IS NOT NULL "
+        "AND (alternative.id IS NULL OR alternative.id = representative.id))"
+    )
     connection.execute(
         "INSERT INTO analysis_scenarios "
         "(id, building_id, name, representative_plan_id, alternative_plan_id, baseline, "

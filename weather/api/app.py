@@ -521,10 +521,10 @@ async def request_validation_error_handler(_request: Request, exc: RequestValida
 
 
 @app.exception_handler(sqlite3.OperationalError)
-async def sqlite_operational_error_handler(_request: Request, exc: sqlite3.OperationalError):
+async def sqlite_operational_error_handler(_request: Request, _exc: sqlite3.OperationalError):
     return JSONResponse(status_code=503, content={"detail": {
         "code": "database_unavailable",
-        "message_en": str(exc),
+        "message_en": "The database is temporarily unavailable.",
         "message_ko": "\ub370\uc774\ud130\ubca0\uc774\uc2a4\ub97c \uc0ac\uc6a9\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4.",
     }})
 
