@@ -477,17 +477,470 @@
             if (poiLayer) {
                 poiLayer.hide();
             }
-
-            createCampusBoundary();
+            
+            setupCampusCamera();
+            applyWhiteContext();
+            loadRoadZones();
 
         }, 1500);
-        
+
+        function applyWhiteContext() {
+
+            if (
+                typeof Cesium === "undefined" ||
+                typeof ws3d === "undefined" ||
+                !ws3d.viewer
+            ) {
+                console.error("Cesium 또는 VWorld Viewer를 찾을 수 없습니다.");
+                return;
+            }
+
+            // 중복 생성 방지
+            if (window.scnuWhiteContextCreated) {
+                return;
+            }
+
+            window.scnuWhiteContextCreated = true;
+
+            var viewer = ws3d.viewer;
+            var scene = viewer.scene;
+
+            /*
+            * 흰색으로 처리할 전체 범위
+            * 순천대학교 주변을 충분히 넓게 설정
+            */
+            var outsidePositions = Cesium.Cartesian3.fromDegreesArray([
+                127.4400, 34.9300,
+                127.5300, 34.9300,
+                127.5300, 35.0100,
+                127.4400, 35.0100
+            ]);
+
+            /*
+            * 원래 색상을 유지할 순천대학교 캠퍼스 영역
+            * 이 부분이 흰색 폴리곤의 구멍이 됨
+            */
+            var campusPositions = Cesium.Cartesian3.fromDegreesArray([
+                 // 서쪽 경계
+                127.4758141, 34.9697356,
+                127.4758274, 34.9701379,
+                127.4759191, 34.9705426,
+                127.4761686, 34.9707547,
+
+                // 북쪽 경계
+                127.4772039, 34.9707564,
+                127.4779345, 34.9710410,
+                127.4784123, 34.9709491,
+                127.4792176, 34.9711079,
+                127.4796666, 34.9711468,
+                127.4801387, 34.9709557,
+
+                // 북동쪽 경계
+                127.4807751, 34.9705095,
+                127.4812968, 34.9702866,
+                127.4818511, 34.9703939,
+                127.4821450, 34.9706200,
+                127.4826353, 34.9705200,
+                127.4830280, 34.9706200,
+
+                // 동쪽 경계
+                127.4833976, 34.9702003,
+                127.4836101, 34.9693224,
+                127.4839489, 34.9682833,
+                127.4841614, 34.9673974,
+                127.4846108, 34.9658488,
+
+                // 남쪽 경계
+                127.4833937, 34.9654779,
+                127.4828237, 34.9668157,
+                127.4815146, 34.9666375,
+                127.4803564, 34.9664593,
+                127.4794261, 34.9662652,
+
+                // 남서쪽·서쪽 복귀
+                127.4789314, 34.9668427,
+                127.4780003, 34.9671266,
+                127.4773916, 34.9671796,
+                127.4771528, 34.9674314,
+                127.4772927, 34.9678869,
+                127.4769713, 34.9680940,
+                127.4767609, 34.9686619,
+                127.4769488, 34.9689789,
+
+                // 시작점으로 닫기
+                127.4758141, 34.9697356
+            ]);
+
+            /*
+            * 바깥 사각형 내부에서
+            * 캠퍼스 영역만 구멍으로 제외
+            */
+            var polygonHierarchy = new Cesium.PolygonHierarchy(
+                outsidePositions,
+                [
+                    new Cesium.PolygonHierarchy(campusPositions)
+                ]
+            );
+
+            var whiteContextInstance = new Cesium.GeometryInstance({
+
+                id: "SCNU_WHITE_CONTEXT",
+
+                geometry: new Cesium.PolygonGeometry({
+                    polygonHierarchy: polygonHierarchy
+                }),
+
+                attributes: {
+                    color: Cesium.ColorGeometryInstanceAttribute.fromColor(
+                        new Cesium.Color(0.30, 0.33, 0.37, 0.68)
+                    )
+                }
+            });
+
+            scene.primitives.add(
+                new Cesium.GroundPrimitive({
+
+                    geometryInstances: whiteContextInstance,
+
+                    /*
+                    * 지형과 3D 건물 모두 흰색 처리
+                    */
+                    classificationType: Cesium.ClassificationType.CESIUM_3D_TILE,
+
+                    allowPicking: false,
+                    asynchronous: true
+                })
+            );
+
+            console.log("캠퍼스 외부 흰색 콘타 표현 적용 완료");
+        }
+
+        async function loadRoadZones() {
+    try {
+        // 중복 실행 방지
+        if (window.scnuRoadZonesLoaded) {
+            return;
+        }
+
+        window.scnuRoadZonesLoaded = true;
+
+        var viewer = ws3d.viewer;
+
+        var roadDataSource =
+            await Cesium.GeoJsonDataSource.load(
+                "./assets/data/road_zones_wgs84.geojson",
+                {
+                    clampToGround: true
+                }
+            );
+
+        viewer.dataSources.add(roadDataSource);
+
+       // 평상시: 눈에는 거의 안 보이지만 클릭은 가능
+        var normalColor =
+            new Cesium.Color(0.20, 0.22, 0.24, 0.01);
+
+        // 클릭한 구역만 회색으로 표시
+        var selectedColor =
+            new Cesium.Color(0.32, 0.35, 0.39, 0.48);
+
+        // 구역 경계선은 아주 약하게
+        var outlineColor =
+            new Cesium.Color(0.30, 0.32, 0.35, 0.32);
+
+        var currentTime = Cesium.JulianDate.now();
+
+        roadDataSource.entities.values.forEach(function (entity) {
+
+            if (!entity.polygon) {
+                return;
+            }
+
+            entity.polygon.material = normalColor;
+            entity.polygon.outline = true;
+            entity.polygon.outlineColor = outlineColor;
+
+            // GeoJSON 속성 읽기
+            var featureId = entity.id;
+            var zoneName = "이름 없음";
+
+            if (
+                entity.properties &&
+                entity.properties.FEATURE_ID
+            ) {
+                featureId =
+                    entity.properties.FEATURE_ID.getValue(
+                        currentTime
+                    );
+            }
+
+            if (
+                entity.properties &&
+                entity.properties.ZONE_NAME
+            ) {
+                zoneName =
+                    entity.properties.ZONE_NAME.getValue(
+                        currentTime
+                    );
+            }
+
+            // 클릭할 때 사용할 값 저장
+            entity.scnuFeatureId = featureId;
+            entity.scnuZoneName = zoneName;
+
+            entity.name = zoneName;
+        });
+
+
+        // 오른쪽 상단 정보창 생성
+        var infoPanel =
+            document.getElementById("road-zone-info");
+
+        if (!infoPanel) {
+            infoPanel = document.createElement("div");
+            infoPanel.id = "road-zone-info";
+
+            Object.assign(infoPanel.style, {
+                position: "absolute",
+                top: "20px",
+                right: "20px",
+                zIndex: "9999",
+                minWidth: "220px",
+                padding: "14px 16px",
+                background: "rgba(28, 31, 35, 0.92)",
+                color: "#ffffff",
+                border: "1px solid rgba(255,255,255,0.25)",
+                borderRadius: "8px",
+                fontFamily: "Arial, sans-serif",
+                fontSize: "14px",
+                lineHeight: "1.6",
+                boxShadow: "0 4px 14px rgba(0,0,0,0.25)",
+                display: "none"
+            });
+
+            document.body.appendChild(infoPanel);
+        }
+
+
+        var selectedRoadEntity = null;
+
+        // 기존 클릭 이벤트가 있으면 제거
+        if (window.scnuRoadClickHandler) {
+            window.scnuRoadClickHandler.destroy();
+        }
+
+        window.scnuRoadClickHandler =
+            new Cesium.ScreenSpaceEventHandler(
+                viewer.scene.canvas
+            );
+
+        window.scnuRoadClickHandler.setInputAction(
+            function (movement) {
+
+                var pickedObject =
+                    viewer.scene.pick(movement.position);
+
+                // 이전 선택 색상 복구
+                if (
+                    selectedRoadEntity &&
+                    selectedRoadEntity.polygon
+                ) {
+                    selectedRoadEntity.polygon.material =
+                        normalColor;
+                }
+
+                selectedRoadEntity = null;
+
+                if (
+                    !Cesium.defined(pickedObject) ||
+                    !pickedObject.id ||
+                    !roadDataSource.entities.contains(
+                        pickedObject.id
+                    )
+                ) {
+                    infoPanel.style.display = "none";
+                    return;
+                }
+
+                var clickedEntity = pickedObject.id;
+
+                if (!clickedEntity.polygon) {
+                    infoPanel.style.display = "none";
+                    return;
+                }
+
+                selectedRoadEntity = clickedEntity;
+
+                // 선택 구역 강조
+                clickedEntity.polygon.material =
+                    selectedColor;
+
+                var zoneName =
+                    clickedEntity.scnuZoneName ||
+                    "이름 없음";
+
+                var featureId =
+                    clickedEntity.scnuFeatureId ||
+                    clickedEntity.id;
+
+                // 정보창 내용
+                infoPanel.replaceChildren();
+
+                var title = document.createElement("div");
+                title.textContent = "도로 구역 정보";
+                title.style.fontWeight = "bold";
+                title.style.fontSize = "16px";
+                title.style.marginBottom = "8px";
+
+                var nameRow = document.createElement("div");
+                nameRow.textContent =
+                    "구역명: " + zoneName;
+
+                var idRow = document.createElement("div");
+                idRow.textContent =
+                    "구역 ID: " + featureId;
+
+                infoPanel.appendChild(title);
+                infoPanel.appendChild(nameRow);
+                infoPanel.appendChild(idRow);
+
+                infoPanel.style.display = "block";
+
+                console.log(
+                    "선택한 도로 구역:",
+                    featureId,
+                    zoneName
+                );
+            },
+            Cesium.ScreenSpaceEventType.LEFT_CLICK
+        );
+
+        console.log(
+            "도로 구역 클릭 기능 적용 완료:",
+            roadDataSource.entities.values.length
+        );
+
+    } catch (error) {
+        console.error(
+            "도로 구역 로딩 실패:",
+            error
+        );
+    }
+}
+
+        function setupCampusCamera() {
+
+            if (
+                typeof Cesium === "undefined" ||
+                typeof ws3d === "undefined" ||
+                !ws3d.viewer
+            ) {
+                return;
+            }
+
+            // 중복 실행 방지
+            if (window.scnuCampusCameraCreated) {
+                return;
+            }
+
+            window.scnuCampusCameraCreated = true;
+
+            var viewer = ws3d.viewer;
+            var scene = viewer.scene;
+            var camera = viewer.camera;
+            var controller = scene.screenSpaceCameraController;
+
+            // 너무 가까이 들어가거나 대한민국 전체까지 축소되지 않도록 제한
+            controller.minimumZoomDistance = 50;
+            controller.maximumZoomDistance = 700;
+
+            // 순천대학교 중심좌표
+            var campusCenter = Cesium.Cartesian3.fromDegrees(
+            127.4797,
+                34.9687,
+                0
+            );
+
+            // 사용자가 볼 수 있는 범위
+            // 순천대학교와 주변 건물 정도를 포함
+            var allowedRectangle = Cesium.Rectangle.fromDegrees(
+                127.4748,  // 서쪽
+                34.9645,   // 남쪽
+                127.4855,  // 동쪽
+                34.9720    // 북쪽
+            );
+
+            var returningToCampus = false;
+
+            function focusCampus() {
+
+                returningToCampus = true;
+
+                camera.lookAt(
+                    campusCenter,
+                    new Cesium.HeadingPitchRange(
+                        Cesium.Math.toRadians(0),    // 방향
+                        Cesium.Math.toRadians(-42),  // 기울기
+                        850                         // 거리
+                    )
+                );
+
+                // 일반 카메라 조작 상태로 복귀
+                camera.lookAtTransform(
+                Cesium.Matrix4.IDENTITY
+                );
+
+                setTimeout(function () {
+                    returningToCampus = false;
+                }, 200);
+            }
+
+            // 처음 실행될 때 학교가 화면에 바로 나타남
+            focusCampus();
+
+            // 화면 중심이 허용 구역을 벗어나면 학교로 복귀
+            camera.moveEnd.addEventListener(function () {
+
+                if (returningToCampus) {
+                    return;
+                }
+
+                var centerScreen = new Cesium.Cartesian2(
+                    scene.canvas.clientWidth / 2,
+                    scene.canvas.clientHeight / 2
+                );
+
+                var centerPosition = camera.pickEllipsoid(
+                    centerScreen,
+                    scene.globe.ellipsoid
+                );
+
+                if (!centerPosition) {
+                    return;
+                }
+
+                var centerCartographic =
+                    Cesium.Cartographic.fromCartesian(centerPosition);
+
+                var isInside = Cesium.Rectangle.contains(
+                    allowedRectangle,
+                    centerCartographic
+                );
+
+                if (!isInside) {
+                    focusCampus();
+                }
+            });
+
+            console.log("순천대학교 카메라 범위 제한 완료");
+        }
+
         console.log(map.getLayerAllElement());
         
         setTimeout(
             function() {
                 map.onClick.addEventListener(buildingInfoEvent);
-                //map.onClick.addEventListener(campusBoundaryEvent);
+                map.onClick.addEventListener(campusBoundaryEvent);
             },
             100);
         var buildingInfoEvent = function(windowPosition, ecefPosition, cartographic, modelObject) {
@@ -549,56 +1002,9 @@
         };
         
         function closeBuildingPanel() {
-
-            function createCampusBoundary() {
-
-                var coords = [
-                    new vw.Coord(127.4758811, 34.9698032),
-                    new vw.Coord(127.4764520, 34.9684882),
-                    new vw.Coord(127.4771066, 34.9672831),
-                    new vw.Coord(127.4792342, 34.9662112),
-
-                    new vw.Coord(127.4837115, 34.9654154),
-                    new vw.Coord(127.4845949, 34.9659560),
-                    new vw.Coord(127.4844475, 34.9669869),
-                    new vw.Coord(127.4841844, 34.9681617),
-
-                    new vw.Coord(127.4833142, 34.9708445),
-                    new vw.Coord(127.4830788, 34.9715139),
-
-                    new vw.Coord(127.4777905, 34.9711092),
-                    new vw.Coord(127.4771614, 34.9710003),
-                    new vw.Coord(127.4761456, 34.9706227),
-
-                    // 처음 좌표를 마지막에 다시 넣어서 경계 닫기
-                    new vw.Coord(127.4758811, 34.9698032)
-                ];
-
-                var coordCol = new vw.Collection(coords);
-
-                var campusArea = new vw.geom.PolygonZ(coordCol);
-
-                campusArea.setId("SCNU_CAMPUS_AREA");
-
-                // 내부 반투명 색상
-                campusArea.setFillColor(
-                    new vw.Color(0, 180, 220, 100)
-                );
-
-                // 캠퍼스 외곽선 색상
-                campusArea.setOutLineColor(
-                    new vw.Color(60, 220, 255, 220)
-                );
-
-                // 지면보다 아주 조금 위에 표시
-                campusArea.setDistanceFromTerrain(10);
-
-                campusArea.setExtrudeHeight(3);
-
-                campusArea.create();
-            }
-
-            document.getElementById("buildingPanel").classList.remove("active");
+            document
+                .getElementById("buildingPanel")
+                .classList.remove("active");
         }
 
         // 순천대학교 캠퍼스 경계 좌표 저장
@@ -610,6 +1016,32 @@
             cartographic
         ) {
 
+            if (!cartographic) return;
+
+            var lon = Number(cartographic.longitudeDD.toFixed(7));
+            var lat = Number(cartographic.latitudeDD.toFixed(7));
+
+            campusBoundaryCoords.push([lon, lat]);
+
+            console.log(
+                "경계 좌표 " + campusBoundaryCoords.length + " :",
+                lon,
+                lat
+            );
+
+            console.log(
+                "전체 좌표 :",
+                JSON.stringify(campusBoundaryCoords)
+            );
+        };
+
+        var campusBoundaryCoords = [];
+
+        var campusBoundaryEvent = function(
+            windowPosition,
+            ecefPosition,
+            cartographic
+        ) {
             if (!cartographic) return;
 
             var lon = Number(cartographic.longitudeDD.toFixed(7));
