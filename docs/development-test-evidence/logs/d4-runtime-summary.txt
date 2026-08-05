@@ -1,0 +1,41 @@
+CURATED RUNTIME SUMMARY
+Captured: 2026-07-30
+Frontend: http://127.0.0.1:5173/
+Weather API: http://127.0.0.1:8000/health -> HTTP 200 {"status":"ok"}
+
+Browser actions:
+1. Opened the Legacy dashboard.
+2. Selected "공과대학 3호관".
+3. Building section rendered 1–6 floors and room buttons 101–601.
+4. Selected room 301.
+5. Opened "강의실 시간표 보기".
+
+Observed room 301 detail:
+- D4 301
+- 3층 301호 · 왼쪽 동
+- 현재 상태: 현재 공실
+- 냉난방 상태: 냉난방기 대기
+- 공간 유형: 강의실
+- 규모: 대형
+- 냉난방기: 2대
+- 특수 설비: 대형 스크린
+- 주 57.0 kWh 절감 가능
+- 절감률: 11.0%
+
+Observed room 301 schedule:
+- 인공지능 · 월요일 09:00–12:00 · P-07
+- 공학수학 · 수요일 13:00–15:00 · P-01
+
+Source-derived building summary:
+- 6 floors
+- left wing: 5 floors
+- right wing: 6 floors
+- bridges: floors 3 and 5
+- 69 rooms
+- room count by floor: 1F 14 / 2F 16 / 3F 17 / 4F 14 / 5F 7 / 6F 1
+- special rooms: 108 computer lab, 204 lab, 305 server room,
+  401 and 410 faculty/assistant offices, 501 project room, 601 graduate room
+
+Data status:
+Mock and simulation data from frontend/src/utils/d4BuildingData.mjs.
+

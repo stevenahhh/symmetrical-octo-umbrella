@@ -1,0 +1,1105 @@
+From: <Saved by Blink>
+Snapshot-Content-Location: file:///C:/Users/steve/Desktop/projects/qwe/symmetrical-octo-umbrella/docs/development-test-evidence/index.html
+Subject: =?utf-8?Q?SCNU=20=EA=B0=9C=EB=B0=9C=20=EB=B0=8F=20=ED=85=8C=EC=8A=A4=ED?=
+ =?utf-8?Q?=8A=B8=20=EC=A6=9D=EA=B1=B0=20=EC=9E=90=EB=A3=8C?=
+Date: Thu, 30 Jul 2026 13:34:32 +0900
+MIME-Version: 1.0
+Content-Type: multipart/related;
+	type="text/html";
+	boundary="----MultipartBoundary--HVfnW06ghpAWUNgpe1gnZVKOHFc3qhtQI0LRwaNWjC----"
+
+
+------MultipartBoundary--HVfnW06ghpAWUNgpe1gnZVKOHFc3qhtQI0LRwaNWjC----
+Content-Type: text/html
+Content-ID: <frame-92A83A3A09F7A82A6CBA5B66A9F4A327@mhtml.blink>
+Content-Transfer-Encoding: quoted-printable
+Content-Location: file:///C:/Users/steve/Desktop/projects/qwe/symmetrical-octo-umbrella/docs/development-test-evidence/index.html
+
+<!DOCTYPE html><html lang=3D"ko"><head><meta http-equiv=3D"Content-Type" co=
+ntent=3D"text/html; charset=3DUTF-8"><link rel=3D"stylesheet" type=3D"text/=
+css" href=3D"cid:css-e3fa0225-9f73-4c11-9771-38695f8565fe@mhtml.blink" />
+   =20
+    <meta name=3D"viewport" content=3D"width=3Ddevice-width, initial-scale=
+=3D1">
+    <title>SCNU =EA=B0=9C=EB=B0=9C =EB=B0=8F =ED=85=8C=EC=8A=A4=ED=8A=B8 =
+=EC=A6=9D=EA=B1=B0 =EC=9E=90=EB=A3=8C</title>
+   =20
+  </head>
+  <body>
+    <section class=3D"page" id=3D"d4-building" aria-labelledby=3D"d4-buildi=
+ng-title">
+      <header class=3D"masthead">
+        <div>
+          <div class=3D"kicker">Implementation Evidence =C2=B7 01</div>
+          <h1 id=3D"d4-building-title">=EA=B3=B5=EA=B3=BC=EB=8C=80=ED=95=99=
+ 3=ED=98=B8=EA=B4=80 =EC=B8=B5=EB=B3=84 =EB=8B=A8=EB=A9=B4</h1>
+        </div>
+        <div class=3D"header-badges">
+          <div class=3D"badge-row">
+            <span class=3D"badge">D4 / =EA=B3=B5=EB=8C=80 3=ED=98=B8=EA=B4=
+=80</span>
+            <span class=3D"badge mock">=EB=AA=A9=EC=97=85=C2=B7=EC=8B=9C=EB=
+=AE=AC=EB=A0=88=EC=9D=B4=EC=85=98 =EB=8D=B0=EC=9D=B4=ED=84=B0</span>
+          </div>
+          <div class=3D"snapshot">SOURCE =C2=B7 d4BuildingData.mjs =C2=B7 L=
+IVE UI VERIFIED</div>
+        </div>
+      </header>
+
+      <div class=3D"metrics" style=3D"--metric-count: 3">
+        <article class=3D"metric primary">
+          <div>
+            <div class=3D"metric-label">Floors</div>
+            <div class=3D"metric-value">6</div>
+          </div>
+          <div class=3D"metric-note">=EC=99=BC=EC=AA=BD =EB=8F=99 5=EC=B8=
+=B5<br>=EC=98=A4=EB=A5=B8=EC=AA=BD =EB=8F=99 6=EC=B8=B5</div>
+        </article>
+        <article class=3D"metric">
+          <div>
+            <div class=3D"metric-label">Rooms</div>
+            <div class=3D"metric-value">69</div>
+          </div>
+          <div class=3D"metric-note">101=ED=98=B8=EB=B6=80=ED=84=B0<br>601=
+=ED=98=B8=EA=B9=8C=EC=A7=80 =EA=B5=AC=EC=84=B1</div>
+        </article>
+        <article class=3D"metric">
+          <div>
+            <div class=3D"metric-label">Special Rooms</div>
+            <div class=3D"metric-value">7</div>
+          </div>
+          <div class=3D"metric-note">=EC=BB=B4=ED=93=A8=ED=84=B0=EC=8B=A4=
+=C2=B7=EC=8B=A4=ED=97=98=EC=8B=A4=C2=B7=EC=84=9C=EB=B2=84=EC=8B=A4 =EB=93=
+=B1</div>
+        </article>
+      </div>
+
+      <div class=3D"building-content">
+        <article class=3D"panel floor-table">
+          <div class=3D"floor-head">
+            <span>=EC=B8=B5</span><span>=EC=99=BC=EC=AA=BD =EB=8F=99</span>=
+<span>=EC=97=B0=EA=B2=B0</span><span>=EC=98=A4=EB=A5=B8=EC=AA=BD =EB=8F=99<=
+/span><span>=ED=95=A9=EA=B3=84</span>
+          </div>
+          <div class=3D"floor-row">
+            <div class=3D"floor-number">6F</div>
+            <div class=3D"wing-block empty">=ED=95=B4=EB=8B=B9 =EC=97=86=EC=
+=9D=8C</div>
+            <div class=3D"bridge">=E2=80=94</div>
+            <div class=3D"wing-block">=EC=98=A4=EB=A5=B8=EC=AA=BD =EB=8F=99=
+ <strong>1</strong></div>
+            <div class=3D"floor-total">1=EC=8B=A4</div>
+          </div>
+          <div class=3D"floor-row">
+            <div class=3D"floor-number">5F</div>
+            <div class=3D"wing-block">=EC=99=BC=EC=AA=BD =EB=8F=99 <strong>=
+4</strong></div>
+            <div class=3D"bridge active">=EC=97=B0=EA=B2=B0 =EB=8B=A4=EB=A6=
+=AC</div>
+            <div class=3D"wing-block">=EC=98=A4=EB=A5=B8=EC=AA=BD =EB=8F=99=
+ <strong>3</strong></div>
+            <div class=3D"floor-total">7=EC=8B=A4</div>
+          </div>
+          <div class=3D"floor-row">
+            <div class=3D"floor-number">4F</div>
+            <div class=3D"wing-block">=EC=99=BC=EC=AA=BD =EB=8F=99 <strong>=
+7</strong></div>
+            <div class=3D"bridge">=E2=80=94</div>
+            <div class=3D"wing-block">=EC=98=A4=EB=A5=B8=EC=AA=BD =EB=8F=99=
+ <strong>7</strong></div>
+            <div class=3D"floor-total">14=EC=8B=A4</div>
+          </div>
+          <div class=3D"floor-row">
+            <div class=3D"floor-number">3F</div>
+            <div class=3D"wing-block">=EC=99=BC=EC=AA=BD =EB=8F=99 <strong>=
+9</strong></div>
+            <div class=3D"bridge active">=EC=97=B0=EA=B2=B0 =EB=8B=A4=EB=A6=
+=AC</div>
+            <div class=3D"wing-block">=EC=98=A4=EB=A5=B8=EC=AA=BD =EB=8F=99=
+ <strong>8</strong></div>
+            <div class=3D"floor-total">17=EC=8B=A4</div>
+          </div>
+          <div class=3D"floor-row">
+            <div class=3D"floor-number">2F</div>
+            <div class=3D"wing-block">=EC=99=BC=EC=AA=BD =EB=8F=99 <strong>=
+8</strong></div>
+            <div class=3D"bridge">=E2=80=94</div>
+            <div class=3D"wing-block">=EC=98=A4=EB=A5=B8=EC=AA=BD =EB=8F=99=
+ <strong>8</strong></div>
+            <div class=3D"floor-total">16=EC=8B=A4</div>
+          </div>
+          <div class=3D"floor-row">
+            <div class=3D"floor-number">1F</div>
+            <div class=3D"wing-block">=EC=99=BC=EC=AA=BD =EB=8F=99 <strong>=
+7</strong></div>
+            <div class=3D"bridge">=E2=80=94</div>
+            <div class=3D"wing-block">=EC=98=A4=EB=A5=B8=EC=AA=BD =EB=8F=99=
+ <strong>7</strong></div>
+            <div class=3D"floor-total">14=EC=8B=A4</div>
+          </div>
+        </article>
+
+        <aside class=3D"panel">
+          <div class=3D"section-header">
+            <div>
+              <div class=3D"section-kicker">Special Facilities</div>
+              <h2>=ED=8A=B9=EC=88=98 =EA=B3=B5=EA=B0=84 =EA=B5=AC=EC=84=B1<=
+/h2>
+            </div>
+            <div class=3D"section-note">=EC=BD=94=EB=93=9C=EC=97=90 =EC=A7=
+=80=EC=A0=95=EB=90=9C 7=EA=B0=9C =EC=8B=A4</div>
+          </div>
+          <div class=3D"special-grid">
+            <div class=3D"special-room"><strong>108</strong><span>=EC=BB=B4=
+=ED=93=A8=ED=84=B0=EC=8B=A4</span></div>
+            <div class=3D"special-room"><strong>204</strong><span>=EC=8B=A4=
+=ED=97=98=EC=8B=A4</span></div>
+            <div class=3D"special-room"><strong>305</strong><span>=EC=84=9C=
+=EB=B2=84=EC=8B=A4</span></div>
+            <div class=3D"special-room"><strong>401</strong><span>=EA=B5=90=
+=EC=88=98/=EC=A1=B0=EA=B5=90=EC=8B=A4</span></div>
+            <div class=3D"special-room"><strong>410</strong><span>=EA=B5=90=
+=EC=88=98/=EC=A1=B0=EA=B5=90=EC=8B=A4</span></div>
+            <div class=3D"special-room"><strong>501</strong><span>=ED=94=84=
+=EB=A1=9C=EC=A0=9D=ED=8A=B8=EC=8B=A4</span></div>
+            <div class=3D"special-room"><strong>601</strong><span>=EB=8C=80=
+=ED=95=99=EC=9B=90=EC=8B=A4</span></div>
+          </div>
+          <div class=3D"mock-note">
+            =EC=9D=B4 =EC=B8=B5=C2=B7=EA=B0=95=EC=9D=98=EC=8B=A4 =EC=A0=95=
+=EB=B3=B4=EB=8A=94 =EA=B8=B0=EB=8A=A5 =EA=B2=80=EC=A6=9D=EC=9A=A9 =EB=AA=A9=
+=EC=97=85 =EB=8D=B0=EC=9D=B4=ED=84=B0=EC=9D=B4=EB=A9=B0 =EC=8B=A4=EC=A0=9C =
+=EA=B3=B5=EA=B0=84 =EA=B4=80=EB=A6=AC =EC=8B=9C=EC=8A=A4=ED=85=9C=EC=9D=B4=
+=EB=82=98 =EC=84=BC=EC=84=9C=EC=9D=98 =EC=B8=A1=EC=A0=95=EA=B0=92=EC=9D=B4 =
+=EC=95=84=EB=8B=99=EB=8B=88=EB=8B=A4.
+          </div>
+        </aside>
+      </div>
+
+    </section>
+
+    <section class=3D"page" id=3D"d4-room" aria-labelledby=3D"d4-room-title=
+">
+      <header class=3D"masthead">
+        <div>
+          <div class=3D"kicker">Implementation Evidence =C2=B7 02</div>
+          <h1 id=3D"d4-room-title">D4 301 =EA=B0=95=EC=9D=98=EC=8B=A4 =EC=
+=83=81=EC=84=B8</h1>
+        </div>
+        <div class=3D"header-badges">
+          <div class=3D"badge-row">
+            <span class=3D"badge">3=EC=B8=B5 =C2=B7 =EC=99=BC=EC=AA=BD =EB=
+=8F=99</span>
+            <span class=3D"badge mock">=EB=AA=A9=EC=97=85=C2=B7=EC=8B=9C=EB=
+=AE=AC=EB=A0=88=EC=9D=B4=EC=85=98 =EB=8D=B0=EC=9D=B4=ED=84=B0</span>
+          </div>
+          <div class=3D"snapshot">LIVE UI =C2=B7 ROOM 301 SELECTED</div>
+        </div>
+      </header>
+
+      <div class=3D"metrics" style=3D"--metric-count: 4">
+        <article class=3D"metric">
+          <div><div class=3D"metric-label">Current State</div><div class=3D=
+"metric-value">=EA=B3=B5=EC=8B=A4</div></div>
+          <div class=3D"metric-note">=EC=8B=A4=ED=96=89 =EC=BA=A1=EC=B2=98 =
+=EC=8B=9C=EC=A0=90<br>=EC=88=98=EC=97=85 =EC=97=86=EC=9D=8C</div>
+        </article>
+        <article class=3D"metric">
+          <div><div class=3D"metric-label">HVAC</div><div class=3D"metric-v=
+alue">=EB=8C=80=EA=B8=B0</div></div>
+          <div class=3D"metric-note">=EB=83=89=EB=82=9C=EB=B0=A9=EA=B8=B0<b=
+r>2=EB=8C=80 =EA=B5=AC=EC=84=B1</div>
+        </article>
+        <article class=3D"metric pass">
+          <div><div class=3D"metric-label">Weekly Saving</div><div class=3D=
+"metric-value">57.0</div></div>
+          <div class=3D"metric-note">kWh / week<br>=EC=A0=88=EA=B0=90 =EA=
+=B0=80=EB=8A=A5</div>
+        </article>
+        <article class=3D"metric pass">
+          <div><div class=3D"metric-label">Saving Rate</div><div class=3D"m=
+etric-value">11%</div></div>
+          <div class=3D"metric-note">=EC=8B=9C=EB=AE=AC=EB=A0=88=EC=9D=B4=
+=EC=85=98<br>=EC=A0=88=EA=B0=90 =EB=B9=84=EC=9C=A8</div>
+        </article>
+      </div>
+
+      <div class=3D"room-content">
+        <article class=3D"panel room-profile">
+          <div class=3D"room-id">
+            <div>
+              <div class=3D"section-kicker">Room Profile</div>
+              <strong>D4 301</strong>
+            </div>
+            <span class=3D"status-pill">=ED=98=84=EC=9E=AC =EA=B3=B5=EC=8B=
+=A4</span>
+          </div>
+          <div class=3D"detail-grid">
+            <div class=3D"detail-card"><span>=EA=B3=B5=EA=B0=84 =EC=9C=A0=
+=ED=98=95</span><strong>=EA=B0=95=EC=9D=98=EC=8B=A4</strong></div>
+            <div class=3D"detail-card"><span>=EA=B7=9C=EB=AA=A8</span><stro=
+ng>=EB=8C=80=ED=98=95</strong></div>
+            <div class=3D"detail-card"><span>=EB=83=89=EB=82=9C=EB=B0=A9=EA=
+=B8=B0</span><strong>2=EB=8C=80</strong></div>
+            <div class=3D"detail-card"><span>=ED=8A=B9=EC=88=98 =EC=84=A4=
+=EB=B9=84</span><strong>=EB=8C=80=ED=98=95 =EC=8A=A4=ED=81=AC=EB=A6=B0</str=
+ong></div>
+          </div>
+          <div class=3D"saving-box">
+            <div><strong>57.0 kWh</strong><span>=EC=A3=BC=EA=B0=84 =EC=97=
+=90=EB=84=88=EC=A7=80 =EC=A0=88=EA=B0=90 =EA=B0=80=EB=8A=A5=EB=9F=89</span>=
+</div>
+            <div class=3D"saving-rate">11%</div>
+          </div>
+          <div class=3D"mock-note">
+            =EA=B3=B5=EC=8B=A4=C2=B7=EB=83=89=EB=82=9C=EB=B0=A9=C2=B7=EC=A0=
+=88=EA=B0=90 =EC=A0=95=EB=B3=B4=EB=8A=94 =EC=8B=9C=EC=97=B0=EC=9A=A9 =EC=83=
+=81=ED=83=9C =EB=B0=8F =EA=B3=84=EC=82=B0=EA=B0=92=EC=9E=85=EB=8B=88=EB=8B=
+=A4. =EC=8B=A4=EC=A0=9C =EC=88=98=EC=97=85, =EC=84=A4=EB=B9=84 =EB=B0=8F =
+=EC=A0=84=EB=A0=A5 =EA=B3=84=EC=B8=A1 =EB=8D=B0=EC=9D=B4=ED=84=B0=EA=B0=80 =
+=EC=95=84=EB=8B=99=EB=8B=88=EB=8B=A4.
+          </div>
+        </article>
+
+        <article class=3D"panel schedule">
+          <div class=3D"section-header">
+            <div>
+              <div class=3D"section-kicker">Weekly Timetable</div>
+              <h2>301=ED=98=B8 =EC=A3=BC=EA=B0=84 =EC=8B=9C=EA=B0=84=ED=91=
+=9C</h2>
+            </div>
+            <div class=3D"section-note">=EC=BD=94=EB=93=9C=EC=97=90=EC=84=
+=9C =EC=83=9D=EC=84=B1=EB=90=9C 2=EA=B0=9C =EC=9D=BC=EC=A0=95</div>
+          </div>
+          <div class=3D"week-timetable" aria-label=3D"301=ED=98=B8 =EC=9B=
+=94=EC=9A=94=EC=9D=BC=EB=B6=80=ED=84=B0 =EA=B8=88=EC=9A=94=EC=9D=BC=EA=B9=
+=8C=EC=A7=80 09=EC=8B=9C=EB=B6=80=ED=84=B0 18=EC=8B=9C =EC=A3=BC=EA=B0=84 =
+=EC=8B=9C=EA=B0=84=ED=91=9C">
+            <div class=3D"timetable-corner">=EC=8B=9C=EA=B0=84</div>
+            <div class=3D"timetable-days">
+              <div class=3D"timetable-day">=EC=9B=94=EC=9A=94=EC=9D=BC</div=
+>
+              <div class=3D"timetable-day">=ED=99=94=EC=9A=94=EC=9D=BC</div=
+>
+              <div class=3D"timetable-day">=EC=88=98=EC=9A=94=EC=9D=BC</div=
+>
+              <div class=3D"timetable-day">=EB=AA=A9=EC=9A=94=EC=9D=BC</div=
+>
+              <div class=3D"timetable-day">=EA=B8=88=EC=9A=94=EC=9D=BC</div=
+>
+            </div>
+            <div class=3D"timetable-axis" aria-hidden=3D"true">
+              <span class=3D"time-label" style=3D"--time-position: 0">09:00=
+</span>
+              <span class=3D"time-label" style=3D"--time-position: 1">10:00=
+</span>
+              <span class=3D"time-label" style=3D"--time-position: 2">11:00=
+</span>
+              <span class=3D"time-label" style=3D"--time-position: 3">12:00=
+</span>
+              <span class=3D"time-label" style=3D"--time-position: 4">13:00=
+</span>
+              <span class=3D"time-label" style=3D"--time-position: 5">14:00=
+</span>
+              <span class=3D"time-label" style=3D"--time-position: 6">15:00=
+</span>
+              <span class=3D"time-label" style=3D"--time-position: 7">16:00=
+</span>
+              <span class=3D"time-label" style=3D"--time-position: 8">17:00=
+</span>
+              <span class=3D"time-label" style=3D"--time-position: 9">18:00=
+</span>
+            </div>
+            <div class=3D"timetable-board">
+              <div class=3D"timetable-day-track" aria-hidden=3D"true"></div=
+>
+              <div class=3D"timetable-day-track" aria-hidden=3D"true"></div=
+>
+              <div class=3D"timetable-day-track" aria-hidden=3D"true"></div=
+>
+              <div class=3D"timetable-day-track" aria-hidden=3D"true"></div=
+>
+              <div class=3D"timetable-day-track" aria-hidden=3D"true"></div=
+>
+              <article class=3D"timetable-event" style=3D"--day: 0; --start=
+: 0; --duration: 3" aria-label=3D"=EC=9B=94=EC=9A=94=EC=9D=BC 09=EC=8B=9C=
+=EB=B6=80=ED=84=B0 12=EC=8B=9C=EA=B9=8C=EC=A7=80 =EC=9D=B8=EA=B3=B5=EC=A7=
+=80=EB=8A=A5, =EB=8B=B4=EB=8B=B9 P-07">
+                <span class=3D"timetable-event-time">09:00=E2=80=9312:00</s=
+pan>
+                <span class=3D"timetable-event-name">=EC=9D=B8=EA=B3=B5=EC=
+=A7=80=EB=8A=A5</span>
+                <span class=3D"timetable-event-meta">=EB=8B=B4=EB=8B=B9 P-0=
+7 =C2=B7 3=EC=8B=9C=EA=B0=84</span>
+              </article>
+              <article class=3D"timetable-event" style=3D"--day: 2; --start=
+: 4; --duration: 2" aria-label=3D"=EC=88=98=EC=9A=94=EC=9D=BC 13=EC=8B=9C=
+=EB=B6=80=ED=84=B0 15=EC=8B=9C=EA=B9=8C=EC=A7=80 =EA=B3=B5=ED=95=99=EC=88=
+=98=ED=95=99, =EB=8B=B4=EB=8B=B9 P-01">
+                <span class=3D"timetable-event-time">13:00=E2=80=9315:00</s=
+pan>
+                <span class=3D"timetable-event-name">=EA=B3=B5=ED=95=99=EC=
+=88=98=ED=95=99</span>
+                <span class=3D"timetable-event-meta">=EB=8B=B4=EB=8B=B9 P-0=
+1 =C2=B7 2=EC=8B=9C=EA=B0=84</span>
+              </article>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class=3D"page" id=3D"solar-tests" aria-labelledby=3D"solar-tes=
+ts-title">
+      <header class=3D"masthead">
+        <div>
+          <div class=3D"kicker">Unit Test Evidence =C2=B7 03</div>
+          <h1 id=3D"solar-tests-title">=ED=83=9C=EC=96=91 =EC=9C=84=EC=B9=
+=98=C2=B7=ED=83=9C=EC=96=91=EA=B4=91 =EA=B3=84=EC=82=B0 =ED=85=8C=EC=8A=A4=
+=ED=8A=B8</h1>
+        </div>
+       =20
+      </header>
+
+     =20
+
+      <div class=3D"solar-content">
+        <div class=3D"solar-left">
+          <article class=3D"panel sun-chart">
+            <div class=3D"section-header">
+              <div>
+                <div class=3D"section-kicker">Sun Altitude</div>
+                <h2>2026=EB=85=84 5=EC=9B=94 15=EC=9D=BC =ED=83=9C=EC=96=91=
+ =EA=B3=A0=EB=8F=84</h2>
+              </div>
+              <div class=3D"section-note">=EC=88=9C=EC=B2=9C =EC=BA=A0=ED=
+=8D=BC=EC=8A=A4 34.97=C2=B0N / 127.476=C2=B0E</div>
+            </div>
+            <figure class=3D"chart-canvas-wrap">
+              <canvas id=3D"sun-altitude-chart" role=3D"img" aria-label=3D"=
+=ED=83=9C=EC=96=91 =EA=B3=A0=EB=8F=84 =EB=B9=84=EA=B5=90. 1=EC=8B=9C=EB=8A=
+=94 -35.82=EB=8F=84=EB=A1=9C =EC=95=BC=EA=B0=84, 9=EC=8B=9C=EB=8A=94 41.69=
+=EB=8F=84, 12=EC=8B=9C=EB=8A=94 72.72=EB=8F=84=EC=9E=85=EB=8B=88=EB=8B=A4."=
+ width=3D"1770" height=3D"1496" style=3D"display: block; box-sizing: border=
+-box; height: 748px; width: 885px;"></canvas>
+              <table class=3D"sr-only">
+                <caption>2026=EB=85=84 5=EC=9B=94 15=EC=9D=BC =ED=83=9C=EC=
+=96=91 =EA=B3=A0=EB=8F=84</caption>
+                <thead><tr><th>=EC=8B=9C=EA=B0=81</th><th>=ED=83=9C=EC=96=
+=91 =EA=B3=A0=EB=8F=84</th><th>=ED=91=9C=EC=8B=9C =EC=83=81=ED=83=9C</th></=
+tr></thead>
+                <tbody>
+                  <tr><td>01:00</td><td>-35.82=C2=B0</td><td>=EC=88=A8=EA=
+=B9=80</td></tr>
+                  <tr><td>09:00</td><td>41.69=C2=B0</td><td>=ED=91=9C=EC=8B=
+=9C</td></tr>
+                  <tr><td>12:00</td><td>72.72=C2=B0</td><td>=ED=91=9C=EC=8B=
+=9C</td></tr>
+                </tbody>
+              </table>
+            </figure>
+          </article>
+          <div class=3D"test-card-grid">
+            <div class=3D"test-card"><div class=3D"pass-mark">PASS 03</div>=
+<strong>=EC=9E=85=EB=A0=A5=EA=B0=92 =EB=B2=94=EC=9C=84 =EB=B3=B4=EC=A0=95</=
+strong><span>13/50 30:88 =E2=86=92 12/31 23:59</span></div>
+            <div class=3D"test-card"><div class=3D"pass-mark">PASS 04</div>=
+<strong>=EC=A0=95=EC=98=A4 =EA=B3=A0=EB=8F=84 =EB=B9=84=EA=B5=90</strong><s=
+pan>72.72=C2=B0 &gt; 41.69=C2=B0</span></div>
+            <div class=3D"test-card"><div class=3D"pass-mark">PASS 05</div>=
+<strong>=EC=95=BC=EA=B0=84 =EB=B9=84=ED=91=9C=EC=8B=9C</strong><span>01:00 =
+visible =3D false</span></div>
+          </div>
+        </div>
+
+        <article class=3D"panel pv-right">
+          <div>
+            <div class=3D"section-kicker">PVGIS Calculation</div>
+            <div class=3D"pvgis-code-note">CODEBASE PVGIS DATA =C2=B7 MODELED, NOT MEASURED</div>
+            <h2>5=EC=9B=94 =EC=98=88=EC=83=81 =EB=B0=9C=EC=A0=84=EB=9F=89 =
+=EA=B3=84=EC=82=B0 =ED=9D=90=EB=A6=84</h2>
+          </div>
+          <div class=3D"formula">
+            <div class=3D"formula-step">=EC=98=A5=EC=83=81 =EB=A9=B4=EC=A0=
+=81<br>=C3=97 =EC=84=A4=EC=B9=98 =EB=B9=84=EC=9C=A8</div>
+            <div class=3D"formula-arrow">=E2=86=92</div>
+            <div class=3D"formula-step">=EB=AA=A8=EB=93=88 =EB=A9=B4=EC=A0=
+=81<br>=C3=97 =ED=9A=A8=EC=9C=A8</div>
+            <div class=3D"formula-step">=EC=A0=95=EA=B2=A9 =EC=B6=9C=EB=A0=
+=A5<br>=C3=97 =EB=B0=9C=EC=A0=84=EA=B3=84=EC=88=98<br>=C3=97 (1=E2=88=92=EC=
+=86=90=EC=8B=A4)</div>
+          </div>
+          <div class=3D"pv-cases">
+            <div class=3D"pv-case">
+              <h3>PASS 01 =C2=B7 =EA=B8=B0=EB=B3=B8 =EC=A1=B0=EA=B1=B4</h3>
+              <div class=3D"value-list">
+                <div class=3D"value-row"><span>=EC=98=A5=EC=83=81 =EB=A9=B4=
+=EC=A0=81</span><strong>100=E3=8E=A1</strong></div>
+                <div class=3D"value-row"><span>=EC=84=A4=EC=B9=98 =EB=B9=84=
+=EC=9C=A8</span><strong>20%</strong></div>
+                <div class=3D"value-row"><span>=EB=AA=A8=EB=93=88 =EB=A9=B4=
+=EC=A0=81</span><strong>20=E3=8E=A1</strong></div>
+                <div class=3D"value-row"><span>=EC=A0=95=EA=B2=A9 =EC=B6=9C=
+=EB=A0=A5</span><strong>4 kW</strong></div>
+                <div class=3D"value-row"><span>=EC=8B=9C=EC=8A=A4=ED=85=9C =
+=EC=86=90=EC=8B=A4</span><strong>10%</strong></div>
+              </div>
+              <div class=3D"result-large">617.724 kWh</div>
+            </div>
+            <div class=3D"pv-case">
+              <h3>PASS 02 =C2=B7 1 kWp =EA=B8=B0=EC=A4=80</h3>
+              <div class=3D"value-list">
+                <div class=3D"value-row"><span>=EC=98=A5=EC=83=81 =EB=A9=B4=
+=EC=A0=81</span><strong>25=E3=8E=A1</strong></div>
+                <div class=3D"value-row"><span>=EC=84=A4=EC=B9=98 =EB=B9=84=
+=EC=9C=A8</span><strong>20%</strong></div>
+                <div class=3D"value-row"><span>=EB=AA=A8=EB=93=88 =EB=A9=B4=
+=EC=A0=81</span><strong>5=E3=8E=A1</strong></div>
+                <div class=3D"value-row"><span>=EC=A0=95=EA=B2=A9 =EC=B6=9C=
+=EB=A0=A5</span><strong>1 kW</strong></div>
+                <div class=3D"value-row"><span>=EC=8B=9C=EC=8A=A4=ED=85=9C =
+=EC=86=90=EC=8B=A4</span><strong>0%</strong></div>
+              </div>
+              <div class=3D"result-large">171.59 kWh</div>
+            </div>
+          </div>
+        </article>
+      </div>
+
+    </section>
+
+    <section class=3D"page" id=3D"vworld-tests" aria-labelledby=3D"vworld-t=
+ests-title">
+      <header class=3D"masthead">
+        <div>
+          <div class=3D"kicker">Unit Test Evidence =C2=B7 04</div>
+          <h1 id=3D"vworld-tests-title">VWorld =EC=84=A0=ED=83=9D=C2=B7=EC=
+=B9=B4=EB=A9=94=EB=9D=BC=C2=B7SDK =ED=85=8C=EC=8A=A4=ED=8A=B8</h1>
+        </div>
+        <div class=3D"header-badges">
+          <div class=3D"badge-row"><span class=3D"badge pass">16 PASS =C2=
+=B7 0 FAIL</span></div>
+          <div class=3D"snapshot">NODE TEST =C2=B7 duration 115.3676ms</div=
+>
+        </div>
+      </header>
+
+      <div class=3D"metrics" style=3D"--metric-count: 4">
+        <article class=3D"metric pass">
+          <div><div class=3D"metric-label">Tests</div><div class=3D"metric-=
+value">16</div></div>
+          <div class=3D"metric-note">=EC=A0=84=EC=B2=B4 =EA=B2=B0=EA=B3=BC<=
+br>=ED=86=B5=EA=B3=BC</div>
+        </article>
+        <article class=3D"metric">
+          <div><div class=3D"metric-label">Failures</div><div class=3D"metr=
+ic-value">0</div></div>
+          <div class=3D"metric-note">=EC=B7=A8=EC=86=8C=C2=B7=EA=B1=B4=EB=
+=84=88=EB=9C=80<br>=EB=AA=A8=EB=91=90 0</div>
+        </article>
+        <article class=3D"metric primary">
+          <div><div class=3D"metric-label">Mapped Buildings</div><div class=
+=3D"metric-value">33</div></div>
+          <div class=3D"metric-note">MODEL_NAME<br>=EB=A7=A4=ED=95=91 =EA=
+=B3=84=EC=95=BD</div>
+        </article>
+        <article class=3D"metric primary">
+          <div><div class=3D"metric-label">D4 Element</div><div class=3D"me=
+tric-value">BLD_D4</div></div>
+          <div class=3D"metric-note">=EC=A2=8C=ED=91=9C =EA=B8=B0=EB=B0=98<=
+br>=EB=8C=80=EC=B2=B4 =EC=84=A0=ED=83=9D</div>
+        </article>
+      </div>
+
+      <div class=3D"vworld-content">
+        <article class=3D"panel">
+          <div class=3D"section-header">
+            <div>
+              <div class=3D"section-kicker">Coverage Flow</div>
+              <h2>=EC=84=A0=ED=83=9D =EC=B2=98=EB=A6=AC =EA=B2=80=EC=A6=9D =
+=EA=B2=BD=EB=A1=9C</h2>
+            </div>
+          </div>
+          <div class=3D"coverage-groups">
+            <div class=3D"coverage-group"><strong>2</strong><span>=EA=B1=B4=
+=EB=AC=BC ID<br>=EB=A7=A4=ED=95=91</span></div>
+            <div class=3D"coverage-group"><strong>3</strong><span>=EC=B9=B4=
+=EB=A9=94=EB=9D=BC<br>=ED=8F=AC=EC=BB=A4=EC=8A=A4</span></div>
+            <div class=3D"coverage-group"><strong>3</strong><span>D4 =EC=A2=
+=8C=ED=91=9C<br>=ED=8C=90=EC=A0=95</span></div>
+            <div class=3D"coverage-group"><strong>4</strong><span>=EC=84=A0=
+=ED=83=9D<br>=EC=96=B4=EB=8C=91=ED=84=B0</span></div>
+            <div class=3D"coverage-group"><strong>4</strong><span>SDK<br>=
+=EB=A1=9C=EB=8D=94</span></div>
+          </div>
+          <div class=3D"flow">
+            <div class=3D"flow-step"><div class=3D"flow-number">1</div><div=
+><strong>MODEL_NAME =ED=95=B4=EC=84=9D</strong><span>VWorld =EB=AA=A8=EB=8D=
+=B8 =EC=9D=B4=EB=A6=84 =E2=86=92 =EB=82=B4=EB=B6=80 =EA=B1=B4=EB=AC=BC =EC=
+=A0=95=EB=B3=B4</span></div></div>
+            <div class=3D"flow-step"><div class=3D"flow-number">2</div><div=
+><strong>=ED=91=9C=EC=A4=80 BLD =EC=84=A0=ED=83=9D =EC=83=9D=EC=84=B1</stro=
+ng><span>elementId + displayName =EA=B3=84=EC=95=BD</span></div></div>
+            <div class=3D"flow-step"><div class=3D"flow-number">3</div><div=
+><strong>D4 =EC=A2=8C=ED=91=9C =EB=8C=80=EC=B2=B4 =ED=8C=90=EC=A0=95</stron=
+g><span>=EB=AA=A8=EB=8D=B8 =EB=AF=B8=EB=93=B1=EB=A1=9D D4=EB=8A=94 =EA=B2=
+=80=EC=A6=9D =EC=A2=8C=ED=91=9C=EB=A1=9C =EC=84=A0=ED=83=9D</span></div></d=
+iv>
+            <div class=3D"flow-step"><div class=3D"flow-number">4</div><div=
+><strong>=EC=B9=B4=EB=A9=94=EB=9D=BC moveTo</strong><span>=EC=A2=8C=ED=91=
+=9C =EC=9C=A0=ED=9A=A8=EC=84=B1 =EB=B0=8F API =EC=A1=B4=EC=9E=AC =EC=97=AC=
+=EB=B6=80 =ED=99=95=EC=9D=B8</span></div></div>
+            <div class=3D"flow-step"><div class=3D"flow-number">5</div><div=
+><strong>SDK =EB=B6=80=ED=8A=B8=EC=8A=A4=ED=8A=B8=EB=9E=A9 =ED=99=95=EC=9D=
+=B8</strong><span>=ED=82=A4 =EB=88=84=EB=9D=BD=C2=B7SDK =EB=B6=80=EC=9E=AC=
+=C2=B7=EC=A0=95=EC=83=81 =EB=B0=98=ED=99=98 =EA=B2=80=EC=A6=9D</span></div>=
+</div>
+          </div>
+          <div class=3D"verified-values">
+            <div class=3D"verified-value"><strong>CONFIGURED D4 COORDINATE<=
+/strong>127.4764043 / 34.9700548</div>
+            <div class=3D"verified-value"><strong>CAMERA ARGUMENTS</strong>=
+alt 200 =C2=B7 heading 0 =C2=B7 pitch =E2=88=9260 =C2=B7 roll 0</div>
+          </div>
+        </article>
+
+        <article class=3D"panel">
+          <div class=3D"section-header">
+            <div>
+              <div class=3D"section-kicker">Executed Results</div>
+              <h2>=ED=86=B5=EA=B3=BC=ED=95=9C 16=EA=B0=9C =EA=B2=B0=EA=B3=
+=BC</h2>
+            </div>
+            <div class=3D"section-note">=EC=8B=A4=ED=96=89 =EB=A1=9C=EA=B7=
+=B8 =EC=88=9C=EC=84=9C</div>
+          </div>
+          <div class=3D"test-list">
+            <div class=3D"test-item">33=EA=B0=9C MODEL_NAME =ED=91=9C=EC=A4=
+=80 =EC=84=A0=ED=83=9D =EB=B3=80=ED=99=98</div>
+            <div class=3D"test-item">=EB=B9=88 =EA=B0=92=C2=B7=EB=AF=B8=EB=
+=93=B1=EB=A1=9D MODEL_NAME=EC=9D=80 null</div>
+            <div class=3D"test-item">=EC=B9=B4=EB=A9=94=EB=9D=BC=EB=A5=BC =
+=EC=A0=95=ED=99=95=ED=9E=88 1=ED=9A=8C =EC=9D=B4=EB=8F=99</div>
+            <div class=3D"test-item">=EC=9C=A0=ED=9A=A8=ED=95=98=EC=A7=80 =
+=EC=95=8A=EC=9D=80 =EC=A2=8C=ED=91=9C=EB=8A=94 =EB=AC=B4=EC=8B=9C</div>
+            <div class=3D"test-item">lookat.moveTo =EC=97=86=EC=9C=BC=EB=A9=
+=B4 =EB=B3=80=EA=B2=BD =EC=97=86=EC=9D=8C</div>
+            <div class=3D"test-item">=ED=97=88=EC=9A=A9 =EB=B2=94=EC=9C=84 =
+=EC=95=88 D4 =ED=81=B4=EB=A6=AD =EC=9D=BC=EC=B9=98</div>
+            <div class=3D"test-item">=ED=97=88=EC=9A=A9 =EB=B2=94=EC=9C=84 =
+=EB=B0=96 D4 =ED=81=B4=EB=A6=AD =EB=B6=88=EC=9D=BC=EC=B9=98</div>
+            <div class=3D"test-item">=EC=A7=80=EB=8F=84 =EC=A2=8C=ED=91=9C =
+=EC=97=86=EC=9C=BC=EB=A9=B4 D4 =EB=B6=88=EC=9D=BC=EC=B9=98</div>
+            <div class=3D"test-item">D4 =EB=B9=84=EB=84=A4=EC=9D=B4=ED=8B=
+=B0=EB=B8=8C =EC=A2=8C=ED=91=9C =EB=A7=88=EC=BB=A4 =EC=A0=95=EC=9D=98</div>
+            <div class=3D"test-item">=EB=84=A4=EC=9D=B4=ED=8B=B0=EB=B8=8C =
+=EB=AA=A8=EB=8D=B8 =EC=84=A0=ED=83=9D =ED=99=9C=EC=84=B1=ED=99=94</div>
+            <div class=3D"test-item">=EB=AF=B8=EB=93=B1=EB=A1=9D =EB=AA=A8=
+=EB=8D=B8 =EC=84=A0=ED=83=9D =EB=B9=84=ED=99=9C=EC=84=B1</div>
+            <div class=3D"test-item">D4=EB=8F=84 =EB=8F=99=EC=9D=BC =EC=84=
+=A0=ED=83=9D =ED=98=95=EC=8B=9D=EC=9C=BC=EB=A1=9C =ED=99=9C=EC=84=B1=ED=99=
+=94</div>
+            <div class=3D"test-item">=ED=8C=8C=EC=8B=B1 =EC=8B=9C=EC=A0=90 =
+SDK =EB=A1=9C=EB=8D=94 =EC=8A=A4=EC=9C=84=ED=8A=B8</div>
+            <div class=3D"test-item">=ED=98=B8=EC=B6=9C=EC=9E=90 API =ED=82=
+=A4 =EB=88=84=EB=9D=BD =EA=B1=B0=EB=B6=80</div>
+            <div class=3D"test-item">=EB=B6=80=ED=8A=B8=EC=8A=A4=ED=8A=B8=
+=EB=9E=A9 =ED=9B=84 SDK =EB=B6=80=EC=9E=AC =EA=B1=B0=EB=B6=80</div>
+            <div class=3D"test-item">=EB=B6=80=ED=8A=B8=EC=8A=A4=ED=8A=B8=
+=EB=9E=A9=EB=90=9C SDK =EC=A0=95=EC=83=81 =EB=B0=98=ED=99=98</div>
+          </div>
+        </article>
+      </div>
+
+    </section>
+
+   =20
+   =20
+ =20
+
+</body></html>
+------MultipartBoundary--HVfnW06ghpAWUNgpe1gnZVKOHFc3qhtQI0LRwaNWjC----
+Content-Type: text/css
+Content-Transfer-Encoding: quoted-printable
+Content-Location: cid:css-e3fa0225-9f73-4c11-9771-38695f8565fe@mhtml.blink
+
+@charset "utf-8";
+
+:root { color-scheme: light; --canvas: #e9edf3; --page: #ffffff; --panel: #=
+f5f7fa; --panel-strong: #eef1f6; --ink: #12151b; --muted: #4d5666; --quiet:=
+ #687386; --border: #d7dde7; --border-strong: #bfc8d6; --indigo: #4f5fd7; -=
+-indigo-soft: #e7eafe; --green: #11845c; --green-soft: #e1f4ec; --amber: #a=
+96800; --amber-soft: #fff2d8; --red: #c2465a; --mono: "Cascadia Mono", "SFM=
+ono-Regular", Consolas, monospace; --sans: Arial, "Noto Sans KR", system-ui=
+, sans-serif; }
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0px; min-height: 100%; background: var(--canvas); colo=
+r: var(--ink); font-family: var(--sans); font-variant-numeric: tabular-nums=
+; -webkit-font-smoothing: antialiased; }
+
+body { display: flex; align-items: center; flex-direction: column; gap: 80p=
+x; padding: 80px 0px; }
+
+.page { display: grid; width: 2160px; height: 1440px; padding: 72px 80px 52=
+px; overflow: hidden; background: var(--page); grid-template-rows: auto aut=
+o minmax(0px, 1fr) auto; gap: 28px; }
+
+.masthead { display: flex; align-items: end; justify-content: space-between=
+; gap: 40px; }
+
+.kicker, .section-kicker, .metric-label, .source-tag { color: var(--indigo)=
+; font-family: var(--mono); font-size: 24px; font-weight: 700; letter-spaci=
+ng: 0.08em; text-transform: uppercase; }
+
+.kicker { display: flex; align-items: center; gap: 18px; }
+
+.kicker::before { width: 52px; height: 4px; background: var(--indigo); cont=
+ent: ""; }
+
+h1 { margin: 14px 0px 8px; font-size: 64px; font-weight: 700; letter-spacin=
+g: -0.04em; line-height: 1.1; word-break: keep-all; }
+
+.subtitle { margin: 0px; color: var(--muted); font-size: 28px; line-height:=
+ 1.45; word-break: keep-all; }
+
+.header-badges { display: flex; align-items: flex-end; flex-direction: colu=
+mn; gap: 14px; }
+
+.badge-row { display: flex; flex-wrap: wrap; justify-content: flex-end; gap=
+: 12px; }
+
+.badge { padding: 12px 18px; border: 2px solid var(--border); border-radius=
+: 10px; background: var(--panel); color: var(--muted); font-family: var(--m=
+ono); font-size: 24px; font-weight: 700; }
+
+.badge.pass { border-color: rgb(157, 215, 195); background: var(--green-sof=
+t); color: var(--green); }
+
+.badge.mock { border-color: rgb(239, 199, 120); background: var(--amber-sof=
+t); color: var(--amber); }
+
+.snapshot { color: var(--quiet); font-family: var(--mono); font-size: 24px;=
+ }
+
+.metrics { display: grid; grid-template-columns: repeat(var(--metric-count,=
+ 3), minmax(0, 1fr)); gap: 20px; }
+
+.metric { display: grid; min-height: 142px; padding: 24px 28px; border: 2px=
+ solid var(--border); border-radius: 16px; background: var(--panel); grid-t=
+emplate-columns: minmax(0px, 1fr) auto; align-items: end; }
+
+.metric.primary { border-color: rgb(170, 178, 240); background: var(--indig=
+o-soft); }
+
+.metric.pass { border-color: rgb(157, 215, 195); background: var(--green-so=
+ft); }
+
+.metric-value { margin-top: 8px; font-size: 84px; font-weight: 750; letter-=
+spacing: -0.05em; line-height: 1.1; }
+
+.metric-note { max-width: 230px; color: var(--muted); font-size: 24px; line=
+-height: 1.35; text-align: right; word-break: keep-all; }
+
+.panel { min-height: 0px; padding: 30px 34px; border: 2px solid var(--borde=
+r); border-radius: 18px; background: var(--panel); }
+
+.panel.white { background: var(--page); }
+
+.section-header { display: flex; align-items: end; justify-content: space-b=
+etween; gap: 28px; margin-bottom: 24px; }
+
+h2 { margin: 6px 0px 0px; font-size: 42px; font-weight: 700; letter-spacing=
+: -0.025em; line-height: 1.25; word-break: keep-all; }
+
+h3 { margin: 0px; font-size: 32px; font-weight: 700; line-height: 1.3; word=
+-break: keep-all; }
+
+.section-note { color: var(--quiet); font-size: 24px; line-height: 1.4; tex=
+t-align: right; }
+
+.page-footer { display: flex; align-items: center; justify-content: space-b=
+etween; gap: 28px; padding-top: 4px; color: var(--quiet); font-size: 24px; =
+line-height: 1.4; }
+
+.page-footer strong { color: var(--muted); }
+
+.source-tag { flex: 0 0 auto; color: var(--quiet); font-size: 24px; white-s=
+pace: nowrap; }
+
+.building-content { display: grid; min-height: 0px; grid-template-columns: =
+minmax(0px, 1.7fr) minmax(620px, 1fr); gap: 24px; }
+
+.floor-table { display: grid; min-height: 0px; grid-template-rows: auto rep=
+eat(6, minmax(0px, 1fr)); gap: 10px; }
+
+.floor-head, .floor-row { display: grid; grid-template-columns: 100px minma=
+x(0px, 1fr) 150px minmax(0px, 1fr) 120px; align-items: center; gap: 14px; }
+
+.floor-head { min-height: 52px; padding: 0px 20px; color: var(--quiet); fon=
+t-family: var(--mono); font-size: 24px; font-weight: 700; text-align: cente=
+r; }
+
+.floor-row { min-height: 92px; padding: 12px 18px; border: 2px solid var(--=
+border); border-radius: 14px; background: var(--page); }
+
+.floor-number { font-size: 36px; font-weight: 800; }
+
+.wing-block { display: flex; min-height: 58px; align-items: center; justify=
+-content: space-between; padding: 0px 20px; border: 2px solid rgb(196, 202,=
+ 239); border-radius: 12px; background: var(--indigo-soft); color: rgb(48, =
+59, 159); font-size: 26px; font-weight: 700; }
+
+.wing-block.empty { border-style: dashed; border-color: var(--border-strong=
+); background: var(--panel); color: var(--quiet); }
+
+.wing-block strong { font-size: 36px; }
+
+.bridge { display: grid; min-height: 52px; place-items: center; border: 2px=
+ dashed var(--border-strong); border-radius: 999px; color: var(--quiet); fo=
+nt-size: 24px; font-weight: 700; }
+
+.bridge.active { border-style: solid; border-color: rgb(157, 215, 195); bac=
+kground: var(--green-soft); color: var(--green); }
+
+.floor-total { font-family: var(--mono); font-size: 30px; font-weight: 800;=
+ text-align: right; }
+
+.special-grid { display: grid; grid-template-columns: repeat(2, minmax(0px,=
+ 1fr)); gap: 14px; }
+
+.special-room { min-height: 112px; padding: 18px 20px; border: 2px solid va=
+r(--border); border-radius: 14px; background: var(--page); }
+
+.special-room strong { display: block; color: var(--indigo); font-family: v=
+ar(--mono); font-size: 30px; }
+
+.special-room span { display: block; margin-top: 8px; color: var(--muted); =
+font-size: 25px; font-weight: 700; }
+
+.mock-note { margin-top: 18px; padding: 20px 22px; border: 2px solid rgb(23=
+9, 199, 120); border-radius: 14px; background: var(--amber-soft); color: rg=
+b(111, 70, 0); font-size: 26px; font-weight: 700; line-height: 1.4; word-br=
+eak: keep-all; }
+
+.room-content { display: grid; min-height: 0px; grid-template-columns: 720p=
+x minmax(0px, 1fr); gap: 24px; }
+
+.room-profile { display: grid; grid-template-rows: auto auto auto 1fr; gap:=
+ 18px; }
+
+.room-id { display: flex; align-items: center; justify-content: space-betwe=
+en; gap: 20px; padding-bottom: 18px; border-bottom: 2px solid var(--border)=
+; }
+
+.room-id strong { font-size: 68px; letter-spacing: -0.04em; }
+
+.status-pill { padding: 12px 18px; border: 2px solid rgb(157, 215, 195); bo=
+rder-radius: 999px; background: var(--green-soft); color: var(--green); fon=
+t-size: 26px; font-weight: 800; }
+
+.detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0px, =
+1fr)); gap: 14px; }
+
+.detail-card { min-height: 112px; padding: 18px 20px; border: 2px solid var=
+(--border); border-radius: 14px; background: var(--page); }
+
+.detail-card span { display: block; color: var(--quiet); font-size: 24px; f=
+ont-weight: 700; }
+
+.detail-card strong { display: block; margin-top: 8px; font-size: 30px; }
+
+.saving-box { display: grid; padding: 24px; border: 2px solid rgb(157, 215,=
+ 195); border-radius: 16px; background: var(--green-soft); grid-template-co=
+lumns: 1fr auto; align-items: end; gap: 20px; }
+
+.saving-box strong { display: block; color: var(--green); font-size: 54px; =
+line-height: 1.08; }
+
+.saving-box span { color: rgb(55, 106, 88); font-size: 25px; font-weight: 7=
+00; }
+
+.saving-rate { display: flex; min-height: 104px; align-items: center; color=
+: var(--green); font-size: 74px; font-weight: 800; line-height: 1.2; }
+
+.schedule { display: grid; grid-template-rows: auto minmax(0px, 1fr); }
+
+.week-timetable { display: grid; min-height: 0px; grid-template-columns: 88=
+px minmax(0px, 1fr); grid-template-rows: 54px minmax(0px, 1fr); }
+
+.timetable-corner { display: grid; place-items: center; border-top-color: ;=
+ border-top-style: ; border-top-width: ; border-bottom-color: ; border-bott=
+om-style: ; border-bottom-width: ; border-left-color: ; border-left-style: =
+; border-left-width: ; border-image-source: ; border-image-slice: ; border-=
+image-width: ; border-image-outset: ; border-image-repeat: ; border-right: =
+0px; border-radius: 12px 0px 0px; background: var(--panel-strong); color: v=
+ar(--quiet); font-size: 16px; }
+
+.timetable-days { display: grid; grid-template-columns: repeat(5, minmax(0p=
+x, 1fr)); border: 1px solid var(--border); border-radius: 0px 12px 0px 0px;=
+ background: var(--panel-strong); }
+
+.timetable-day { display: grid; place-items: center; border-left: 1px solid=
+ var(--border); font-size: 20px; text-align: center; }
+
+.timetable-day:first-child { border-left: 0px; }
+
+.timetable-axis { position: relative; min-height: 0px; border-right-color: =
+; border-right-style: ; border-right-width: ; border-bottom-color: ; border=
+-bottom-style: ; border-bottom-width: ; border-left-color: ; border-left-st=
+yle: ; border-left-width: ; border-image-source: ; border-image-slice: ; bo=
+rder-image-width: ; border-image-outset: ; border-image-repeat: ; border-to=
+p: 0px; border-radius: 0px 0px 0px 12px; background: var(--page); }
+
+.time-label { position: absolute; top: calc(var(--time-position) * 11.11111=
+1%); right: 12px; color: var(--quiet); font-family: var(--mono); font-size:=
+ 15px; line-height: 1; transform: translateY(-50%); }
+
+.time-label:first-child { transform: none; }
+
+.time-label:last-child { transform: translateY(-100%); }
+
+.timetable-board { position: relative; display: grid; min-height: 0px; over=
+flow: hidden; border-right: 1px solid var(--border); border-bottom: 1px sol=
+id var(--border); border-radius: 0px 0px 12px; background-color: var(--page=
+); background-image: linear-gradient(
+          to bottom,
+          transparent calc(100% - 1px),
+          var(--border) 1px
+        ); background-size: 100% calc(11.1111%); grid-template-columns: rep=
+eat(5, minmax(0px, 1fr)); }
+
+.timetable-day-track { min-width: 0px; border-left: 1px solid var(--border)=
+; }
+
+.timetable-event { position: absolute; top: calc(var(--start) * 11.111111% =
++ 8px); left: calc(var(--day) * 20% + 10px); display: flex; width: calc(20%=
+ - 20px); height: calc(var(--duration) * 11.111111% - 16px); min-height: 96=
+px; justify-content: center; flex-direction: column; padding: 14px 16px; bo=
+rder: 2px solid rgb(170, 178, 240); border-radius: 10px; background: var(--=
+indigo-soft); color: var(--ink); word-break: keep-all; }
+
+.timetable-event-time { color: var(--indigo); font-family: var(--mono); fon=
+t-size: 17px; }
+
+.timetable-event-name { margin-top: 8px; font-size: 22px; }
+
+.timetable-event-meta { margin-top: 6px; color: var(--muted); font-size: 16=
+px; }
+
+.solar-content { display: grid; min-height: 0px; grid-template-columns: 1.0=
+4fr 0.96fr; gap: 24px; }
+
+.solar-left, .pv-right { display: grid; min-height: 0px; gap: 18px; }
+
+.solar-left { grid-template-rows: 1fr auto; }
+
+.sun-chart { display: grid; min-height: 0px; grid-template-rows: auto minma=
+x(0px, 1fr); }
+
+.chart-canvas-wrap { position: relative; min-height: 0px; }
+
+.chart-canvas-wrap canvas { display: block; width: 100%; height: 100%; }
+
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; overf=
+low: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0=
+px; }
+
+.test-card-grid { display: grid; grid-template-columns: repeat(3, minmax(0p=
+x, 1fr)); gap: 12px; }
+
+.test-card { min-height: 132px; padding: 18px 20px; border: 2px solid rgb(1=
+57, 215, 195); border-radius: 14px; background: var(--green-soft); }
+
+.test-card .pass-mark { color: var(--green); font-family: var(--mono); font=
+-size: 24px; font-weight: 800; }
+
+.test-card strong { display: block; margin-top: 10px; font-size: 27px; line=
+-height: 1.3; }
+
+.test-card span { display: block; margin-top: 8px; color: var(--muted); fon=
+t-size: 24px; line-height: 1.35; }
+
+.formula { display: grid; padding: 24px; border: 2px solid rgb(170, 178, 24=
+0); border-radius: 16px; background: var(--indigo-soft); grid-template-colu=
+mns: repeat(4, minmax(0px, 1fr)); align-items: center; gap: 12px; text-alig=
+n: center; }
+
+.formula-step { color: rgb(48, 59, 159); font-size: 25px; font-weight: 800;=
+ line-height: 1.35; }
+
+.formula-arrow { color: var(--indigo); font-size: 38px; font-weight: 800; }
+
+.pv-cases { display: grid; grid-template-columns: repeat(2, minmax(0px, 1fr=
+)); gap: 14px; }
+
+.pv-case { padding: 22px; border: 2px solid var(--border); border-radius: 1=
+4px; background: var(--page); }
+
+.pv-case h3 { color: var(--indigo); }
+
+.value-list { display: grid; margin-top: 18px; gap: 10px; }
+
+.value-row { display: flex; align-items: baseline; justify-content: space-b=
+etween; gap: 18px; padding-bottom: 8px; border-bottom: 1px solid var(--bord=
+er); color: var(--muted); font-size: 24px; }
+
+.value-row strong { color: var(--ink); font-size: 28px; }
+
+.result-large { margin-top: 20px; color: var(--green); font-size: 48px; fon=
+t-weight: 800; }
+
+.vworld-content { display: grid; min-height: 0px; grid-template-columns: 82=
+0px minmax(0px, 1fr); gap: 24px; }
+
+.coverage-groups { display: grid; grid-template-columns: repeat(5, minmax(0=
+px, 1fr)); gap: 10px; }
+
+.coverage-group { min-width: 0px; min-height: 116px; padding: 16px; border:=
+ 2px solid var(--border); border-radius: 14px; background: var(--page); tex=
+t-align: center; }
+
+.coverage-group strong { display: block; color: var(--indigo); font-size: 4=
+6px; }
+
+.coverage-group span { display: block; margin-top: 6px; color: var(--muted)=
+; font-size: 24px; font-weight: 700; line-height: 1.25; }
+
+.flow { display: grid; margin-top: 20px; gap: 12px; }
+
+.flow-step { display: grid; min-height: 100px; padding: 18px 20px; border: =
+2px solid rgb(196, 202, 239); border-radius: 14px; background: var(--indigo=
+-soft); grid-template-columns: 64px 1fr; align-items: center; gap: 16px; }
+
+.flow-number { display: grid; width: 56px; height: 56px; place-items: cente=
+r; border-radius: 12px; background: var(--indigo); color: white; font-famil=
+y: var(--mono); font-size: 28px; font-weight: 800; }
+
+.flow-step strong { display: block; font-size: 28px; }
+
+.flow-step span { display: block; margin-top: 5px; color: var(--muted); fon=
+t-size: 24px; }
+
+.verified-values { display: grid; margin-top: 18px; grid-template-columns: =
+repeat(2, minmax(0px, 1fr)); gap: 12px; }
+
+.verified-value { padding: 16px 18px; border: 2px solid rgb(157, 215, 195);=
+ border-radius: 12px; background: var(--green-soft); color: rgb(55, 106, 88=
+); font-size: 24px; font-weight: 700; line-height: 1.35; }
+
+.verified-value strong { display: block; color: var(--green); font-family: =
+var(--mono); font-size: 25px; }
+
+.test-list { display: grid; min-height: 0px; grid-template-columns: repeat(=
+2, minmax(0px, 1fr)); grid-auto-rows: minmax(0px, 1fr); gap: 10px; }
+
+.test-item { display: grid; min-height: 0px; padding: 13px 16px; border: 2p=
+x solid var(--border); border-radius: 12px; background: var(--page); grid-t=
+emplate-columns: 34px 1fr; align-items: center; gap: 12px; color: var(--mut=
+ed); font-size: 24px; font-weight: 700; line-height: 1.25; }
+
+.test-item::before { display: grid; width: 30px; height: 30px; place-items:=
+ center; border-radius: 50%; background: var(--green); color: white; conten=
+t: "=E2=9C=93"; font-size: 20px; font-weight: 900; }
+
+#vworld-tests .flow { grid-template-columns: repeat(2, minmax(0px, 1fr)); g=
+ap: 10px; }
+
+#vworld-tests .flow-step { min-height: 84px; padding: 10px 12px; grid-templ=
+ate-columns: 50px 1fr; gap: 10px; }
+
+#vworld-tests .flow-step:last-child { grid-column: 1 / -1; }
+
+#vworld-tests .flow-number { width: 48px; height: 48px; font-size: 24px; }
+
+#vworld-tests .flow-step strong { font-size: 26px; line-height: 1.15; }
+
+#vworld-tests .flow-step span { margin-top: 2px; font-size: 24px; line-heig=
+ht: 1.2; }
+
+body .page *, body .page ::before, body .page ::after, body .page svg text =
+{ font-weight: 500; }
+
+.page { grid-template-rows: auto auto minmax(0px, 1fr); gap: 24px; }
+
+.kicker, .section-kicker, .metric-label, .source-tag { font-size: 16px; let=
+ter-spacing: 0.04em; }
+
+h1 { margin: 10px 0px 0px; font-size: 40px; letter-spacing: -0.02em; }
+
+.badge, .snapshot { font-size: 16px; }
+
+.badge { padding: 9px 14px; }
+
+.metric { min-height: 118px; padding: 20px 24px; }
+
+.metric-value { font-size: 52px; letter-spacing: -0.02em; }
+
+.metric-note, .section-note { font-size: 18px; }
+
+.panel { padding: 26px 30px; }
+
+h2 { font-size: 26px; letter-spacing: -0.01em; }
+
+h3 { font-size: 22px; }
+
+.floor-head, .bridge, .source-tag, .detail-card span, .class-block span, .e=
+mpty-day, .test-card .pass-mark, .test-card span, .value-row, .coverage-gro=
+up span, .flow-step span, #vworld-tests .flow-step span, .verified-value, .=
+test-item { font-size: 18px; }
+
+.floor-number, .wing-block strong, .special-room strong, .detail-card stron=
+g, .day-name, .class-block strong, .value-row strong, .coverage-group stron=
+g { font-size: 26px; }
+
+.wing-block, .special-room span, .mock-note, .status-pill, .saving-box span=
+, .schedule-note, .test-card strong, .formula-step, .pv-case h3, .verified-=
+value strong, #vworld-tests .flow-step strong { font-size: 20px; }
+
+.floor-total, .class-block .time, .flow-number, #vworld-tests .flow-number =
+{ font-size: 22px; font-weight: 400; }
+
+.room-id strong, .saving-box strong, .result-large { font-size: 38px; }
+
+.saving-rate { font-size: 46px; }
+
+.formula-arrow { font-size: 30px; }
+
+.test-card .pass-mark { font-weight: 400; }
+
+body .page svg text { font-size: 22px; }
+
+#d4-building .special-grid { grid-template-columns: 1fr; }
+
+#d4-building .special-room { min-height: 76px; }
+
+#d4-room .room-profile { grid-template-rows: auto auto auto auto; align-con=
+tent: start; }
+
+#vworld-tests .vworld-content > .panel:first-child { display: grid; grid-te=
+mplate-rows: auto auto minmax(0px, 1fr) auto; }
+
+#vworld-tests .vworld-content > .panel:last-child { display: grid; grid-tem=
+plate-rows: auto minmax(0px, 1fr); }
+
+@page { size: 15in 10in; margin: 0px; }
+
+@media print {
+  html, body { width: 2160px; min-height: 1440px; background: rgb(255, 255,=
+ 255); }
+  body { display: block; padding: 0px; }
+  .page { width: 2160px; height: 1440px; break-after: page; }
+  .page:last-child { break-after: auto; }
+}
+
+@media (max-width: 2160px) {
+  body { align-items: flex-start; padding: 0px; }
+  .page { transform-origin: left top; }
+}
+
+/* Requested MHTML-only revision: PVGIS reference + 125% global scale. */
+html { zoom: 1.25; }
+
+.pvgis-code-note { margin-top: 8px; color: var(--amber); font-family: var(--mono); font-size: 16px; letter-spacing: 0.03em; }
+------MultipartBoundary--HVfnW06ghpAWUNgpe1gnZVKOHFc3qhtQI0LRwaNWjC------ 

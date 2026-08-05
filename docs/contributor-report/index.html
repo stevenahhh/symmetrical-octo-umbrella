@@ -1,0 +1,1027 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="SCNU 디지털 트윈 프로젝트의 GitHub 협업 활동을 요약한 단일 페이지 보고서"
+    />
+    <title>SCNU GitHub 협업 활동 보고서</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --surface-canvas: #edf0f5;
+        --surface-report: #ffffff;
+        --surface-panel: #f7f8fa;
+        --surface-elevated: #eff1f6;
+        --text-primary: #15171c;
+        --text-secondary: #4d5462;
+        --text-tertiary: #626b7a;
+        --border-default: #dde1e8;
+        --border-strong: #c4cbd7;
+        --accent-primary: #5e6ad2;
+        --accent-soft: #444da8;
+        --status-success: #16845b;
+        --status-closed: #c64f63;
+        --series-1: #5e6ad2;
+        --series-2: #247cc5;
+        --series-3: #168f7a;
+        --series-4: #b06b00;
+        --series-5: #c15378;
+        --series-6: #805bc1;
+        --space-1: 4px;
+        --space-2: 8px;
+        --space-3: 12px;
+        --space-4: 16px;
+        --space-5: 20px;
+        --space-6: 24px;
+        --space-8: 32px;
+        --space-10: 40px;
+        --font-sans: Arial, "Noto Sans KR", system-ui, sans-serif;
+        --font-mono: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        min-height: 100%;
+        margin: 0;
+      }
+
+      body {
+        display: grid;
+        place-items: start center;
+        min-height: 100dvh;
+        background: var(--surface-canvas);
+        color: var(--text-primary);
+        font-family: var(--font-sans);
+        font-variant-numeric: tabular-nums;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .report {
+        display: grid;
+        grid-template-rows: 92px 88px 500px 236px 52px;
+        gap: var(--space-3);
+        width: 1080px;
+        height: 1080px;
+        padding: 28px;
+        overflow: hidden;
+        background: var(--surface-report);
+      }
+
+      .report-header {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: end;
+        gap: var(--space-4);
+      }
+
+      .eyebrow,
+      .section-kicker,
+      .metric-label,
+      .column-label,
+      .chip {
+        color: var(--text-tertiary);
+        font-family: var(--font-mono);
+        font-size: 9px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        line-height: 1.4;
+        text-transform: uppercase;
+      }
+
+      .eyebrow {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        color: var(--accent-soft);
+      }
+
+      .eyebrow::before {
+        width: 22px;
+        height: 2px;
+        background: var(--accent-primary);
+        content: "";
+      }
+
+      .report-title {
+        margin: 7px 0 4px;
+        font-size: 34px;
+        font-weight: 600;
+        letter-spacing: -0.035em;
+        line-height: 1.08;
+        word-break: keep-all;
+      }
+
+      .report-subtitle {
+        margin: 0;
+        color: var(--text-secondary);
+        font-size: 11px;
+        line-height: 1.4;
+        white-space: nowrap;
+      }
+
+      .meta-stack {
+        display: flex;
+        align-items: flex-end;
+        flex-direction: column;
+        gap: var(--space-1);
+      }
+
+      .chip-row {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: var(--space-1);
+      }
+
+      .chip {
+        padding: 5px 7px;
+        border: 1px solid var(--border-default);
+        border-radius: 4px;
+        background: var(--surface-panel);
+        color: var(--text-secondary);
+        letter-spacing: 0.025em;
+        text-transform: none;
+      }
+
+      .snapshot {
+        color: var(--text-tertiary);
+        font-family: var(--font-mono);
+        font-size: 9px;
+      }
+
+      .metric-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: var(--space-2);
+      }
+
+      .metric-card,
+      .panel,
+      .timeline-panel {
+        border: 1px solid var(--border-default);
+        background: var(--surface-panel);
+      }
+
+      .metric-card {
+        display: grid;
+        min-height: 88px;
+        padding: 12px 14px;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: end;
+        border-radius: 8px;
+      }
+
+      .metric-main {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-self: stretch;
+      }
+
+      .metric-value {
+        margin-top: var(--space-1);
+        font-size: 34px;
+        font-weight: 600;
+        letter-spacing: -0.035em;
+        line-height: 1.08;
+      }
+
+      .metric-note {
+        align-self: end;
+        max-width: 88px;
+        color: var(--text-tertiary);
+        font-size: 9px;
+        line-height: 1.3;
+        text-align: right;
+        word-break: keep-all;
+      }
+
+      .metric-card.accent {
+        border-color: color-mix(in srgb, var(--accent-primary) 45%, var(--border-default));
+        background: color-mix(in srgb, var(--accent-primary) 7%, var(--surface-report));
+      }
+
+      .metric-card.success .metric-value {
+        color: var(--status-success);
+      }
+
+      .main-grid {
+        display: grid;
+        min-height: 0;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: var(--space-3);
+      }
+
+      .panel {
+        min-height: 0;
+        padding: 14px 16px;
+        border-radius: 8px;
+      }
+
+      .section-header {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: var(--space-2);
+        margin-bottom: 10px;
+      }
+
+      .section-title {
+        margin: 2px 0 0;
+        font-size: 18px;
+        font-weight: 600;
+        letter-spacing: -0.015em;
+        line-height: 1.25;
+        word-break: keep-all;
+      }
+
+      .section-note {
+        color: var(--text-tertiary);
+        font-size: 9px;
+        line-height: 1.4;
+        text-align: right;
+      }
+
+      .contributor-header,
+      .contributor-row {
+        display: grid;
+        grid-template-columns: 25px 146px minmax(80px, 1fr) 52px 34px;
+        align-items: center;
+        gap: var(--space-2);
+      }
+
+      .contributor-header {
+        padding: 0 8px 6px;
+        border-bottom: 1px solid var(--border-default);
+      }
+
+      .contributor-list {
+        display: grid;
+        min-height: 0;
+        grid-template-rows: repeat(6, minmax(0, 1fr));
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      .contributor-panel {
+        display: grid;
+        grid-template-rows: auto auto minmax(0, 1fr);
+      }
+
+      .contributor-row {
+        min-height: 0;
+        padding: 5px 8px;
+        border-bottom: 1px solid var(--border-default);
+      }
+
+      .contributor-row:last-child {
+        border-bottom: 0;
+      }
+
+      .contributor-row.lead {
+        margin-top: 4px;
+        border: 1px solid var(--border-strong);
+        border-radius: 6px;
+        background: var(--surface-elevated);
+      }
+
+      .rank {
+        color: var(--text-tertiary);
+        font-family: var(--font-mono);
+        font-size: 9px;
+      }
+
+      .identity {
+        display: flex;
+        min-width: 0;
+        align-items: center;
+        gap: var(--space-2);
+      }
+
+      .identity-mark {
+        display: grid;
+        width: 26px;
+        height: 26px;
+        flex: 0 0 26px;
+        place-items: center;
+        border: 1px solid color-mix(in srgb, var(--series) 65%, var(--border-strong));
+        border-radius: 7px;
+        background: color-mix(in srgb, var(--series) 9%, var(--surface-report));
+        color: var(--series);
+        font-family: var(--font-mono);
+        font-size: 9px;
+        font-weight: 600;
+      }
+
+      .identity-copy {
+        min-width: 0;
+      }
+
+      .handle {
+        overflow: hidden;
+        font-size: 11px;
+        font-weight: 600;
+        line-height: 1.25;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .alias {
+        overflow: hidden;
+        margin-top: 2px;
+        color: var(--text-tertiary);
+        font-family: var(--font-mono);
+        font-size: 9px;
+        line-height: 1.35;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .bar-track {
+        height: 7px;
+        overflow: hidden;
+        border-radius: 2px;
+        background: #e6e9ef;
+      }
+
+      .bar-fill {
+        width: var(--value);
+        min-width: 1px;
+        height: 100%;
+        border-radius: inherit;
+        background: var(--series);
+      }
+
+      .data-value {
+        color: var(--text-primary);
+        font-family: var(--font-mono);
+        font-size: 10px;
+        font-weight: 600;
+        text-align: right;
+      }
+
+      .data-unit {
+        margin-left: 2px;
+        color: var(--text-tertiary);
+        font-size: 9px;
+        font-weight: 500;
+      }
+
+      .activity-panel {
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr) auto;
+      }
+
+      .matrix {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 3px;
+        table-layout: fixed;
+      }
+
+      .matrix th,
+      .matrix td {
+        height: 34px;
+        padding: 0;
+        border-radius: 4px;
+        text-align: center;
+      }
+
+      .matrix thead th {
+        height: 27px;
+        color: var(--text-tertiary);
+        font-family: var(--font-mono);
+        font-size: 9px;
+        font-weight: 600;
+        line-height: 1.25;
+      }
+
+      .matrix .row-label {
+        width: 76px;
+        padding-right: 3px;
+        color: var(--text-secondary);
+        font-family: var(--font-mono);
+        font-size: 9px;
+        font-weight: 600;
+        text-align: left;
+        white-space: nowrap;
+      }
+
+      .row-label span {
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        margin-right: 4px;
+        border-radius: 50%;
+        background: var(--series);
+        vertical-align: 1px;
+      }
+
+      .matrix-cell {
+        border: 1px solid color-mix(in srgb, var(--accent-primary) calc(var(--level) * 48%), var(--border-default));
+        background: color-mix(in srgb, var(--accent-primary) calc(var(--level) * 34%), var(--surface-elevated));
+        color: var(--text-primary);
+        font-family: var(--font-mono);
+        font-size: 9px;
+        font-weight: 600;
+      }
+
+      .matrix-cell.zero {
+        color: var(--text-tertiary);
+      }
+
+      .merge-summary {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        align-items: center;
+        gap: var(--space-3);
+        margin-top: 8px;
+        padding-top: 10px;
+        border-top: 1px solid var(--border-default);
+      }
+
+      .merge-rate {
+        font-size: 28px;
+        font-weight: 600;
+        letter-spacing: -0.03em;
+        line-height: 1;
+      }
+
+      .merge-rate small {
+        display: block;
+        margin-top: 5px;
+        color: var(--text-tertiary);
+        font-family: var(--font-mono);
+        font-size: 9px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+      }
+
+      .merge-bar {
+        display: grid;
+        grid-template-columns: 9fr 1fr;
+        height: 10px;
+        overflow: hidden;
+        border-radius: 3px;
+        background: var(--surface-report);
+      }
+
+      .merged {
+        background: var(--status-success);
+      }
+
+      .closed {
+        background: var(--status-closed);
+      }
+
+      .merge-legend {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 7px;
+        color: var(--text-tertiary);
+        font-family: var(--font-mono);
+        font-size: 9px;
+      }
+
+      .merge-legend strong {
+        color: var(--text-secondary);
+        font-weight: 600;
+      }
+
+      .timeline-panel {
+        padding: 14px 16px 12px;
+        border-radius: 8px;
+      }
+
+      .timeline-panel .section-header {
+        margin-bottom: 8px;
+      }
+
+      .timeline-grid {
+        position: relative;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px 10px;
+      }
+
+      .timeline-grid::before {
+        display: none;
+      }
+
+      .milestone {
+        position: relative;
+        min-width: 0;
+        display: grid;
+        min-height: 72px;
+        padding: 8px 10px;
+        grid-template-columns: 30px minmax(0, 1fr);
+        grid-template-rows: auto auto auto;
+        column-gap: 8px;
+        border: 1px solid var(--border-default);
+        border-radius: 6px;
+        background: var(--surface-report);
+      }
+
+      .milestone-dot {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        width: 30px;
+        height: 30px;
+        margin: 0;
+        grid-row: 1 / 4;
+        place-items: center;
+        border: 1px solid var(--border-strong);
+        border-radius: 8px;
+        background: var(--surface-panel);
+        color: var(--accent-soft);
+        font-family: var(--font-mono);
+        font-size: 9px;
+        font-weight: 600;
+      }
+
+      .milestone.final .milestone-dot {
+        border-color: var(--accent-primary);
+        background: color-mix(in srgb, var(--accent-primary) 16%, var(--surface-elevated));
+      }
+
+      .milestone-date {
+        color: var(--text-tertiary);
+        font-family: var(--font-mono);
+        font-size: 9px;
+      }
+
+      .milestone-title {
+        margin: 1px 0;
+        overflow: hidden;
+        font-size: 10px;
+        font-weight: 600;
+        line-height: 1.35;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .milestone-meta {
+        overflow: hidden;
+        color: var(--text-tertiary);
+        font-family: var(--font-mono);
+        font-size: 9px;
+        line-height: 1.4;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .report-footer {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: end;
+        gap: var(--space-3);
+        padding-top: 0;
+        color: var(--text-tertiary);
+        font-size: 9px;
+        line-height: 1.35;
+      }
+
+      .methodology {
+        max-width: 860px;
+        word-break: keep-all;
+      }
+
+      .source {
+        font-family: var(--font-mono);
+        text-align: right;
+        white-space: nowrap;
+      }
+
+      @media (max-width: 1000px) {
+        .report {
+          width: 100%;
+          height: auto;
+          min-height: 100dvh;
+          padding: 28px 22px;
+          overflow: visible;
+        }
+
+        .report-header,
+        .main-grid,
+        .report-footer {
+          grid-template-columns: 1fr;
+        }
+
+        .meta-stack {
+          align-items: flex-start;
+        }
+
+        .chip-row {
+          justify-content: flex-start;
+        }
+
+        .metric-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .main-grid {
+          gap: var(--space-4);
+        }
+
+        .timeline-grid {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          row-gap: var(--space-5);
+        }
+
+        .timeline-grid::before {
+          display: none;
+        }
+
+        .source {
+          text-align: left;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .report {
+          padding: 22px 14px;
+        }
+
+        .report-title {
+          font-size: 32px;
+        }
+
+        .metric-grid,
+        .timeline-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .contributor-header,
+        .contributor-row {
+          grid-template-columns: 26px minmax(115px, 1fr) 58px 48px;
+          gap: var(--space-2);
+        }
+
+        .contributor-header > :nth-child(3),
+        .contributor-row > :nth-child(3) {
+          display: none;
+        }
+
+        .panel,
+        .timeline-panel {
+          padding: var(--space-4);
+        }
+
+        .matrix {
+          border-spacing: 3px;
+        }
+
+        .matrix .row-label {
+          width: 78px;
+          max-width: 78px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .matrix th,
+        .matrix td {
+          height: 34px;
+        }
+
+        .section-header {
+          align-items: start;
+          flex-direction: column;
+          gap: var(--space-2);
+        }
+
+        .section-note {
+          text-align: left;
+        }
+      }
+
+      @media print {
+        @page {
+          size: 1080px 1080px;
+          margin: 0;
+        }
+
+        body {
+          background: var(--surface-report);
+          print-color-adjust: exact;
+          -webkit-print-color-adjust: exact;
+        }
+
+        .report {
+          width: 1080px;
+          height: 1080px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="report" aria-labelledby="report-title">
+      <header class="report-header">
+        <div>
+          <div class="eyebrow">SCNU Digital Twin · Collaboration Evidence</div>
+          <h1 class="report-title" id="report-title">GitHub 협업 활동 보고서</h1>
+          <p class="report-subtitle">dev 브랜치 커밋과 GitHub 전체 Pull Request 활동을 요약했습니다.</p>
+        </div>
+        <div class="meta-stack">
+          <div class="chip-row" aria-label="보고서 범위">
+            <span class="chip">Repository · symmetrical-octo-umbrella</span>
+            <span class="chip">Branch · dev</span>
+            <span class="chip">2026.03.30–07.20</span>
+          </div>
+          <div class="snapshot">Snapshot · 883bad1 · 2026.07.30 집계</div>
+        </div>
+      </header>
+
+      <section class="metric-grid" aria-label="핵심 지표">
+        <article class="metric-card">
+          <div class="metric-main">
+            <div class="metric-label">Contributors</div>
+            <div class="metric-value">6</div>
+          </div>
+          <div class="metric-note">이름·이메일 별칭을 통합해 6명으로 집계</div>
+        </article>
+        <article class="metric-card accent">
+          <div class="metric-main">
+            <div class="metric-label">Commits on dev</div>
+            <div class="metric-value">84</div>
+          </div>
+          <div class="metric-note">기본 브랜치 전체 커밋 이력 기준</div>
+        </article>
+        <article class="metric-card">
+          <div class="metric-main">
+            <div class="metric-label">Pull Requests</div>
+            <div class="metric-value">20</div>
+          </div>
+          <div class="metric-note">사람이 생성한 전체 PR</div>
+        </article>
+        <article class="metric-card success">
+          <div class="metric-main">
+            <div class="metric-label">Merged PRs</div>
+            <div class="metric-value">18</div>
+          </div>
+          <div class="metric-note">전체 PR의 90%가 병합됨</div>
+        </article>
+      </section>
+
+      <section class="main-grid" aria-label="기여 활동 상세">
+        <article class="panel contributor-panel">
+          <div class="section-header">
+            <div>
+              <div class="section-kicker">Contributor Ranking</div>
+              <h2 class="section-title">기여자별 활동</h2>
+            </div>
+            <div class="section-note">정렬 기준 · dev 커밋 수</div>
+          </div>
+          <div class="contributor-header" aria-hidden="true">
+            <div class="column-label">#</div>
+            <div class="column-label">Contributor</div>
+            <div class="column-label">Share of 84</div>
+            <div class="column-label" style="text-align: right">Commits</div>
+            <div class="column-label" style="text-align: right">PR</div>
+          </div>
+          <ol class="contributor-list">
+            <li class="contributor-row lead" style="--series: var(--series-1)">
+              <div class="rank">01</div>
+              <div class="identity">
+                <div class="identity-mark">SA</div>
+                <div class="identity-copy">
+                  <div class="handle">stevenahhh</div>
+                  <div class="alias">Sungwang Ahn · 2 identities merged</div>
+                </div>
+              </div>
+              <div class="bar-track" aria-label="전체 84개 커밋 중 46개">
+                <div class="bar-fill" style="--value: 54.8%"></div>
+              </div>
+              <div class="data-value">46<span class="data-unit">개</span></div>
+              <div class="data-value">11</div>
+            </li>
+            <li class="contributor-row" style="--series: var(--series-2)">
+              <div class="rank">02</div>
+              <div class="identity">
+                <div class="identity-mark">JG</div>
+                <div class="identity-copy">
+                  <div class="handle">JangGayeon</div>
+                  <div class="alias">PLT · gayeon · aliases merged</div>
+                </div>
+              </div>
+              <div class="bar-track" aria-label="전체 84개 커밋 중 14개">
+                <div class="bar-fill" style="--value: 16.7%"></div>
+              </div>
+              <div class="data-value">14<span class="data-unit">개</span></div>
+              <div class="data-value">1</div>
+            </li>
+            <li class="contributor-row" style="--series: var(--series-3)">
+              <div class="rank">03</div>
+              <div class="identity">
+                <div class="identity-mark">WK</div>
+                <div class="identity-copy">
+                  <div class="handle">wndkfl</div>
+                  <div class="alias">2 email identities merged</div>
+                </div>
+              </div>
+              <div class="bar-track" aria-label="전체 84개 커밋 중 10개">
+                <div class="bar-fill" style="--value: 11.9%"></div>
+              </div>
+              <div class="data-value">10<span class="data-unit">개</span></div>
+              <div class="data-value">3</div>
+            </li>
+            <li class="contributor-row" style="--series: var(--series-4)">
+              <div class="rank">04</div>
+              <div class="identity">
+                <div class="identity-mark">S3</div>
+                <div class="identity-copy">
+                  <div class="handle">SEON3345</div>
+                  <div class="alias">GitHub contributor</div>
+                </div>
+              </div>
+              <div class="bar-track" aria-label="전체 84개 커밋 중 9개">
+                <div class="bar-fill" style="--value: 10.7%"></div>
+              </div>
+              <div class="data-value">9<span class="data-unit">개</span></div>
+              <div class="data-value">4</div>
+            </li>
+            <li class="contributor-row" style="--series: var(--series-5)">
+              <div class="rank">05</div>
+              <div class="identity">
+                <div class="identity-mark">KM</div>
+                <div class="identity-copy">
+                  <div class="handle">KdlsMH</div>
+                  <div class="alias">GitHub contributor</div>
+                </div>
+              </div>
+              <div class="bar-track" aria-label="전체 84개 커밋 중 4개">
+                <div class="bar-fill" style="--value: 4.8%"></div>
+              </div>
+              <div class="data-value">4<span class="data-unit">개</span></div>
+              <div class="data-value">1</div>
+            </li>
+            <li class="contributor-row" style="--series: var(--series-6)">
+              <div class="rank">06</div>
+              <div class="identity">
+                <div class="identity-mark">BD</div>
+                <div class="identity-copy">
+                  <div class="handle">bdyong</div>
+                  <div class="alias">GitHub contributor</div>
+                </div>
+              </div>
+              <div class="bar-track" aria-label="전체 84개 커밋 중 1개">
+                <div class="bar-fill" style="--value: 1.2%"></div>
+              </div>
+              <div class="data-value">1<span class="data-unit">개</span></div>
+              <div class="data-value">0</div>
+            </li>
+          </ol>
+        </article>
+
+        <article class="panel activity-panel">
+          <div class="section-header">
+            <div>
+              <div class="section-kicker">Monthly Activity</div>
+              <h2 class="section-title">월별 커밋 집중도</h2>
+            </div>
+            <div class="section-note">셀 안 숫자 · 커밋 수</div>
+          </div>
+          <table class="matrix" aria-label="기여자별 월간 커밋 수">
+            <thead>
+              <tr>
+                <th scope="col"></th>
+                <th scope="col">3월<br />4</th>
+                <th scope="col">4월<br />38</th>
+                <th scope="col">5월<br />15</th>
+                <th scope="col">6월<br />4</th>
+                <th scope="col">7월<br />23</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="--series: var(--series-1)">
+                <th class="row-label" scope="row"><span></span>stevenahhh</th>
+                <td class="matrix-cell" style="--level: 0.08">1</td>
+                <td class="matrix-cell" style="--level: 1">19</td>
+                <td class="matrix-cell" style="--level: 0.68">13</td>
+                <td class="matrix-cell zero" style="--level: 0">0</td>
+                <td class="matrix-cell" style="--level: 0.68">13</td>
+              </tr>
+              <tr style="--series: var(--series-2)">
+                <th class="row-label" scope="row"><span></span>JangGayeon</th>
+                <td class="matrix-cell zero" style="--level: 0">0</td>
+                <td class="matrix-cell" style="--level: 0.58">11</td>
+                <td class="matrix-cell" style="--level: 0.12">2</td>
+                <td class="matrix-cell zero" style="--level: 0">0</td>
+                <td class="matrix-cell" style="--level: 0.08">1</td>
+              </tr>
+              <tr style="--series: var(--series-3)">
+                <th class="row-label" scope="row"><span></span>wndkfl</th>
+                <td class="matrix-cell zero" style="--level: 0">0</td>
+                <td class="matrix-cell" style="--level: 0.22">4</td>
+                <td class="matrix-cell zero" style="--level: 0">0</td>
+                <td class="matrix-cell" style="--level: 0.22">4</td>
+                <td class="matrix-cell" style="--level: 0.12">2</td>
+              </tr>
+              <tr style="--series: var(--series-4)">
+                <th class="row-label" scope="row"><span></span>SEON3345</th>
+                <td class="matrix-cell" style="--level: 0.12">2</td>
+                <td class="matrix-cell zero" style="--level: 0">0</td>
+                <td class="matrix-cell zero" style="--level: 0">0</td>
+                <td class="matrix-cell zero" style="--level: 0">0</td>
+                <td class="matrix-cell" style="--level: 0.37">7</td>
+              </tr>
+              <tr style="--series: var(--series-5)">
+                <th class="row-label" scope="row"><span></span>KdlsMH</th>
+                <td class="matrix-cell zero" style="--level: 0">0</td>
+                <td class="matrix-cell" style="--level: 0.22">4</td>
+                <td class="matrix-cell zero" style="--level: 0">0</td>
+                <td class="matrix-cell zero" style="--level: 0">0</td>
+                <td class="matrix-cell zero" style="--level: 0">0</td>
+              </tr>
+              <tr style="--series: var(--series-6)">
+                <th class="row-label" scope="row"><span></span>bdyong</th>
+                <td class="matrix-cell" style="--level: 0.08">1</td>
+                <td class="matrix-cell zero" style="--level: 0">0</td>
+                <td class="matrix-cell zero" style="--level: 0">0</td>
+                <td class="matrix-cell zero" style="--level: 0">0</td>
+                <td class="matrix-cell zero" style="--level: 0">0</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="merge-summary" aria-label="Pull Request 병합 비율 90%, 18건 병합, 2건 종료">
+            <div class="merge-rate">90%<small>PR MERGE RATE</small></div>
+            <div>
+              <div class="merge-bar" aria-hidden="true">
+                <div class="merged"></div>
+                <div class="closed"></div>
+              </div>
+              <div class="merge-legend">
+                <span><strong>18</strong> merged</span>
+                <span><strong>2</strong> closed</span>
+              </div>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="timeline-panel" aria-labelledby="timeline-title">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Project Timeline</div>
+            <h2 class="section-title" id="timeline-title">주요 개발 이력</h2>
+          </div>
+          <div class="section-note">기능 브랜치와 병합 PR 기준</div>
+        </div>
+        <div class="timeline-grid">
+          <article class="milestone">
+            <div class="milestone-dot">INIT</div>
+            <div class="milestone-date">2026.03.30–31</div>
+            <div class="milestone-title">저장소·초기 자료 구성</div>
+            <div class="milestone-meta">initial commit · 3D assets</div>
+          </article>
+          <article class="milestone">
+            <div class="milestone-dot">#1–2</div>
+            <div class="milestone-date">2026.04.01</div>
+            <div class="milestone-title">날씨 통합과 MVP</div>
+            <div class="milestone-meta">frontend · weather pipeline</div>
+          </article>
+          <article class="milestone">
+            <div class="milestone-dot">#3</div>
+            <div class="milestone-date">2026.04.15</div>
+            <div class="milestone-title">차량 입출차 계수</div>
+            <div class="milestone-meta">Parking-Counting · KdlsMH</div>
+          </article>
+          <article class="milestone">
+            <div class="milestone-dot">#4–9</div>
+            <div class="milestone-date">2026.04.30–05.11</div>
+            <div class="milestone-title">미기후·팝업·UI 고도화</div>
+            <div class="milestone-meta">MRT · materials · dashboard</div>
+          </article>
+          <article class="milestone">
+            <div class="milestone-dot">#10–12</div>
+            <div class="milestone-date">2026.06.01–07.02</div>
+            <div class="milestone-title">D4 교통·화면 재구성</div>
+            <div class="milestone-meta">traffic · sidebar · wndkfl</div>
+          </article>
+          <article class="milestone final">
+            <div class="milestone-dot">#13–20</div>
+            <div class="milestone-date">2026.07.19–20</div>
+            <div class="milestone-title">VWorld·강의실 통합</div>
+            <div class="milestone-meta">renderer · classroom · conflict resolution</div>
+          </article>
+        </div>
+      </section>
+
+      <footer class="report-footer">
+        <div class="methodology">
+          집계: <strong>dev</strong> 커밋 + GitHub PR. 이름·이메일 별칭을 통합하고 자동화 계정은 제외했습니다.
+          건수는 품질·투입 시간을 의미하지 않으며 줄 변경량은 생성 파일 영향으로 생략했습니다.
+        </div>
+        <div class="source">Source · Git history + GitHub API</div>
+      </footer>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,22 @@
+CURATED TEST SUMMARY
+Source run: logs/vworld-tests-raw.log
+
+Coverage groups:
+- Building resolver: 2
+- Camera focus: 3
+- D4 coordinate hit: 3
+- Selection activation: 4
+- SDK loader suite: 4
+
+Configured in-code values checked by the tests:
+- D4 coordinate: longitude 127.4764043 / latitude 34.9700548
+- canonical D4 element: BLD_D4
+- camera altitude: 200
+- camera direction: heading 0 / pitch -60 / roll 0
+- missing caller key: rejected
+- missing SDK after bootstrap: rejected
+- bootstrapped SDK: returned
+
+Provenance note:
+The tests verify consistency with the configured D4 coordinate. They do not independently establish external geographic provenance.
+

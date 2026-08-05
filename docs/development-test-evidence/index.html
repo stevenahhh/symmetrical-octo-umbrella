@@ -1,0 +1,2264 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SCNU 개발 및 테스트 증거 자료</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --canvas: #e9edf3;
+        --page: #ffffff;
+        --panel: #f5f7fa;
+        --panel-strong: #eef1f6;
+        --ink: #12151b;
+        --muted: #4d5666;
+        --quiet: #687386;
+        --border: #d7dde7;
+        --border-strong: #bfc8d6;
+        --indigo: #4f5fd7;
+        --indigo-soft: #e7eafe;
+        --green: #11845c;
+        --green-soft: #e1f4ec;
+        --amber: #a96800;
+        --amber-soft: #fff2d8;
+        --red: #c2465a;
+        --mono: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+        --sans: Arial, "Noto Sans KR", system-ui, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        background: var(--canvas);
+        color: var(--ink);
+        font-family: var(--sans);
+        font-variant-numeric: tabular-nums;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      body {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        gap: 80px;
+        padding: 80px 0;
+      }
+
+      .page {
+        display: grid;
+        width: 2160px;
+        height: 1440px;
+        padding: 72px 80px 52px;
+        overflow: hidden;
+        background: var(--page);
+        grid-template-rows: auto auto minmax(0, 1fr) auto;
+        gap: 28px;
+      }
+
+      .masthead {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 40px;
+      }
+
+      .kicker,
+      .section-kicker,
+      .metric-label,
+      .source-tag {
+        color: var(--indigo);
+        font-family: var(--mono);
+        font-size: 24px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .kicker {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+      }
+
+      .kicker::before {
+        width: 52px;
+        height: 4px;
+        background: var(--indigo);
+        content: "";
+      }
+
+      h1 {
+        margin: 14px 0 8px;
+        font-size: 64px;
+        font-weight: 700;
+        letter-spacing: -0.04em;
+        line-height: 1.1;
+        word-break: keep-all;
+      }
+
+      .subtitle {
+        margin: 0;
+        color: var(--muted);
+        font-size: 28px;
+        line-height: 1.45;
+        word-break: keep-all;
+      }
+
+      .header-badges {
+        display: flex;
+        align-items: flex-end;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .badge-row {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 12px;
+      }
+
+      .badge {
+        padding: 12px 18px;
+        border: 2px solid var(--border);
+        border-radius: 10px;
+        background: var(--panel);
+        color: var(--muted);
+        font-family: var(--mono);
+        font-size: 24px;
+        font-weight: 700;
+      }
+
+      .badge.pass {
+        border-color: #9dd7c3;
+        background: var(--green-soft);
+        color: var(--green);
+      }
+
+      .badge.mock {
+        border-color: #efc778;
+        background: var(--amber-soft);
+        color: var(--amber);
+      }
+
+      .snapshot {
+        color: var(--quiet);
+        font-family: var(--mono);
+        font-size: 24px;
+      }
+
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(var(--metric-count, 3), minmax(0, 1fr));
+        gap: 20px;
+      }
+
+      .metric {
+        display: grid;
+        min-height: 142px;
+        padding: 24px 28px;
+        border: 2px solid var(--border);
+        border-radius: 16px;
+        background: var(--panel);
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: end;
+      }
+
+      .metric.primary {
+        border-color: #aab2f0;
+        background: var(--indigo-soft);
+      }
+
+      .metric.pass {
+        border-color: #9dd7c3;
+        background: var(--green-soft);
+      }
+
+      .metric-value {
+        margin-top: 8px;
+        font-size: 84px;
+        font-weight: 750;
+        letter-spacing: -0.05em;
+        line-height: 1.1;
+      }
+
+      .metric-note {
+        max-width: 230px;
+        color: var(--muted);
+        font-size: 24px;
+        line-height: 1.35;
+        text-align: right;
+        word-break: keep-all;
+      }
+
+      .panel {
+        min-height: 0;
+        padding: 30px 34px;
+        border: 2px solid var(--border);
+        border-radius: 18px;
+        background: var(--panel);
+      }
+
+      .panel.white {
+        background: var(--page);
+      }
+
+      .section-header {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 28px;
+        margin-bottom: 24px;
+      }
+
+      h2 {
+        margin: 6px 0 0;
+        font-size: 42px;
+        font-weight: 700;
+        letter-spacing: -0.025em;
+        line-height: 1.25;
+        word-break: keep-all;
+      }
+
+      h3 {
+        margin: 0;
+        font-size: 32px;
+        font-weight: 700;
+        line-height: 1.3;
+        word-break: keep-all;
+      }
+
+      .section-note {
+        color: var(--quiet);
+        font-size: 24px;
+        line-height: 1.4;
+        text-align: right;
+      }
+
+      .page-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 28px;
+        padding-top: 4px;
+        color: var(--quiet);
+        font-size: 24px;
+        line-height: 1.4;
+      }
+
+      .page-footer strong {
+        color: var(--muted);
+      }
+
+      .source-tag {
+        flex: 0 0 auto;
+        color: var(--quiet);
+        font-size: 24px;
+        white-space: nowrap;
+      }
+
+      /* Page 01 */
+      .building-content {
+        display: grid;
+        min-height: 0;
+        grid-template-columns: minmax(0, 1.7fr) minmax(620px, 1fr);
+        gap: 24px;
+      }
+
+      .floor-table {
+        display: grid;
+        min-height: 0;
+        grid-template-rows: auto repeat(6, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .floor-head,
+      .floor-row {
+        display: grid;
+        grid-template-columns: 100px minmax(0, 1fr) 150px minmax(0, 1fr) 120px;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .floor-head {
+        min-height: 52px;
+        padding: 0 20px;
+        color: var(--quiet);
+        font-family: var(--mono);
+        font-size: 24px;
+        font-weight: 700;
+        text-align: center;
+      }
+
+      .floor-row {
+        min-height: 92px;
+        padding: 12px 18px;
+        border: 2px solid var(--border);
+        border-radius: 14px;
+        background: var(--page);
+      }
+
+      .floor-number {
+        font-size: 36px;
+        font-weight: 800;
+      }
+
+      .wing-block {
+        display: flex;
+        min-height: 58px;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 20px;
+        border: 2px solid #c4caef;
+        border-radius: 12px;
+        background: var(--indigo-soft);
+        color: #303b9f;
+        font-size: 26px;
+        font-weight: 700;
+      }
+
+      .wing-block.empty {
+        border-style: dashed;
+        border-color: var(--border-strong);
+        background: var(--panel);
+        color: var(--quiet);
+      }
+
+      .wing-block strong {
+        font-size: 36px;
+      }
+
+      .bridge {
+        display: grid;
+        min-height: 52px;
+        place-items: center;
+        border: 2px dashed var(--border-strong);
+        border-radius: 999px;
+        color: var(--quiet);
+        font-size: 24px;
+        font-weight: 700;
+      }
+
+      .bridge.active {
+        border-style: solid;
+        border-color: #9dd7c3;
+        background: var(--green-soft);
+        color: var(--green);
+      }
+
+      .floor-total {
+        font-family: var(--mono);
+        font-size: 30px;
+        font-weight: 800;
+        text-align: right;
+      }
+
+      .special-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .special-room {
+        min-height: 112px;
+        padding: 18px 20px;
+        border: 2px solid var(--border);
+        border-radius: 14px;
+        background: var(--page);
+      }
+
+      .special-room strong {
+        display: block;
+        color: var(--indigo);
+        font-family: var(--mono);
+        font-size: 30px;
+      }
+
+      .special-room span {
+        display: block;
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 25px;
+        font-weight: 700;
+      }
+
+      .mock-note {
+        margin-top: 18px;
+        padding: 20px 22px;
+        border: 2px solid #efc778;
+        border-radius: 14px;
+        background: var(--amber-soft);
+        color: #6f4600;
+        font-size: 26px;
+        font-weight: 700;
+        line-height: 1.4;
+        word-break: keep-all;
+      }
+
+      /* Page 02 */
+      .room-content {
+        display: grid;
+        min-height: 0;
+        grid-template-columns: 720px minmax(0, 1fr);
+        gap: 24px;
+      }
+
+      .room-profile {
+        display: grid;
+        grid-template-rows: auto auto auto 1fr;
+        gap: 18px;
+      }
+
+      .room-id {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        padding-bottom: 18px;
+        border-bottom: 2px solid var(--border);
+      }
+
+      .room-id strong {
+        font-size: 68px;
+        letter-spacing: -0.04em;
+      }
+
+      .status-pill {
+        padding: 12px 18px;
+        border: 2px solid #9dd7c3;
+        border-radius: 999px;
+        background: var(--green-soft);
+        color: var(--green);
+        font-size: 26px;
+        font-weight: 800;
+      }
+
+      .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .detail-card {
+        min-height: 112px;
+        padding: 18px 20px;
+        border: 2px solid var(--border);
+        border-radius: 14px;
+        background: var(--page);
+      }
+
+      .detail-card span {
+        display: block;
+        color: var(--quiet);
+        font-size: 24px;
+        font-weight: 700;
+      }
+
+      .detail-card strong {
+        display: block;
+        margin-top: 8px;
+        font-size: 30px;
+      }
+
+      .saving-box {
+        display: grid;
+        padding: 24px;
+        border: 2px solid #9dd7c3;
+        border-radius: 16px;
+        background: var(--green-soft);
+        grid-template-columns: 1fr auto;
+        align-items: end;
+        gap: 20px;
+      }
+
+      .saving-box strong {
+        display: block;
+        color: var(--green);
+        font-size: 54px;
+        line-height: 1.08;
+      }
+
+      .saving-box span {
+        color: #376a58;
+        font-size: 25px;
+        font-weight: 700;
+      }
+
+      .saving-rate {
+        display: flex;
+        min-height: 104px;
+        align-items: center;
+        color: var(--green);
+        font-size: 74px;
+        font-weight: 800;
+        line-height: 1.2;
+      }
+
+      .schedule {
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr);
+      }
+
+      .week-timetable {
+        display: grid;
+        min-height: 0;
+        grid-template-columns: 88px minmax(0, 1fr);
+        grid-template-rows: 54px minmax(0, 1fr);
+      }
+
+      .timetable-corner {
+        display: grid;
+        place-items: center;
+        border: 1px solid var(--border);
+        border-right: 0;
+        border-radius: 12px 0 0 0;
+        background: var(--panel-strong);
+        color: var(--quiet);
+        font-size: 16px;
+      }
+
+      .timetable-days {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        border: 1px solid var(--border);
+        border-radius: 0 12px 0 0;
+        background: var(--panel-strong);
+      }
+
+      .timetable-day {
+        display: grid;
+        place-items: center;
+        border-left: 1px solid var(--border);
+        font-size: 20px;
+        text-align: center;
+      }
+
+      .timetable-day:first-child {
+        border-left: 0;
+      }
+
+      .timetable-axis {
+        position: relative;
+        min-height: 0;
+        border: 1px solid var(--border);
+        border-top: 0;
+        border-radius: 0 0 0 12px;
+        background: var(--page);
+      }
+
+      .time-label {
+        position: absolute;
+        top: calc(var(--time-position) * 11.111111%);
+        right: 12px;
+        color: var(--quiet);
+        font-family: var(--mono);
+        font-size: 15px;
+        line-height: 1;
+        transform: translateY(-50%);
+      }
+
+      .time-label:first-child {
+        transform: none;
+      }
+
+      .time-label:last-child {
+        transform: translateY(-100%);
+      }
+
+      .timetable-board {
+        position: relative;
+        display: grid;
+        min-height: 0;
+        overflow: hidden;
+        border-right: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+        border-radius: 0 0 12px 0;
+        background-color: var(--page);
+        background-image: linear-gradient(
+          to bottom,
+          transparent calc(100% - 1px),
+          var(--border) 1px
+        );
+        background-size: 100% calc(100% / 9);
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+      }
+
+      .timetable-day-track {
+        min-width: 0;
+        border-left: 1px solid var(--border);
+      }
+
+      .timetable-event {
+        position: absolute;
+        top: calc(var(--start) * 11.111111% + 8px);
+        left: calc(var(--day) * 20% + 10px);
+        display: flex;
+        width: calc(20% - 20px);
+        height: calc(var(--duration) * 11.111111% - 16px);
+        min-height: 96px;
+        justify-content: center;
+        flex-direction: column;
+        padding: 14px 16px;
+        border: 2px solid #aab2f0;
+        border-radius: 10px;
+        background: var(--indigo-soft);
+        color: var(--ink);
+        word-break: keep-all;
+      }
+
+      .timetable-event-time {
+        color: var(--indigo);
+        font-family: var(--mono);
+        font-size: 17px;
+      }
+
+      .timetable-event-name {
+        margin-top: 8px;
+        font-size: 22px;
+      }
+
+      .timetable-event-meta {
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 16px;
+      }
+
+      /* Page 03 */
+      .solar-content {
+        display: grid;
+        min-height: 0;
+        grid-template-columns: 1.04fr 0.96fr;
+        gap: 24px;
+      }
+
+      .solar-left,
+      .pv-right {
+        display: grid;
+        min-height: 0;
+        gap: 18px;
+      }
+
+      .solar-left {
+        grid-template-rows: 1fr auto;
+      }
+
+      .sun-chart {
+        display: grid;
+        min-height: 0;
+        grid-template-rows: auto minmax(0, 1fr);
+      }
+
+      .chart-canvas-wrap {
+        position: relative;
+        min-height: 0;
+      }
+
+      .chart-canvas-wrap canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      .test-card-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .test-card {
+        min-height: 132px;
+        padding: 18px 20px;
+        border: 2px solid #9dd7c3;
+        border-radius: 14px;
+        background: var(--green-soft);
+      }
+
+      .test-card .pass-mark {
+        color: var(--green);
+        font-family: var(--mono);
+        font-size: 24px;
+        font-weight: 800;
+      }
+
+      .test-card strong {
+        display: block;
+        margin-top: 10px;
+        font-size: 27px;
+        line-height: 1.3;
+      }
+
+      .test-card span {
+        display: block;
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 24px;
+        line-height: 1.35;
+      }
+
+      .formula {
+        display: grid;
+        padding: 24px;
+        border: 2px solid #aab2f0;
+        border-radius: 16px;
+        background: var(--indigo-soft);
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        align-items: center;
+        gap: 12px;
+        text-align: center;
+      }
+
+      .formula-step {
+        color: #303b9f;
+        font-size: 25px;
+        font-weight: 800;
+        line-height: 1.35;
+      }
+
+      .formula-arrow {
+        color: var(--indigo);
+        font-size: 38px;
+        font-weight: 800;
+      }
+
+      .pv-cases {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .pv-case {
+        padding: 22px;
+        border: 2px solid var(--border);
+        border-radius: 14px;
+        background: var(--page);
+      }
+
+      .pv-case h3 {
+        color: var(--indigo);
+      }
+
+      .value-list {
+        display: grid;
+        margin-top: 18px;
+        gap: 10px;
+      }
+
+      .value-row {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 18px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border);
+        color: var(--muted);
+        font-size: 24px;
+      }
+
+      .value-row strong {
+        color: var(--ink);
+        font-size: 28px;
+      }
+
+      .result-large {
+        margin-top: 20px;
+        color: var(--green);
+        font-size: 48px;
+        font-weight: 800;
+      }
+
+      /* Page 04 */
+      .vworld-content {
+        display: grid;
+        min-height: 0;
+        grid-template-columns: 820px minmax(0, 1fr);
+        gap: 24px;
+      }
+
+      .coverage-groups {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .coverage-group {
+        min-width: 0;
+        min-height: 116px;
+        padding: 16px;
+        border: 2px solid var(--border);
+        border-radius: 14px;
+        background: var(--page);
+        text-align: center;
+      }
+
+      .coverage-group strong {
+        display: block;
+        color: var(--indigo);
+        font-size: 46px;
+      }
+
+      .coverage-group span {
+        display: block;
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 24px;
+        font-weight: 700;
+        line-height: 1.25;
+      }
+
+      .flow {
+        display: grid;
+        margin-top: 20px;
+        gap: 12px;
+      }
+
+      .flow-step {
+        display: grid;
+        min-height: 100px;
+        padding: 18px 20px;
+        border: 2px solid #c4caef;
+        border-radius: 14px;
+        background: var(--indigo-soft);
+        grid-template-columns: 64px 1fr;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .flow-number {
+        display: grid;
+        width: 56px;
+        height: 56px;
+        place-items: center;
+        border-radius: 12px;
+        background: var(--indigo);
+        color: white;
+        font-family: var(--mono);
+        font-size: 28px;
+        font-weight: 800;
+      }
+
+      .flow-step strong {
+        display: block;
+        font-size: 28px;
+      }
+
+      .flow-step span {
+        display: block;
+        margin-top: 5px;
+        color: var(--muted);
+        font-size: 24px;
+      }
+
+      .verified-values {
+        display: grid;
+        margin-top: 18px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .verified-value {
+        padding: 16px 18px;
+        border: 2px solid #9dd7c3;
+        border-radius: 12px;
+        background: var(--green-soft);
+        color: #376a58;
+        font-size: 24px;
+        font-weight: 700;
+        line-height: 1.35;
+      }
+
+      .verified-value strong {
+        display: block;
+        color: var(--green);
+        font-family: var(--mono);
+        font-size: 25px;
+      }
+
+      .test-list {
+        display: grid;
+        min-height: 0;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-auto-rows: minmax(0, 1fr);
+        gap: 10px;
+      }
+
+      .test-item {
+        display: grid;
+        min-height: 0;
+        padding: 13px 16px;
+        border: 2px solid var(--border);
+        border-radius: 12px;
+        background: var(--page);
+        grid-template-columns: 34px 1fr;
+        align-items: center;
+        gap: 12px;
+        color: var(--muted);
+        font-size: 24px;
+        font-weight: 700;
+        line-height: 1.25;
+      }
+
+      .test-item::before {
+        display: grid;
+        width: 30px;
+        height: 30px;
+        place-items: center;
+        border-radius: 50%;
+        background: var(--green);
+        color: white;
+        content: "✓";
+        font-size: 20px;
+        font-weight: 900;
+      }
+
+      #vworld-tests .flow {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      #vworld-tests .flow-step {
+        min-height: 84px;
+        padding: 10px 12px;
+        grid-template-columns: 50px 1fr;
+        gap: 10px;
+      }
+
+      #vworld-tests .flow-step:last-child {
+        grid-column: 1 / -1;
+      }
+
+      #vworld-tests .flow-number {
+        width: 48px;
+        height: 48px;
+        font-size: 24px;
+      }
+
+      #vworld-tests .flow-step strong {
+        font-size: 26px;
+        line-height: 1.15;
+      }
+
+      #vworld-tests .flow-step span {
+        margin-top: 2px;
+        font-size: 24px;
+        line-height: 1.2;
+      }
+
+      /*
+       * Standard document export.
+       * Final images are produced only through HTML -> PDF -> PNG.
+       */
+      body .page *,
+      body .page *::before,
+      body .page *::after,
+      body .page svg text {
+        font-weight: 400;
+      }
+
+      .page {
+        grid-template-rows: auto auto minmax(0, 1fr);
+        gap: 24px;
+      }
+
+      .kicker,
+      .section-kicker,
+      .metric-label,
+      .source-tag {
+        font-size: 16px;
+        letter-spacing: 0.04em;
+      }
+
+      h1 {
+        margin: 10px 0 0;
+        font-size: 40px;
+        letter-spacing: -0.02em;
+      }
+
+      .badge,
+      .snapshot {
+        font-size: 16px;
+      }
+
+      .badge {
+        padding: 9px 14px;
+      }
+
+      .metric {
+        min-height: 118px;
+        padding: 20px 24px;
+      }
+
+      .metric-value {
+        font-size: 52px;
+        letter-spacing: -0.02em;
+      }
+
+      .metric-note,
+      .section-note {
+        font-size: 18px;
+      }
+
+      .panel {
+        padding: 26px 30px;
+      }
+
+      h2 {
+        font-size: 26px;
+        letter-spacing: -0.01em;
+      }
+
+      h3 {
+        font-size: 22px;
+      }
+
+      .floor-head,
+      .bridge,
+      .source-tag,
+      .detail-card span,
+      .class-block span,
+      .empty-day,
+      .test-card .pass-mark,
+      .test-card span,
+      .value-row,
+      .coverage-group span,
+      .flow-step span,
+      #vworld-tests .flow-step span,
+      .verified-value,
+      .test-item {
+        font-size: 18px;
+      }
+
+      .floor-number,
+      .wing-block strong,
+      .special-room strong,
+      .detail-card strong,
+      .day-name,
+      .class-block strong,
+      .value-row strong,
+      .coverage-group strong {
+        font-size: 26px;
+      }
+
+      .wing-block,
+      .special-room span,
+      .mock-note,
+      .status-pill,
+      .saving-box span,
+      .schedule-note,
+      .test-card strong,
+      .formula-step,
+      .pv-case h3,
+      .verified-value strong,
+      #vworld-tests .flow-step strong {
+        font-size: 20px;
+      }
+
+      .floor-total,
+      .class-block .time,
+      .flow-number,
+      #vworld-tests .flow-number {
+        font-size: 22px;
+        font-weight: 400;
+      }
+
+      .room-id strong,
+      .saving-box strong,
+      .result-large {
+        font-size: 38px;
+      }
+
+      .saving-rate {
+        font-size: 46px;
+      }
+
+      .formula-arrow {
+        font-size: 30px;
+      }
+
+      .test-card .pass-mark {
+        font-weight: 400;
+      }
+
+      body .page svg text {
+        font-size: 22px;
+      }
+
+      #d4-building .special-grid {
+        grid-template-columns: 1fr;
+      }
+
+      #d4-building .special-room {
+        min-height: 76px;
+      }
+
+      #d4-room .room-profile {
+        grid-template-rows: auto auto auto auto;
+        align-content: start;
+      }
+
+      #vworld-tests .vworld-content > .panel:first-child {
+        display: grid;
+        grid-template-rows: auto auto minmax(0, 1fr) auto;
+      }
+
+      #vworld-tests .vworld-content > .panel:last-child {
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr);
+      }
+
+      /* Pages 05-08 · Conference research appendix */
+      .conference-page {
+        background:
+          linear-gradient(135deg, rgba(79, 95, 215, 0.05), transparent 34%),
+          var(--page);
+      }
+
+      .conference-page .masthead {
+        border-bottom-color: #c4caef;
+      }
+
+      .conference-page a {
+        color: #303b9f;
+        text-decoration-thickness: 1px;
+        text-underline-offset: 4px;
+      }
+
+      .conference-page a:focus-visible {
+        outline: 3px solid var(--indigo);
+        outline-offset: 4px;
+      }
+
+      .conference-lead {
+        display: grid;
+        min-height: 0;
+        grid-template-columns: 1.08fr 0.92fr;
+        gap: 24px;
+      }
+
+      .paper-frame-grid,
+      .venue-grid {
+        display: grid;
+        min-height: 0;
+        gap: 14px;
+      }
+
+      .paper-frame-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .paper-frame,
+      .venue-card,
+      .research-note,
+      .source-block {
+        border: 2px solid var(--border);
+        border-radius: 14px;
+        background: var(--page);
+      }
+
+      .paper-frame {
+        padding: 20px 22px;
+      }
+
+      .paper-frame strong {
+        display: block;
+        color: var(--indigo);
+        font-size: 22px;
+      }
+
+      .paper-frame p {
+        margin: 10px 0 0;
+        color: var(--muted);
+        font-size: 18px;
+        line-height: 1.45;
+        word-break: keep-all;
+      }
+
+      .fit-evidence {
+        display: grid;
+        align-content: start;
+        gap: 14px;
+      }
+
+      .fit-row {
+        padding: 18px 20px;
+        border: 2px solid #c4caef;
+        border-radius: 14px;
+        background: var(--indigo-soft);
+      }
+
+      .fit-row strong {
+        display: block;
+        color: #303b9f;
+        font-size: 20px;
+      }
+
+      .fit-row span {
+        display: block;
+        margin-top: 7px;
+        color: var(--muted);
+        font-size: 18px;
+        line-height: 1.4;
+      }
+
+      .conference-warning {
+        padding: 18px 20px;
+        border: 2px solid #efc778;
+        border-radius: 14px;
+        background: var(--amber-soft);
+        color: #6f4600;
+        font-size: 18px;
+        line-height: 1.45;
+        word-break: keep-all;
+      }
+
+      .venue-grid.primary-venues {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .venue-grid.followup-venues {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-rows: repeat(2, minmax(0, 1fr));
+      }
+
+      .venue-card {
+        display: grid;
+        min-height: 0;
+        padding: 22px;
+        grid-template-rows: auto auto auto 1fr auto;
+        align-content: start;
+        gap: 10px;
+      }
+
+      .venue-card.featured {
+        border-color: #aab2f0;
+        background: linear-gradient(180deg, var(--indigo-soft), var(--page) 38%);
+      }
+
+      .venue-rank {
+        color: var(--quiet);
+        font-family: var(--mono);
+        font-size: 16px;
+      }
+
+      .venue-status {
+        width: fit-content;
+        padding: 7px 10px;
+        border-radius: 999px;
+        background: var(--green-soft);
+        color: var(--green);
+        font-size: 15px;
+      }
+
+      .venue-status.waiting {
+        background: var(--amber-soft);
+        color: #7a5300;
+      }
+
+      .venue-card h2 {
+        margin: 0;
+        font-size: 24px;
+        line-height: 1.25;
+      }
+
+      .venue-meta {
+        color: var(--muted);
+        font-family: var(--mono);
+        font-size: 16px;
+        line-height: 1.45;
+      }
+
+      .venue-card p,
+      .venue-card li {
+        color: var(--muted);
+        font-size: 17px;
+        line-height: 1.45;
+        word-break: keep-all;
+      }
+
+      .venue-card p {
+        margin: 0;
+      }
+
+      .venue-action {
+        padding-top: 10px;
+        border-top: 1px solid var(--border);
+        color: var(--ink);
+        font-size: 16px;
+        line-height: 1.4;
+      }
+
+      .venue-action strong {
+        color: var(--indigo);
+      }
+
+      .update-strip {
+        grid-column: 1 / -1;
+        display: grid;
+        padding: 18px 22px;
+        border: 2px solid #9dd7c3;
+        border-radius: 14px;
+        background: var(--green-soft);
+        grid-template-columns: auto 1fr;
+        align-items: center;
+        gap: 18px;
+        color: #376a58;
+        font-size: 18px;
+        line-height: 1.4;
+      }
+
+      .update-strip strong {
+        color: var(--green);
+        font-size: 20px;
+        white-space: nowrap;
+      }
+
+      .conference-audit {
+        display: grid;
+        min-height: 0;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 24px;
+      }
+
+      .conference-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .conference-table th,
+      .conference-table td {
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--border);
+        font-size: 16px;
+        line-height: 1.35;
+        text-align: left;
+        vertical-align: top;
+      }
+
+      .conference-table th {
+        color: var(--quiet);
+        font-size: 15px;
+      }
+
+      .conference-table td:first-child {
+        color: var(--ink);
+        font-weight: 400;
+      }
+
+      .audit-side {
+        display: grid;
+        min-height: 0;
+        grid-template-rows: auto 1fr;
+        gap: 14px;
+      }
+
+      .research-note,
+      .source-block {
+        padding: 20px 22px;
+      }
+
+      .research-note h2,
+      .source-block h2 {
+        margin-bottom: 12px;
+      }
+
+      .research-note ol,
+      .source-block ol {
+        margin: 0;
+        padding-left: 22px;
+      }
+
+      .research-note li,
+      .source-block li {
+        color: var(--muted);
+        font-size: 15px;
+        line-height: 1.4;
+      }
+
+      .research-note li + li,
+      .source-block li + li {
+        margin-top: 7px;
+      }
+
+      .source-block ol {
+        columns: 2;
+        column-gap: 28px;
+      }
+
+      .source-block li {
+        break-inside: avoid;
+      }
+
+      @page {
+        size: 15in 10in;
+        margin: 0;
+      }
+
+      @media print {
+        html,
+        body {
+          width: 2160px;
+          min-height: 1440px;
+          background: #ffffff;
+        }
+
+        body {
+          display: block;
+          padding: 0;
+        }
+
+        .page {
+          width: 2160px;
+          height: 1440px;
+          break-after: page;
+          page-break-after: always;
+        }
+
+        .page:last-child {
+          break-after: auto;
+          page-break-after: auto;
+        }
+      }
+
+      @media (max-width: 2160px) {
+        body {
+          align-items: flex-start;
+          padding: 0;
+        }
+
+        .page {
+          transform-origin: top left;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <section class="page" id="d4-building" aria-labelledby="d4-building-title">
+      <header class="masthead">
+        <div>
+          <div class="kicker">Implementation Evidence · 01</div>
+          <h1 id="d4-building-title">공과대학 3호관 층별 단면</h1>
+        </div>
+        <div class="header-badges">
+          <div class="badge-row">
+            <span class="badge">D4 / 공대 3호관</span>
+            <span class="badge mock">목업·시뮬레이션 데이터</span>
+          </div>
+          <div class="snapshot">SOURCE · d4BuildingData.mjs · LIVE UI VERIFIED</div>
+        </div>
+      </header>
+
+      <div class="metrics" style="--metric-count: 3">
+        <article class="metric primary">
+          <div>
+            <div class="metric-label">Floors</div>
+            <div class="metric-value">6</div>
+          </div>
+          <div class="metric-note">왼쪽 동 5층<br />오른쪽 동 6층</div>
+        </article>
+        <article class="metric">
+          <div>
+            <div class="metric-label">Rooms</div>
+            <div class="metric-value">69</div>
+          </div>
+          <div class="metric-note">101호부터<br />601호까지 구성</div>
+        </article>
+        <article class="metric">
+          <div>
+            <div class="metric-label">Special Rooms</div>
+            <div class="metric-value">7</div>
+          </div>
+          <div class="metric-note">컴퓨터실·실험실·서버실 등</div>
+        </article>
+      </div>
+
+      <div class="building-content">
+        <article class="panel floor-table">
+          <div class="floor-head">
+            <span>층</span><span>왼쪽 동</span><span>연결</span><span>오른쪽 동</span><span>합계</span>
+          </div>
+          <div class="floor-row">
+            <div class="floor-number">6F</div>
+            <div class="wing-block empty">해당 없음</div>
+            <div class="bridge">—</div>
+            <div class="wing-block">오른쪽 동 <strong>1</strong></div>
+            <div class="floor-total">1실</div>
+          </div>
+          <div class="floor-row">
+            <div class="floor-number">5F</div>
+            <div class="wing-block">왼쪽 동 <strong>4</strong></div>
+            <div class="bridge active">연결 다리</div>
+            <div class="wing-block">오른쪽 동 <strong>3</strong></div>
+            <div class="floor-total">7실</div>
+          </div>
+          <div class="floor-row">
+            <div class="floor-number">4F</div>
+            <div class="wing-block">왼쪽 동 <strong>7</strong></div>
+            <div class="bridge">—</div>
+            <div class="wing-block">오른쪽 동 <strong>7</strong></div>
+            <div class="floor-total">14실</div>
+          </div>
+          <div class="floor-row">
+            <div class="floor-number">3F</div>
+            <div class="wing-block">왼쪽 동 <strong>9</strong></div>
+            <div class="bridge active">연결 다리</div>
+            <div class="wing-block">오른쪽 동 <strong>8</strong></div>
+            <div class="floor-total">17실</div>
+          </div>
+          <div class="floor-row">
+            <div class="floor-number">2F</div>
+            <div class="wing-block">왼쪽 동 <strong>8</strong></div>
+            <div class="bridge">—</div>
+            <div class="wing-block">오른쪽 동 <strong>8</strong></div>
+            <div class="floor-total">16실</div>
+          </div>
+          <div class="floor-row">
+            <div class="floor-number">1F</div>
+            <div class="wing-block">왼쪽 동 <strong>7</strong></div>
+            <div class="bridge">—</div>
+            <div class="wing-block">오른쪽 동 <strong>7</strong></div>
+            <div class="floor-total">14실</div>
+          </div>
+        </article>
+
+        <aside class="panel">
+          <div class="section-header">
+            <div>
+              <div class="section-kicker">Special Facilities</div>
+              <h2>특수 공간 구성</h2>
+            </div>
+            <div class="section-note">코드에 지정된 7개 실</div>
+          </div>
+          <div class="special-grid">
+            <div class="special-room"><strong>108</strong><span>컴퓨터실</span></div>
+            <div class="special-room"><strong>204</strong><span>실험실</span></div>
+            <div class="special-room"><strong>305</strong><span>서버실</span></div>
+            <div class="special-room"><strong>401</strong><span>교수/조교실</span></div>
+            <div class="special-room"><strong>410</strong><span>교수/조교실</span></div>
+            <div class="special-room"><strong>501</strong><span>프로젝트실</span></div>
+            <div class="special-room"><strong>601</strong><span>대학원실</span></div>
+          </div>
+          <div class="mock-note">
+            이 층·강의실 정보는 기능 검증용 목업 데이터이며 실제 공간 관리 시스템이나 센서의 측정값이 아닙니다.
+          </div>
+        </aside>
+      </div>
+
+    </section>
+
+    <section class="page" id="d4-room" aria-labelledby="d4-room-title">
+      <header class="masthead">
+        <div>
+          <div class="kicker">Implementation Evidence · 02</div>
+          <h1 id="d4-room-title">D4 301 강의실 상세</h1>
+        </div>
+        <div class="header-badges">
+          <div class="badge-row">
+            <span class="badge">3층 · 왼쪽 동</span>
+            <span class="badge mock">목업·시뮬레이션 데이터</span>
+          </div>
+          <div class="snapshot">LIVE UI · ROOM 301 SELECTED</div>
+        </div>
+      </header>
+
+      <div class="metrics" style="--metric-count: 4">
+        <article class="metric">
+          <div><div class="metric-label">Current State</div><div class="metric-value">공실</div></div>
+          <div class="metric-note">실행 캡처 시점<br />수업 없음</div>
+        </article>
+        <article class="metric">
+          <div><div class="metric-label">HVAC</div><div class="metric-value">대기</div></div>
+          <div class="metric-note">냉난방기<br />2대 구성</div>
+        </article>
+        <article class="metric pass">
+          <div><div class="metric-label">Weekly Saving</div><div class="metric-value">57.0</div></div>
+          <div class="metric-note">kWh / week<br />절감 가능</div>
+        </article>
+        <article class="metric pass">
+          <div><div class="metric-label">Saving Rate</div><div class="metric-value">11%</div></div>
+          <div class="metric-note">시뮬레이션<br />절감 비율</div>
+        </article>
+      </div>
+
+      <div class="room-content">
+        <article class="panel room-profile">
+          <div class="room-id">
+            <div>
+              <div class="section-kicker">Room Profile</div>
+              <strong>D4 301</strong>
+            </div>
+            <span class="status-pill">현재 공실</span>
+          </div>
+          <div class="detail-grid">
+            <div class="detail-card"><span>공간 유형</span><strong>강의실</strong></div>
+            <div class="detail-card"><span>규모</span><strong>대형</strong></div>
+            <div class="detail-card"><span>냉난방기</span><strong>2대</strong></div>
+            <div class="detail-card"><span>특수 설비</span><strong>대형 스크린</strong></div>
+          </div>
+          <div class="saving-box">
+            <div><strong>57.0 kWh</strong><span>주간 에너지 절감 가능량</span></div>
+            <div class="saving-rate">11%</div>
+          </div>
+          <div class="mock-note">
+            공실·냉난방·절감 정보는 시연용 상태 및 계산값입니다. 실제 수업, 설비 및 전력 계측 데이터가 아닙니다.
+          </div>
+        </article>
+
+        <article class="panel schedule">
+          <div class="section-header">
+            <div>
+              <div class="section-kicker">Weekly Timetable</div>
+              <h2>301호 주간 시간표</h2>
+            </div>
+            <div class="section-note">코드에서 생성된 2개 일정</div>
+          </div>
+          <div class="week-timetable" aria-label="301호 월요일부터 금요일까지 09시부터 18시 주간 시간표">
+            <div class="timetable-corner">시간</div>
+            <div class="timetable-days">
+              <div class="timetable-day">월요일</div>
+              <div class="timetable-day">화요일</div>
+              <div class="timetable-day">수요일</div>
+              <div class="timetable-day">목요일</div>
+              <div class="timetable-day">금요일</div>
+            </div>
+            <div class="timetable-axis" aria-hidden="true">
+              <span class="time-label" style="--time-position: 0">09:00</span>
+              <span class="time-label" style="--time-position: 1">10:00</span>
+              <span class="time-label" style="--time-position: 2">11:00</span>
+              <span class="time-label" style="--time-position: 3">12:00</span>
+              <span class="time-label" style="--time-position: 4">13:00</span>
+              <span class="time-label" style="--time-position: 5">14:00</span>
+              <span class="time-label" style="--time-position: 6">15:00</span>
+              <span class="time-label" style="--time-position: 7">16:00</span>
+              <span class="time-label" style="--time-position: 8">17:00</span>
+              <span class="time-label" style="--time-position: 9">18:00</span>
+            </div>
+            <div class="timetable-board">
+              <div class="timetable-day-track" aria-hidden="true"></div>
+              <div class="timetable-day-track" aria-hidden="true"></div>
+              <div class="timetable-day-track" aria-hidden="true"></div>
+              <div class="timetable-day-track" aria-hidden="true"></div>
+              <div class="timetable-day-track" aria-hidden="true"></div>
+              <article
+                class="timetable-event"
+                style="--day: 0; --start: 0; --duration: 3"
+                aria-label="월요일 09시부터 12시까지 인공지능, 담당 P-07"
+              >
+                <span class="timetable-event-time">09:00–12:00</span>
+                <span class="timetable-event-name">인공지능</span>
+                <span class="timetable-event-meta">담당 P-07 · 3시간</span>
+              </article>
+              <article
+                class="timetable-event"
+                style="--day: 2; --start: 4; --duration: 2"
+                aria-label="수요일 13시부터 15시까지 공학수학, 담당 P-01"
+              >
+                <span class="timetable-event-time">13:00–15:00</span>
+                <span class="timetable-event-name">공학수학</span>
+                <span class="timetable-event-meta">담당 P-01 · 2시간</span>
+              </article>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="page" id="solar-tests" aria-labelledby="solar-tests-title">
+      <header class="masthead">
+        <div>
+          <div class="kicker">Unit Test Evidence · 03</div>
+          <h1 id="solar-tests-title">태양 위치·태양광 계산 테스트</h1>
+        </div>
+        <div class="header-badges">
+          <div class="badge-row">
+            <span class="badge pass">5 PASS · 0 FAIL</span>
+            <span class="badge mock">계산 시뮬레이션 · 실측 아님</span>
+          </div>
+          <div class="snapshot">NODE TEST · duration 92.7309ms</div>
+        </div>
+      </header>
+
+      <div class="metrics" style="--metric-count: 4">
+        <article class="metric pass">
+          <div><div class="metric-label">Tests</div><div class="metric-value">5</div></div>
+          <div class="metric-note">전체 테스트<br />통과</div>
+        </article>
+        <article class="metric">
+          <div><div class="metric-label">Failures</div><div class="metric-value">0</div></div>
+          <div class="metric-note">취소·건너뜀<br />모두 0</div>
+        </article>
+        <article class="metric primary">
+          <div><div class="metric-label">Default PV</div><div class="metric-value">617.724</div></div>
+          <div class="metric-note">kWh / May<br />100㎡ 기준</div>
+        </article>
+        <article class="metric primary">
+          <div><div class="metric-label">1 kWp Benchmark</div><div class="metric-value">171.59</div></div>
+          <div class="metric-note">kWh / May<br />손실 0%</div>
+        </article>
+      </div>
+
+      <div class="solar-content">
+        <div class="solar-left">
+          <article class="panel sun-chart">
+            <div class="section-header">
+              <div>
+                <div class="section-kicker">Sun Altitude</div>
+                <h2>2026년 5월 15일 태양 고도</h2>
+              </div>
+              <div class="section-note">순천 캠퍼스 34.97°N / 127.476°E</div>
+            </div>
+            <figure class="chart-canvas-wrap">
+              <canvas
+                id="sun-altitude-chart"
+                role="img"
+                aria-label="태양 고도 비교. 1시는 -35.82도로 야간, 9시는 41.69도, 12시는 72.72도입니다."
+              ></canvas>
+              <table class="sr-only">
+                <caption>2026년 5월 15일 태양 고도</caption>
+                <thead><tr><th>시각</th><th>태양 고도</th><th>표시 상태</th></tr></thead>
+                <tbody>
+                  <tr><td>01:00</td><td>-35.82°</td><td>숨김</td></tr>
+                  <tr><td>09:00</td><td>41.69°</td><td>표시</td></tr>
+                  <tr><td>12:00</td><td>72.72°</td><td>표시</td></tr>
+                </tbody>
+              </table>
+            </figure>
+          </article>
+          <div class="test-card-grid">
+            <div class="test-card"><div class="pass-mark">PASS 03</div><strong>입력값 범위 보정</strong><span>13/50 30:88 → 12/31 23:59</span></div>
+            <div class="test-card"><div class="pass-mark">PASS 04</div><strong>정오 고도 비교</strong><span>72.72° &gt; 41.69°</span></div>
+            <div class="test-card"><div class="pass-mark">PASS 05</div><strong>야간 비표시</strong><span>01:00 visible = false</span></div>
+          </div>
+        </div>
+
+        <article class="panel pv-right">
+          <div>
+            <div class="section-kicker">PV Calculation</div>
+            <h2>5월 예상 발전량 계산 흐름</h2>
+          </div>
+          <div class="formula">
+            <div class="formula-step">옥상 면적<br />× 설치 비율</div>
+            <div class="formula-arrow">→</div>
+            <div class="formula-step">모듈 면적<br />× 효율</div>
+            <div class="formula-step">정격 출력<br />× 발전계수<br />× (1−손실)</div>
+          </div>
+          <div class="pv-cases">
+            <div class="pv-case">
+              <h3>PASS 01 · 기본 조건</h3>
+              <div class="value-list">
+                <div class="value-row"><span>옥상 면적</span><strong>100㎡</strong></div>
+                <div class="value-row"><span>설치 비율</span><strong>20%</strong></div>
+                <div class="value-row"><span>모듈 면적</span><strong>20㎡</strong></div>
+                <div class="value-row"><span>정격 출력</span><strong>4 kW</strong></div>
+                <div class="value-row"><span>시스템 손실</span><strong>10%</strong></div>
+              </div>
+              <div class="result-large">617.724 kWh</div>
+            </div>
+            <div class="pv-case">
+              <h3>PASS 02 · 1 kWp 기준</h3>
+              <div class="value-list">
+                <div class="value-row"><span>옥상 면적</span><strong>25㎡</strong></div>
+                <div class="value-row"><span>설치 비율</span><strong>20%</strong></div>
+                <div class="value-row"><span>모듈 면적</span><strong>5㎡</strong></div>
+                <div class="value-row"><span>정격 출력</span><strong>1 kW</strong></div>
+                <div class="value-row"><span>시스템 손실</span><strong>0%</strong></div>
+              </div>
+              <div class="result-large">171.59 kWh</div>
+            </div>
+          </div>
+        </article>
+      </div>
+
+    </section>
+
+    <section class="page" id="vworld-tests" aria-labelledby="vworld-tests-title">
+      <header class="masthead">
+        <div>
+          <div class="kicker">Unit Test Evidence · 04</div>
+          <h1 id="vworld-tests-title">VWorld 선택·카메라·SDK 테스트</h1>
+        </div>
+        <div class="header-badges">
+          <div class="badge-row"><span class="badge pass">16 PASS · 0 FAIL</span></div>
+          <div class="snapshot">NODE TEST · duration 115.3676ms</div>
+        </div>
+      </header>
+
+      <div class="metrics" style="--metric-count: 4">
+        <article class="metric pass">
+          <div><div class="metric-label">Tests</div><div class="metric-value">16</div></div>
+          <div class="metric-note">전체 결과<br />통과</div>
+        </article>
+        <article class="metric">
+          <div><div class="metric-label">Failures</div><div class="metric-value">0</div></div>
+          <div class="metric-note">취소·건너뜀<br />모두 0</div>
+        </article>
+        <article class="metric primary">
+          <div><div class="metric-label">Mapped Buildings</div><div class="metric-value">33</div></div>
+          <div class="metric-note">MODEL_NAME<br />매핑 계약</div>
+        </article>
+        <article class="metric primary">
+          <div><div class="metric-label">D4 Element</div><div class="metric-value">BLD_D4</div></div>
+          <div class="metric-note">좌표 기반<br />대체 선택</div>
+        </article>
+      </div>
+
+      <div class="vworld-content">
+        <article class="panel">
+          <div class="section-header">
+            <div>
+              <div class="section-kicker">Coverage Flow</div>
+              <h2>선택 처리 검증 경로</h2>
+            </div>
+          </div>
+          <div class="coverage-groups">
+            <div class="coverage-group"><strong>2</strong><span>건물 ID<br />매핑</span></div>
+            <div class="coverage-group"><strong>3</strong><span>카메라<br />포커스</span></div>
+            <div class="coverage-group"><strong>3</strong><span>D4 좌표<br />판정</span></div>
+            <div class="coverage-group"><strong>4</strong><span>선택<br />어댑터</span></div>
+            <div class="coverage-group"><strong>4</strong><span>SDK<br />로더</span></div>
+          </div>
+          <div class="flow">
+            <div class="flow-step"><div class="flow-number">1</div><div><strong>MODEL_NAME 해석</strong><span>VWorld 모델 이름 → 내부 건물 정보</span></div></div>
+            <div class="flow-step"><div class="flow-number">2</div><div><strong>표준 BLD 선택 생성</strong><span>elementId + displayName 계약</span></div></div>
+            <div class="flow-step"><div class="flow-number">3</div><div><strong>D4 좌표 대체 판정</strong><span>모델 미등록 D4는 검증 좌표로 선택</span></div></div>
+            <div class="flow-step"><div class="flow-number">4</div><div><strong>카메라 moveTo</strong><span>좌표 유효성 및 API 존재 여부 확인</span></div></div>
+            <div class="flow-step"><div class="flow-number">5</div><div><strong>SDK 부트스트랩 확인</strong><span>키 누락·SDK 부재·정상 반환 검증</span></div></div>
+          </div>
+          <div class="verified-values">
+            <div class="verified-value"><strong>CONFIGURED D4 COORDINATE</strong>127.4764043 / 34.9700548</div>
+            <div class="verified-value"><strong>CAMERA ARGUMENTS</strong>alt 200 · heading 0 · pitch −60 · roll 0</div>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="section-header">
+            <div>
+              <div class="section-kicker">Executed Results</div>
+              <h2>통과한 16개 결과</h2>
+            </div>
+            <div class="section-note">실행 로그 순서</div>
+          </div>
+          <div class="test-list">
+            <div class="test-item">33개 MODEL_NAME 표준 선택 변환</div>
+            <div class="test-item">빈 값·미등록 MODEL_NAME은 null</div>
+            <div class="test-item">카메라를 정확히 1회 이동</div>
+            <div class="test-item">유효하지 않은 좌표는 무시</div>
+            <div class="test-item">lookat.moveTo 없으면 변경 없음</div>
+            <div class="test-item">허용 범위 안 D4 클릭 일치</div>
+            <div class="test-item">허용 범위 밖 D4 클릭 불일치</div>
+            <div class="test-item">지도 좌표 없으면 D4 불일치</div>
+            <div class="test-item">D4 비네이티브 좌표 마커 정의</div>
+            <div class="test-item">네이티브 모델 선택 활성화</div>
+            <div class="test-item">미등록 모델 선택 비활성</div>
+            <div class="test-item">D4도 동일 선택 형식으로 활성화</div>
+            <div class="test-item">파싱 시점 SDK 로더 스위트</div>
+            <div class="test-item">호출자 API 키 누락 거부</div>
+            <div class="test-item">부트스트랩 후 SDK 부재 거부</div>
+            <div class="test-item">부트스트랩된 SDK 정상 반환</div>
+          </div>
+        </article>
+      </div>
+
+    </section>
+
+    <section class="page conference-page" id="conference-strategy" aria-labelledby="conference-strategy-title">
+      <header class="masthead">
+        <div>
+          <div class="kicker">Conference Research Appendix · 05</div>
+          <h1 id="conference-strategy-title">SCNU 디지털 트윈 학회 투고 전략</h1>
+        </div>
+        <div class="header-badges">
+          <div class="badge-row">
+            <span class="badge">외부 조사본 전체 반영</span>
+            <span class="badge mock">2026-07-31 기준 재검증</span>
+          </div>
+          <div class="snapshot">ADDITIVE APPENDIX · ORIGINAL 4 PAGES PRESERVED</div>
+        </div>
+      </header>
+
+      <div class="metrics" style="--metric-count: 4">
+        <article class="metric primary">
+          <div><div class="metric-label">Primary Candidates</div><div class="metric-value">3</div></div>
+          <div class="metric-note">KSII · IEIE<br />ACK</div>
+        </article>
+        <article class="metric">
+          <div><div class="metric-label">Follow-up</div><div class="metric-value">3</div></div>
+          <div class="metric-note">KIIT · KISM<br />KICS</div>
+        </article>
+        <article class="metric">
+          <div><div class="metric-label">Specialty</div><div class="metric-value">2</div></div>
+          <div class="metric-note">센서학회<br />KIISC</div>
+        </article>
+        <article class="metric pass">
+          <div><div class="metric-label">Closest Deadline</div><div class="metric-value">08.07</div></div>
+          <div class="metric-note">한국센서학회<br />영문 1쪽</div>
+        </article>
+      </div>
+
+      <div class="conference-lead">
+        <article class="panel">
+          <div class="section-header">
+            <div>
+              <div class="section-kicker">Paper Frames</div>
+              <h2>현재 구현에서 발전시킬 4개 후보 원고 방향</h2>
+            </div>
+          </div>
+          <div class="paper-frame-grid">
+            <div class="paper-frame">
+              <strong>01 · 캠퍼스 디지털 트윈 상호작용</strong>
+              <p>VWorld의 MODEL_NAME·D4 좌표 대체 선택과 Legacy의 건물·강의실 드릴다운을 서로 다른 프로토타입 경로로 구분해 설명한다.</p>
+            </div>
+            <div class="paper-frame">
+              <strong>02 · 미기후 위험도 시뮬레이션</strong>
+              <p>기상 입력에서 지역 온도·풍속·복사·UTCI·WBGT를 계산하고 건물 팝업으로 전달하는 파이프라인을 제시한다.</p>
+            </div>
+            <div class="paper-frame">
+              <strong>03 · 캠퍼스 에너지 의사결정 UI</strong>
+              <p>태양 위치, 옥상 조건, 손실률을 이용한 월간 태양광 발전량 계산과 강의실 공실·절감 시나리오를 시각화한다.</p>
+            </div>
+            <div class="paper-frame">
+              <strong>04 · 교통·안전 비전 연계</strong>
+              <p>YOLO 교통량 API와 번호판·안전 신고 PoC를 디지털 트윈의 외부 관측 계층으로 묶는 확장 구조를 논의한다.</p>
+            </div>
+          </div>
+        </article>
+
+        <aside class="fit-evidence">
+          <div class="fit-row">
+            <strong>가장 강한 현재 근거</strong>
+            <span>VWorld 선택·SDK 테스트 16건과 태양광 계산 테스트 5건이 실행 증거로 남아 있어, 구현 중심 학부생 논문에 적합하다.</span>
+          </div>
+          <div class="fit-row">
+            <strong>학회별 투고 게이트</strong>
+            <span>KSII는 실제 브라우저 시나리오, ACK는 종단간 재현, IEIE는 라벨 영상 벤치마크, KISM은 사용성 평가가 있어야 준비도를 주장할 수 있다.</span>
+          </div>
+          <div class="conference-warning">
+            <strong>표현 원칙</strong><br />
+            열환경·재질·복사·절감량은 추정 기반 시뮬레이션이다. 실측 데이터나 검증된 에너지 절감 효과로 표현하지 않는다. 교통 비전은 YOLO 자산과 입력 장치가 별도 준비돼야 한다.
+          </div>
+          <div class="fit-row">
+            <strong>한 편만 먼저 낸다면</strong>
+            <span>“VWorld 기반 캠퍼스 디지털 트윈의 이중 선택 경로와 건물 상세 정보 연계”를 KSII용 1~2쪽 구현 논문으로 정리하는 경로가 가장 짧다.</span>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="page conference-page" id="conference-primary" aria-labelledby="conference-primary-title">
+      <header class="masthead">
+        <div>
+          <div class="kicker">Conference Research Appendix · 06</div>
+          <h1 id="conference-primary-title">우선 투고 후보 · 지금 준비할 3곳</h1>
+        </div>
+        <div class="header-badges">
+          <div class="badge-row">
+            <span class="badge pass">2026 공식 페이지 확인</span>
+            <span class="badge mock">마감 전 재확인 필수</span>
+          </div>
+          <div class="snapshot">KSII · IEIE · ACK 2026</div>
+        </div>
+      </header>
+
+      <div class="venue-grid primary-venues">
+        <article class="venue-card featured">
+          <div class="venue-rank">추천 1 · 가장 현실적</div>
+          <span class="venue-status">2026 CFP 확인</span>
+          <h2>한국인터넷정보학회 추계학술발표대회</h2>
+          <div>
+            <div class="venue-meta">10/22–24 · 강릉 세인트존스호텔</div>
+            <p>학부생 제출이 명시된 1~2쪽 구현 논문 경로다. 캡스톤, 서비스 구현, AI 응용, 영상처리, 메타버스, IoT 프로젝트를 처음 논문화하기 좋다.</p>
+            <p><strong>SCNU 적합 주제:</strong> VWorld 디지털 트윈, 미기후 팝업, 교통 비전 API.</p>
+          </div>
+          <div class="venue-action"><strong>발표신청 08.20 · 논문 08.27</strong><br />문제–방법–결과 그림–결론을 2쪽으로 먼저 고정한다.</div>
+        </article>
+
+        <article class="venue-card featured">
+          <div class="venue-rank">추천 2 · 수상 목표</div>
+          <span class="venue-status waiting">학부생 전용 · 실험 보강 필요</span>
+          <h2>대한전자공학회 2026 추계학술대회</h2>
+          <div>
+            <div class="venue-meta">11/27–28 · 곤지암리조트 · 10/19 마감</div>
+            <p>국내 2·3·4년제 대학 학부생 제1저자를 대상으로 한다. 1차 서면심사 통과작은 구두, 나머지 채택작은 포스터다. 현재 비전·선택 로직에는 정확도 비교가 없어 수상 준비 상태는 아니다.</p>
+            <p><strong>SCNU 적합 주제:</strong> 컴퓨터비전 교통량, VWorld 선택 알고리즘, 태양광·열환경 계산.</p>
+          </div>
+          <div class="venue-action"><strong>게재용 1~5쪽 + 익명 심사용 4쪽</strong><br />전체 저자 중 최소 1명 회원. 라벨 영상·MAE·정확도 실험을 통과해야 투고한다.</div>
+        </article>
+
+        <article class="venue-card featured">
+          <div class="venue-rank">추천 3 · SW·캡스톤 정석</div>
+          <span class="venue-status">2026 CFP 공개됨</span>
+          <h2>한국정보처리학회 ACK 2026</h2>
+          <div>
+            <div class="venue-meta">11/05–07 · 세종대학교 · 09/16 마감</div>
+            <p>원 조사본은 “개최 일정 확인·CFP 대기”로 기록했다. 그러나 7월 13~14일자 공식 공지에는 이미 학부생·고등학생 논문경진대회와 2~3쪽 제출 조건이 공개돼 있었다.</p>
+            <p><strong>SCNU 적합 주제:</strong> 웹·SW 서비스, 캠퍼스 디지털 트윈 통합, 데이터 파이프라인.</p>
+          </div>
+          <div class="venue-action"><strong>학부생 연회비 면제 · 행사 등록비 필요</strong><br />발표자가 직접 제출하고 제출 뒤 발표자 변경은 불가하다.</div>
+        </article>
+
+        <div class="update-strip">
+          <strong>조사본 갱신</strong>
+          <span>ACK의 “2026 CFP 대기” 문구는 원 조사본의 기록으로 보존했다. 다만 7월 13~14일자 공식 공지와 충돌하므로 현재 판단에서는 폐기하고, 09.16 마감·학부생 2~3쪽·10.15 결과 발표로 정정했다.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="page conference-page" id="conference-followup" aria-labelledby="conference-followup-title">
+      <header class="masthead">
+        <div>
+          <div class="kicker">Conference Research Appendix · 07</div>
+          <h1 id="conference-followup-title">후속·특수 후보 · 주제가 맞을 때</h1>
+        </div>
+        <div class="header-badges">
+          <div class="badge-row">
+            <span class="badge">일정·계획 확인</span>
+            <span class="badge mock">일부 상세 CFP 대기</span>
+          </div>
+          <div class="snapshot">KIIT · KISM · KICS · SENSORS · KIISC</div>
+        </div>
+      </header>
+
+      <div class="venue-grid followup-venues">
+        <article class="venue-card">
+          <div class="venue-rank">추천 4 · 대학생 경진대회</div>
+          <span class="venue-status waiting">상세 포털 확인 필요</span>
+          <h2>한국정보기술학회 추계종합학술대회</h2>
+          <div>
+            <div class="venue-meta">11/26–28 · 메종글래드 제주</div>
+            <p>2026 연간 자료에 대학생논문경진대회와 10월 31일까지의 모집 계획이 명시됐다. AI·빅데이터·클라우드·SW공학·IoT 범위가 넓다.</p>
+          </div>
+          <div class="venue-action"><strong>SCNU:</strong> 미기후 API와 대시보드 통합. 실제 CFP 공개 뒤 페이지·비용 재확인.</div>
+        </article>
+
+        <article class="venue-card">
+          <div class="venue-rank">추천 5 · 스마트미디어 직접 적합</div>
+          <span class="venue-status waiting">원 조사본 일정 · 현재 재확인 필요</span>
+          <h2>한국스마트미디어학회 추계학술대회</h2>
+          <div>
+            <div class="venue-meta">11/13–15 · 조선대학교</div>
+            <p>원 조사본은 11/13~15 조선대학교 일정을 기록했다. 현재 공식 게시판에는 전용 추계 공지가 없고, 대신 8/26~28 제주 CSMS가 확인된다. 2025 전례는 올해 규정이 아니다.</p>
+          </div>
+          <div class="venue-action"><strong>SCNU:</strong> 건물·강의실 인터랙션과 디지털 트윈 UX. 홈페이지·JAMS 주 1회 확인.</div>
+        </article>
+
+        <article class="venue-card">
+          <div class="venue-rank">추천 6 · AI·ICT 융합</div>
+          <span class="venue-status waiting">전용 추계 CFP 대기</span>
+          <h2>한국통신학회 추계종합학술발표회</h2>
+          <div>
+            <div class="venue-meta">11/19–20 · 홍천 비발디파크</div>
+            <p>네트워크, IoT, 디지털 트윈, 메타버스, AI 기반 플랫폼에 적합하다. 일정과 장소 예고는 있으나 학부생 트랙·등록 조건은 전용 포털에서 다시 확인한다.</p>
+          </div>
+          <div class="venue-action"><strong>SCNU:</strong> 센서·기상·교통 API를 묶는 분산 캠퍼스 플랫폼.</div>
+        </article>
+
+        <article class="venue-card">
+          <div class="venue-rank">특수 1 · 센서·AI 플랫폼</div>
+          <span class="venue-status">08.07 마감</span>
+          <h2>한국센서학회 추계학술대회</h2>
+          <div>
+            <div class="venue-meta">09/16–18 · 여수 디오션리조트</div>
+            <p>대학생 포스터가 명시돼 있고 영문 1쪽 요약문을 제출한다. 이미지센서, 신호처리, 시스템, AI센서플랫폼 분야가 열려 있다.</p>
+          </div>
+          <div class="venue-action"><strong>SCNU:</strong> 실제 센서나 비전 입력이 있는 경우에만 강한 후보. 제1저자 등록 필수.</div>
+        </article>
+
+        <article class="venue-card">
+          <div class="venue-rank">특수 2 · 정보보호</div>
+          <span class="venue-status waiting">사무국 조건 확인</span>
+          <h2>KIISC 충청지부 정보보호 학술논문발표회</h2>
+          <div>
+            <div class="venue-meta">09/22 · 대전 · 약 3쪽 · 08/21 마감</div>
+            <p>학부생 제1저자 투고는 원 조사본에 기록됐지만 발표 방식과 지도교수 등록 조건은 사무국 확인이 필요하다. 현재 저장소에는 위협모델·보안 통제·공격 실험이 없다.</p>
+          </div>
+          <div class="venue-action"><strong>현재는 보류:</strong> 위협모델, 구현 통제, 공격·오용 실험, 성능 오버헤드가 논문 핵심일 때만 선택.</div>
+        </article>
+
+        <div class="conference-warning">
+          <strong>후속 후보 운영 원칙</strong><br />
+          KIIT·KISM·KICS는 공식 일정과 상세 CFP를 분리한다. CISC-W 2026은 충청지부 행사와 별개이며 10/28~30 여수 개최만 공식 확인됐다. 전년도 규정을 2026 규정으로 간주하지 않는다.
+        </div>
+      </div>
+    </section>
+
+    <section class="page conference-page" id="conference-audit" aria-labelledby="conference-audit-title">
+      <header class="masthead">
+        <div>
+          <div class="kicker">Conference Research Appendix · 08</div>
+          <h1 id="conference-audit-title">비교표·주의사항·공식 출처</h1>
+        </div>
+        <div class="header-badges">
+          <div class="badge-row">
+            <span class="badge pass">8개 원 후보 + 1개 검증 대안</span>
+            <span class="badge mock">시뮬레이션 표현 제한</span>
+          </div>
+          <div class="snapshot">SOURCE SNAPSHOT · ACCESSED 2026-07-31</div>
+        </div>
+      </header>
+
+      <div class="conference-audit">
+        <article class="panel">
+          <div class="section-header">
+            <div>
+              <div class="section-kicker">Decision Table</div>
+              <h2>학회별 일정·조건·프로젝트 연결</h2>
+            </div>
+          </div>
+          <table class="conference-table">
+            <thead>
+              <tr><th>학회</th><th>일정</th><th>원고·마감</th><th>SCNU 판단</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>KSII 추계</td><td>10/22–24</td><td>1~2쪽 · 08/27</td><td>지금 바로 준비할 구현 논문</td></tr>
+              <tr><td>IEIE 추계</td><td>11/27–28</td><td>게재 1~5쪽 + 심사 4쪽 · 10/19</td><td>라벨 평가 전에는 조건부</td></tr>
+              <tr><td>ACK 2026</td><td>11/05–07</td><td>학부생 2~3쪽 · 09/16</td><td>SW·캡스톤·통합 시스템 우선</td></tr>
+              <tr><td>KIIT 추계</td><td>11/26–28</td><td>모집 계획 ~10/31</td><td>상세 포털 공개 뒤 확정</td></tr>
+              <tr><td>KISM 추계</td><td>원 조사본 11/13–15</td><td>전용 2026 공지 미확인</td><td>현재 확인 가능: CSMS 08/26–28</td></tr>
+              <tr><td>KICS 추계</td><td>11/19–20</td><td>전용 CFP 미확인</td><td>IoT·플랫폼 구조가 중심일 때</td></tr>
+              <tr><td>센서학회</td><td>09/16–18</td><td>영문 1쪽 · 08/07</td><td>현장 센서·라벨 평가 전에는 보류</td></tr>
+              <tr><td>KIISC 충청</td><td>09/22</td><td>약 3쪽 · 08/21 · 조건 확인</td><td>보안 실험 전에는 보류</td></tr>
+              <tr><td>CISC-W 2026</td><td>10/28–30</td><td>행사 일정만 공식 확인</td><td>충청지부와 별개인 대체 후보</td></tr>
+            </tbody>
+          </table>
+          <div class="conference-warning" style="margin-top: 14px">
+            ICTC는 학부생 발표가 가능하지만 조사본 기준 저자 등록비가 일반 요율 78만~86만원이고 7월 31일이 마감이라 기본 추천에서 제외했다. KMMS, 한국디지털콘텐츠학회, 방송미디어공학회, KIICE는 관련 전례가 있으나 2026 추계 CFP가 확인되지 않아 확정 후보로 쓰지 않았다.
+          </div>
+        </article>
+
+        <aside class="audit-side">
+          <div class="research-note">
+            <h2>꼭 알아둘 점</h2>
+            <ol>
+              <li>KSII 최신 공식 공지는 발표신청 08.20, 논문 08.27이다. 검색 결과의 08.24·09.07은 오래된 값이다.</li>
+              <li>ACK는 원 조사본의 “CFP 대기” 판단과 달리 7월 13~14일에 이미 상세 공지를 게시했다. 09.16 제출, 10.15 결과, 10.19 최종본·사전등록 일정이 확인됐다.</li>
+              <li>KISM의 11월 일정은 원 조사본에는 있으나 현재 공식 게시판에서 전용 추계 공지를 찾지 못했다. 삭제하지 않고 미확인 상태로 표시했다.</li>
+              <li>센서학회는 대학생 포스터를 허용하지만 현재 프로젝트의 기상·열환경 값만으로는 센서 연구라 보기 어렵다.</li>
+              <li>모든 마감·등록비·회원 조건은 제출 직전 공식 페이지에서 한 번 더 확인한다.</li>
+            </ol>
+          </div>
+          <div class="source-block">
+            <h2>주요 공식 출처</h2>
+            <ol>
+              <li><a href="https://ksii.or.kr/society/ksii/homepage/bbs/5001/15372">KSII 2026 CFP</a></li>
+              <li><a href="https://conf.theieie.org/2026f/pages/undergraduate_competition.vm">IEIE 학부생 경진대회</a></li>
+              <li><a href="https://ack.kips.or.kr/">ACK 2026 포털</a></li>
+              <li><a href="https://www.manuscriptlink.com/society/kips/conference/ack2026/notice/article/1382">ACK 2026 논문모집</a></li>
+              <li><a href="https://www.manuscriptlink.com/society/kips/conference/ack2026/notice/article/1383">ACK 제출 유의사항</a></li>
+              <li><a href="https://ki-it.or.kr/file/download/12248?view=1">KIIT 2026 연간 자료</a></li>
+              <li><a href="https://ki-it.or.kr/homepage/custom/goingevent">KIIT 공식 행사 일정</a></li>
+              <li><a href="https://kism.or.kr/">KISM 공식 홈페이지</a></li>
+              <li><a href="https://www.kism.or.kr/bbs/board.php?bo_table=SY01000000&amp;wr_id=72">KISM CSMS 2026</a></li>
+              <li><a href="https://conf.kics.or.kr/2026s/board/article/5283">KICS 일정 예고</a></li>
+              <li><a href="https://www.kics.or.kr/html/?pmode=inputList&amp;smode=view&amp;part=&amp;intAcSeq=919">KICS 추계 공식 일정</a></li>
+              <li><a href="https://sensors.or.kr/conference/sensor26f/static/641">한국센서학회 추계</a></li>
+              <li><a href="https://kiisc.or.kr/bbs/nn/article/4996">KIISC 충청지부 공지</a></li>
+              <li><a href="https://www.cisc.or.kr/">KIISC CISC-W 2026</a></li>
+              <li><a href="https://ictc.org/authors_paperSubmission">ICTC 제출 규정</a></li>
+            </ol>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <script>
+      const valueLabels = {
+        id: "valueLabels",
+        afterDatasetsDraw(chart) {
+          const { ctx } = chart;
+          const colors = ["#a96800", "#4f5fd7", "#11845c"];
+          ctx.save();
+          ctx.font = '400 20px Arial, "Noto Sans KR", sans-serif';
+          ctx.textAlign = "center";
+          ctx.textBaseline = "bottom";
+          chart.getDatasetMeta(0).data.forEach((bar, index) => {
+            ctx.fillStyle = colors[index];
+            ctx.fillText(`${chart.data.datasets[0].data[index]}°`, bar.x, bar.y - 10);
+          });
+          ctx.restore();
+        },
+      };
+
+      const chartContext = document.getElementById("sun-altitude-chart");
+      window.sunAltitudeChart = new Chart(chartContext, {
+        type: "bar",
+        data: {
+          labels: ["01:00 · 숨김", "09:00 · 표시", "12:00 · 표시"],
+          datasets: [{
+            data: [-35.82, 41.69, 72.72],
+            backgroundColor: ["#fff2d8", "#e7eafe", "#e1f4ec"],
+            borderColor: ["#efc778", "#aab2f0", "#9dd7c3"],
+            borderWidth: 2,
+            borderRadius: 10,
+            barPercentage: 0.58,
+            categoryPercentage: 0.72,
+          }],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: false,
+          devicePixelRatio: 2,
+          layout: { padding: { top: 34, right: 16 } },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label(context) {
+                  return `태양 고도 ${context.raw}°`;
+                },
+              },
+            },
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              border: { color: "#bfc8d6" },
+              ticks: {
+                color: "#4d5666",
+                font: { family: "Arial", size: 17, weight: "normal" },
+              },
+            },
+            y: {
+              min: -40,
+              max: 90,
+              grid: { color: "#d7dde7" },
+              border: { color: "#bfc8d6" },
+              ticks: {
+                stepSize: 20,
+                color: "#687386",
+                callback(value) {
+                  return `${value}°`;
+                },
+                font: { family: "Arial", size: 16, weight: "normal" },
+              },
+              title: {
+                display: true,
+                text: "태양 고도 (°)",
+                color: "#4d5666",
+                font: { family: "Arial", size: 16, weight: "normal" },
+              },
+            },
+          },
+        },
+        plugins: [valueLabels],
+      });
+      window.__chartsReady = true;
+    </script>
+  </body>
+</html>
