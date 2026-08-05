@@ -27,7 +27,8 @@ try:
         ScenarioBuildingMismatch, ScenarioRepository)
     from weather.energy.ranking_service import RankingRequest, rank_campus
     from weather.energy.roof_service import building_roofs
-    from weather.energy.simulation_service import recommendation_candidates, simulate
+    from weather.energy.simulation_service import (NoValidRecommendationCandidate,
+        recommendation_candidates, simulate)
     from weather.energy.weather_scenarios import PRESET_NAMES, build_preset_series
 except ModuleNotFoundError:
     from energy.api_models import (AnalysisRunCreate, AnalysisRunHistoryOut, AnalysisRunOut, AnalysisScenarioCreate,
@@ -47,7 +48,8 @@ except ModuleNotFoundError:
         ScenarioBuildingMismatch, ScenarioRepository)
     from energy.ranking_service import RankingRequest, rank_campus
     from energy.roof_service import building_roofs
-    from energy.simulation_service import recommendation_candidates, simulate
+    from energy.simulation_service import (NoValidRecommendationCandidate,
+        recommendation_candidates, simulate)
     from energy.weather_scenarios import PRESET_NAMES, build_preset_series
 
 router = APIRouter(tags=["campus-energy"])
@@ -477,7 +479,12 @@ def recommend(scenario_id: str, request: DateRequest, db: Database = Depends(dat
         raise HTTPException(409, {"code": "incomplete_scenario", "message_en": "Source has no arrays.",
                                   "message_ko": "\uc6d0\ubcf8 \uc2dc\ub098\ub9ac\uc624\uc5d0 \ubc30\uc5f4\uc774 \uc5c6\uc2b5\ub2c8\ub2e4."})
     suggested_id = f"scenario-{uuid4()}"
-    arrays, scores = recommendation_candidates(source, suggested_id, db)
+    try:
+        arrays, scores = recommendation_candidates(source, suggested_id, db)
+    except NoValidRecommendationCandidate as exc:
+        raise HTTPException(409, {"code": "no_valid_recommendation_candidate",
+            "message_en": "No valid recommendation fits the current roof constraints.",
+            "message_ko": "현재 옥상 제약 조건에 맞는 추천 설치안을 만들 수 없습니다."}) from exc
     now = datetime.now(KST).isoformat()
     suggested = Scenario(id=suggested_id, building_id=source.building_id,
         name=f"{source.name} recommendation {request.date.isoformat()}", weather_preset=source.weather_preset,
@@ -498,10 +505,10 @@ def update_scenario(scenario_id: str, payload: ScenarioCreate,
     if CampusRepository(db).get_building(payload.building_id) is None:
         raise _missing("building_not_found", payload.building_id)
     try:
-        arrays = tuple(
-            PanelArray(scenario_id=scenario_id, **item.model_dump())
-            for item in payload.arrays
-        )
+        arrays = tuple(PanelArray(
+            id=f"{scenario_id}-array-{index + 1}", scenario_id=scenario_id,
+            **item.model_dump(exclude={"id"}),
+        ) for index, item in enumerate(payload.arrays))
         updated = Scenario(
             id=scenario_id, building_id=payload.building_id, name=payload.name,
             weather_preset=payload.weather_preset, created_at=current.created_at,

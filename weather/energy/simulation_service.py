@@ -8,6 +8,10 @@ from .models import PanelArray, Scenario, ScenarioInterval
 from .persistence import Database, ScenarioRepository
 from .weather_scenarios import build_preset_series
 
+
+class NoValidRecommendationCandidate(RuntimeError):
+    pass
+
 def calculate_simulation(database: Database, scenario: Scenario, day: date,
                          weather_preset: str) -> tuple[tuple[ScenarioInterval, ...], dict]:
     """Calculate a complete result without mutating the source scenario."""
@@ -94,16 +98,26 @@ def recommendation_candidates(source: Scenario, suggested_id: str, database: Dat
     template = source.arrays[0]
     options = []
     scores = []
-    for columns in (12, 8, 4):
-        for tilt in (25.0, 15.0, 35.0):
+    column_options = tuple(dict.fromkeys((
+        template.columns,
+        max(1, template.columns - 2),
+        max(1, template.columns - 4),
+    )))
+    tilt_options = tuple(dict.fromkeys((template.tilt_deg, 25.0, 15.0, 35.0)))
+    for columns in column_options:
+        for tilt in tilt_options:
             candidate = replace(template, id=f"{suggested_id}-array-1", scenario_id=suggested_id,
-                                origin_x_m=15.5, origin_y_m=10.0, rows=2, columns=columns,
-                                azimuth_deg=180.0, tilt_deg=tilt, orientation="portrait")
+                                columns=columns, tilt_deg=tilt)
             valid = not validate_geometry(database, source.building_id, (candidate,))
-            score = float(columns * 200 - abs(tilt - 25))
-            scores.append({"candidate_id": f"2x{columns}-{int(tilt)}", "module_count": columns * 2,
-                           "azimuth_deg": 180.0, "tilt_deg": tilt, "orientation": "portrait",
+            module_count = template.rows * columns
+            score = float(module_count * 100 - abs(tilt - 25))
+            scores.append({"candidate_id": f"{template.rows}x{columns}-{int(tilt)}",
+                           "module_count": module_count,
+                           "azimuth_deg": template.azimuth_deg, "tilt_deg": tilt,
+                           "orientation": template.orientation,
                            "score": score, "valid": valid})
             if valid:
                 options.append((score, candidate))
+    if not options:
+        raise NoValidRecommendationCandidate(source.id)
     return (max(options, key=lambda item: item[0])[1],), scores

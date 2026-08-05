@@ -85,6 +85,42 @@ def test_create_reuses_client_array_labels_without_global_id_collisions(tmp_path
         assert first.json()["arrays"][0]["id"] != second.json()["arrays"][0]["id"]
 
 
+def test_update_replaces_client_array_ids_without_cross_scenario_collisions(
+    tmp_path, monkeypatch,
+) -> None:
+    with client(tmp_path, monkeypatch) as api:
+        first = api.post("/energy/scenarios", json=payload(count=1)).json()
+        second = api.post("/energy/scenarios", json=payload(count=1)).json()
+        update = payload(count=1)
+        update["arrays"][0]["id"] = first["arrays"][0]["id"]
+
+        response = api.put(f"/energy/scenarios/{second['id']}", json=update)
+
+        assert response.status_code == 200, response.text
+        assert response.json()["arrays"][0]["id"] == f"{second['id']}-array-1"
+        assert api.get(f"/energy/scenarios/{first['id']}").json() == first
+
+
+def test_recommendation_uses_the_valid_source_footprint_for_wide_modules(
+    tmp_path, monkeypatch,
+) -> None:
+    with client(tmp_path, monkeypatch) as api:
+        source_payload = payload(count=1)
+        source_payload["arrays"][0].update({
+            "rows": 1, "columns": 1, "origin_x_m": 15.5, "module_width_m": 20.0,
+        })
+        source = api.post("/energy/scenarios", json=source_payload)
+        assert source.status_code == 201, source.text
+
+        response = api.post(
+            f"/energy/scenarios/{source.json()['id']}/recommend",
+            json={"date": "2026-05-18"},
+        )
+
+        assert response.status_code == 201, response.text
+        assert response.json()["scenario"]["arrays"][0]["columns"] == 1
+
+
 def test_canonical_routes_reject_invalid_requests_and_api_aliases_are_absent(tmp_path, monkeypatch) -> None:
     with client(tmp_path, monkeypatch) as api:
         assert api.get("/energy/buildings/missing/demand", params={"date": "2026-05-18"}).status_code == 404
@@ -626,7 +662,7 @@ def test_array_and_representative_ids_trim_and_reject_whitespace(tmp_path, monke
             f"/energy/scenarios/{created.json()['id']}", json=trimmed_update,
         )
         assert trimmed.status_code == 200, trimmed.text
-        assert trimmed.json()["arrays"][0]["id"] == "trimmed-array"
+        assert trimmed.json()["arrays"][0]["id"] == f"{created.json()['id']}-array-1"
 
         invalid_update = payload(count=1)
         invalid_update["arrays"][0]["id"] = "  \t "
