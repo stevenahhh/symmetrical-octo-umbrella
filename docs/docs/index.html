@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>순천대학교 디지털 트윈</title>
+    <script type="text/javascript" src="https://map.vworld.kr/js/webglMapInit.js.do?version=3.0&apiKey=3329D00D-2732-339C-8B7D-D622F356E18C"></script>
+
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+       #vmap {
+            width: 100%;
+            height: 100vh;
+
+            filter: saturate(0.65) brightness(0.82) contrast(1.08);
+        }
+
+        table {
+            display: none;
+        }
+        
+        #buildingPanel {
+            position: absolute;
+
+            top: 30px;
+            right: 30px;
+
+            width: 320px;
+            padding: 28px;
+
+            background: rgba(20, 25, 35, 0.92);
+            backdrop-filter: blur(15px);
+
+            color: white;
+
+            border-radius: 18px;
+
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
+
+            z-index: 9999;
+
+            transform: translateX(400px);
+            opacity: 0;
+
+            transition: all 0.35s ease;
+        }
+
+        #buildingPanel.active {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        #closePanel {
+            position: absolute;
+
+            top: 15px;
+            right: 18px;
+
+            border: none;
+            background: none;
+
+            color: white;
+            font-size: 25px;
+
+            cursor: pointer;
+        }
+
+        .panel-subtitle {
+            font-size: 11px;
+            letter-spacing: 2px;
+
+            opacity: 0.6;
+
+            margin-bottom: 10px;
+        }
+
+        #panelBuildingName {
+            margin: 0;
+
+            font-size: 24px;
+        }
+
+        #panelBuildingId {
+            margin-top: 7px;
+
+            font-size: 13px;
+
+            opacity: 0.6;
+        }
+
+        .panel-line {
+            height: 1px;
+
+            background: rgba(255, 255, 255, 0.15);
+
+            margin: 25px 0;
+        }
+
+        .info-row {
+            display: flex;
+
+            justify-content: space-between;
+            align-items: center;
+
+            padding: 12px 0;
+
+            font-size: 15px;
+        }
+
+        .info-row span {
+            opacity: 0.7;
+        }
+
+        .info-row strong {
+            font-size: 16px;
+        }
+        
+        #systemHeader {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            z-index: 9999;
+
+            padding: 20px 24px;
+
+            background: rgba(20, 25, 35, 0.88);
+            backdrop-filter: blur(15px);
+
+            color: white;
+            border-radius: 16px;
+
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+        }
+
+        .system-title {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .system-description {
+            margin-top: 5px;
+
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .system-status {
+            display: flex;
+            align-items: center;
+
+            margin-top: 15px;
+
+            font-size: 11px;
+            letter-spacing: 1px;
+            color: rgba(255, 255, 255, 0.75);
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+
+            margin-right: 7px;
+
+            background: #37e88b;
+            border-radius: 50%;
+
+            box-shadow: 0 0 8px #37e88b;
+        }
+
+        .status-divider {
+            margin: 0 10px;
+            opacity: 0.3;
+        }
+
+        #mapGrid {
+            position: absolute;
+            inset: 0;
+            z-index: 1500;
+
+            pointer-events: none;
+
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+
+            background-size: 60px 60px;
+        }
+
+        #mapGrid::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+
+            pointer-events: none;
+
+            background:
+                radial-gradient(
+                    circle at center,
+                    transparent 45%,
+                    rgba(0, 0, 0, 0.18) 100%
+                );
+        }
+    </style>
+</head>
+
+<body>
+    <div id="vmap"></div>
+    <div id="mapGrid"></div>
+
+    <div id="systemHeader">
+    <div class="system-title">SCNU DIGITAL TWIN</div>
+    <div class="system-description">
+        국립순천대학교 스마트 캠퍼스 통합 관제 시스템
+    </div>
+
+    <div class="system-status">
+        <span class="status-dot"></span>
+        SYSTEM ONLINE
+        <span class="status-divider">|</span>
+        <span id="systemClock">--:--:--</span>
+    </div>
+</div>
+    <div id="buildingPanel">
+    <button id="closePanel" onclick="closeBuildingPanel()">×</button>
+
+    <div class="panel-subtitle">SCNU DIGITAL TWIN</div>
+
+    <h2 id="panelBuildingName">건물을 선택하세요</h2>
+    <div id="panelBuildingId">-</div>
+
+    <div class="panel-line"></div>
+
+    <div class="info-row">
+        <span>현재 인원</span>
+        <strong id="panelPopulation">-</strong>
+    </div>
+
+    <div class="info-row">
+        <span>혼잡도</span>
+        <strong id="panelCongestion">-</strong>
+    </div>
+
+    <div class="info-row">
+        <span>전력 사용량</span>
+        <strong id="panelPower">-</strong>
+    </div>
+
+    <div class="info-row">
+        <span>차량 유입</span>
+        <strong id="panelTraffic">-</strong>
+    </div>
+</div>
+    <table>
+        <tr>
+            <td>아이디 : <input type="text" id="buildingId" name="buildingId" value=""></td>
+            <td>타입 : <input type="text" id="buildingType" name="buildingType" value=""></td>
+            <td>레이어 이름 : <input type="text" id="buildingLayerName" name="buildingLayerName" value=""></td>
+            <td><input type="button" value="div 올리기" onclick="openBookmarkPopup();"></td>
+        </tr>
+    </table>
+    <script>
+        // 순천대학교 건물 ID 매핑
+        const buildingData = {
+            "SC090179": {
+                id: "D3",
+                name: "공과대학 2호관"
+            },
+
+            "SC090180": {
+                id: "D2",
+                name: "공과대학 1호관"
+            }, 
+            
+            "SC090089": {
+                id: "D1",
+                name: "창업보육센터"
+            }, 
+            
+            "SC030008": {
+                id: "C3",
+                name: "공동실험실습관"
+            }, 
+            
+            "SC030418": {
+                id: "C2",
+                name: "친환경농업센터"
+            }, 
+            
+            "SC030009": {
+                id: "C4",
+                name: "환경친화형물질공장기술혁신센터"
+            }, 
+            
+            "SC030012": {
+                id: "B6",
+                name: "제1중앙공급실"
+            }, 
+            
+            "SC030013": {
+                id: "B5",
+                name: "생명산업과학대학온실"
+            }, 
+            
+            "SC030394": {
+                id: "B4",
+                name: "생명산업과학대학2호관"
+            }, 
+            
+            "SC030448": {
+                id: "B3",
+                name: "생명산업과학대학1호관"
+            }, 
+            
+            "SC030382": {
+                id: "B2",
+                name: "70주년기념관"
+            }, 
+            
+            "SC030464": {
+                id: "B1",
+                name: "박물관"
+            }, 
+            
+            "SC030058": {
+                id: "A17",
+                name: "체육관"
+            }, 
+            
+            "SC030030": {
+                id: "A8",
+                name: "학생생활관 향림관"
+            }, 
+            
+            "SC090108": {
+                id: "A9",
+                name: "학생생활관 청운관"
+            }, 
+            
+            "SC090106": {
+                id: "A12",
+                name: "우정원"
+            }, 
+            
+            "SC090104": {
+                id: "A11",
+                name: "제2중앙공급실"
+            }, 
+            
+            "SC090105": {
+                id: "A10",
+                name: "인재관"
+            }, 
+            
+            "SC090101": {
+                id: "A6",
+                name: "학생생활관 창조관"
+            }, 
+            
+            "SC030028": {
+                id: "A7",
+                name: "학생생활관 관리동"
+            }, 
+            
+            "SC030527": {
+                id: "A5",
+                name: "학생생활관 진리관"
+            }, 
+            
+            "SC030493": {
+                id: "A1",
+                name: "대학본부"
+            }, 
+            
+            "SC030523": {
+                id: "A2",
+                name: "약학대학"
+            }, 
+            
+            "SC090098": {
+                id: "E1",
+                name: "학생회관"
+            }, 
+            
+            "SC090102": {
+                id: "E2",
+                name: "기초교육관"
+            }, 
+            
+            "SC090091": {
+                id: "E3",
+                name: "사범대학"
+            }, 
+            
+            "SC030409": {
+                id: "C1",
+                name: "도서관"
+            }, 
+            
+            "SC090094": {
+                id: "E8",
+                name: "인문예술대학"
+            }, 
+
+            "SC090113": {
+                id: "E7",
+                name: "사회과학대학"
+            }, 
+            
+            "SC090103": {
+                id: "E6",
+                name: "미래창조관"
+            }, 
+            
+            "SC030061": {
+                id: "F1",
+                name: "국제문화컨벤션관"
+            },
+            
+            "SC030380": {
+                id: "F2",
+                name: "평생교육원"
+            },
+            
+            "SC030673": {
+                id: "F4",
+                name: "연립관사"
+            },   
+        };
+
+        // 기존 지도 코드
+        var hX = 127.425;
+
+        //우주에서 보는 지구 시점
+        //homePosition ||  지구본
+        var hX = 127.425;
+        var hY = 38.196;
+        var hZ = 13487000;
+        var hH = 0;
+        var hT = -80;
+        var hR = 0;
+
+        //페이지 초기화시 지도의 카메라 시점이 여의도 좌표이동
+        //initPosition || 여의도
+        var sX = 126.97005361917438;
+        var sY = 37.513398668248875;
+        var sZ = 5000;
+        var sH = 0;
+        var sT = -60;
+        var sR = 0;
+
+        var options = {
+            mapId: "vmap",
+            initPosition: new vw.CameraPosition(
+                new vw.CoordZ(127.4810, 34.9697, 400),
+                new vw.Direction(0, -60, 0)
+            ),
+            logo: false,
+            navigation: false
+        };
+
+        var map = new vw.Map();
+        map.setOption(options);
+        map.start();
+
+        setTimeout(function() {
+
+            var poiLayer = map.getLayerElement("POI_GROUP");
+
+            if (poiLayer) {
+                poiLayer.hide();
+            }
+            
+            setupCampusCamera();
+            applyWhiteContext();
+            loadRoadZones();
+
+        }, 1500);
+
+        function applyWhiteContext() {
+
+            if (
+                typeof Cesium === "undefined" ||
+                typeof ws3d === "undefined" ||
+                !ws3d.viewer
+            ) {
+                console.error("Cesium 또는 VWorld Viewer를 찾을 수 없습니다.");
+                return;
+            }
+
+            // 중복 생성 방지
+            if (window.scnuWhiteContextCreated) {
+                return;
+            }
+
+            window.scnuWhiteContextCreated = true;
+
+            var viewer = ws3d.viewer;
+            var scene = viewer.scene;
+
+            /*
+            * 흰색으로 처리할 전체 범위
+            * 순천대학교 주변을 충분히 넓게 설정
+            */
+            var outsidePositions = Cesium.Cartesian3.fromDegreesArray([
+                127.4400, 34.9300,
+                127.5300, 34.9300,
+                127.5300, 35.0100,
+                127.4400, 35.0100
+            ]);
+
+            /*
+            * 원래 색상을 유지할 순천대학교 캠퍼스 영역
+            * 이 부분이 흰색 폴리곤의 구멍이 됨
+            */
+            var campusPositions = Cesium.Cartesian3.fromDegreesArray([
+                 // 서쪽 경계
+                127.4758141, 34.9697356,
+                127.4758274, 34.9701379,
+                127.4759191, 34.9705426,
+                127.4761686, 34.9707547,
+
+                // 북쪽 경계
+                127.4772039, 34.9707564,
+                127.4779345, 34.9710410,
+                127.4784123, 34.9709491,
+                127.4792176, 34.9711079,
+                127.4796666, 34.9711468,
+                127.4801387, 34.9709557,
+
+                // 북동쪽 경계
+                127.4807751, 34.9705095,
+                127.4812968, 34.9702866,
+                127.4818511, 34.9703939,
+                127.4821450, 34.9706200,
+                127.4826353, 34.9705200,
+                127.4830280, 34.9706200,
+
+                // 동쪽 경계
+                127.4833976, 34.9702003,
+                127.4836101, 34.9693224,
+                127.4839489, 34.9682833,
+                127.4841614, 34.9673974,
+                127.4846108, 34.9658488,
+
+                // 남쪽 경계
+                127.4833937, 34.9654779,
+                127.4828237, 34.9668157,
+                127.4815146, 34.9666375,
+                127.4803564, 34.9664593,
+                127.4794261, 34.9662652,
+
+                // 남서쪽·서쪽 복귀
+                127.4789314, 34.9668427,
+                127.4780003, 34.9671266,
+                127.4773916, 34.9671796,
+                127.4771528, 34.9674314,
+                127.4772927, 34.9678869,
+                127.4769713, 34.9680940,
+                127.4767609, 34.9686619,
+                127.4769488, 34.9689789,
+
+                // 시작점으로 닫기
+                127.4758141, 34.9697356
+            ]);
+
+            /*
+            * 바깥 사각형 내부에서
+            * 캠퍼스 영역만 구멍으로 제외
+            */
+            var polygonHierarchy = new Cesium.PolygonHierarchy(
+                outsidePositions,
+                [
+                    new Cesium.PolygonHierarchy(campusPositions)
+                ]
+            );
+
+            var whiteContextInstance = new Cesium.GeometryInstance({
+
+                id: "SCNU_WHITE_CONTEXT",
+
+                geometry: new Cesium.PolygonGeometry({
+                    polygonHierarchy: polygonHierarchy
+                }),
+
+                attributes: {
+                    color: Cesium.ColorGeometryInstanceAttribute.fromColor(
+                        new Cesium.Color(0.30, 0.33, 0.37, 0.68)
+                    )
+                }
+            });
+
+            scene.primitives.add(
+                new Cesium.GroundPrimitive({
+
+                    geometryInstances: whiteContextInstance,
+
+                    /*
+                    * 지형과 3D 건물 모두 흰색 처리
+                    */
+                    classificationType: Cesium.ClassificationType.CESIUM_3D_TILE,
+
+                    allowPicking: false,
+                    asynchronous: true
+                })
+            );
+
+            console.log("캠퍼스 외부 흰색 콘타 표현 적용 완료");
+        }
+
+        async function loadRoadZones() {
+    try {
+        // 중복 실행 방지
+        if (window.scnuRoadZonesLoaded) {
+            return;
+        }
+
+        window.scnuRoadZonesLoaded = true;
+
+        var viewer = ws3d.viewer;
+
+        var roadDataSource =
+            await Cesium.GeoJsonDataSource.load(
+                "./assets/data/road_zones_wgs84.geojson",
+                {
+                    clampToGround: true
+                }
+            );
+
+        viewer.dataSources.add(roadDataSource);
+
+       // 평상시: 눈에는 거의 안 보이지만 클릭은 가능
+        var normalColor =
+            new Cesium.Color(0.20, 0.22, 0.24, 0.01);
+
+        // 클릭한 구역만 회색으로 표시
+        var selectedColor =
+            new Cesium.Color(0.32, 0.35, 0.39, 0.48);
+
+        // 구역 경계선은 아주 약하게
+        var outlineColor =
+            new Cesium.Color(0.30, 0.32, 0.35, 0.32);
+
+        var currentTime = Cesium.JulianDate.now();
+
+        roadDataSource.entities.values.forEach(function (entity) {
+
+            if (!entity.polygon) {
+                return;
+            }
+
+            entity.polygon.material = normalColor;
+            entity.polygon.outline = true;
+            entity.polygon.outlineColor = outlineColor;
+
+            // GeoJSON 속성 읽기
+            var featureId = entity.id;
+            var zoneName = "이름 없음";
+
+            if (
+                entity.properties &&
+                entity.properties.FEATURE_ID
+            ) {
+                featureId =
+                    entity.properties.FEATURE_ID.getValue(
+                        currentTime
+                    );
+            }
+
+            if (
+                entity.properties &&
+                entity.properties.ZONE_NAME
+            ) {
+                zoneName =
+                    entity.properties.ZONE_NAME.getValue(
+                        currentTime
+                    );
+            }
+
+            // 클릭할 때 사용할 값 저장
+            entity.scnuFeatureId = featureId;
+            entity.scnuZoneName = zoneName;
+
+            entity.name = zoneName;
+        });
+
+
+        // 오른쪽 상단 정보창 생성
+        var infoPanel =
+            document.getElementById("road-zone-info");
+
+        if (!infoPanel) {
+            infoPanel = document.createElement("div");
+            infoPanel.id = "road-zone-info";
+
+            Object.assign(infoPanel.style, {
+                position: "absolute",
+                top: "20px",
+                right: "20px",
+                zIndex: "9999",
+                minWidth: "220px",
+                padding: "14px 16px",
+                background: "rgba(28, 31, 35, 0.92)",
+                color: "#ffffff",
+                border: "1px solid rgba(255,255,255,0.25)",
+                borderRadius: "8px",
+                fontFamily: "Arial, sans-serif",
+                fontSize: "14px",
+                lineHeight: "1.6",
+                boxShadow: "0 4px 14px rgba(0,0,0,0.25)",
+                display: "none"
+            });
+
+            document.body.appendChild(infoPanel);
+        }
+
+
+        var selectedRoadEntity = null;
+
+        // 기존 클릭 이벤트가 있으면 제거
+        if (window.scnuRoadClickHandler) {
+            window.scnuRoadClickHandler.destroy();
+        }
+
+        window.scnuRoadClickHandler =
+            new Cesium.ScreenSpaceEventHandler(
+                viewer.scene.canvas
+            );
+
+        window.scnuRoadClickHandler.setInputAction(
+            function (movement) {
+
+                var pickedObject =
+                    viewer.scene.pick(movement.position);
+
+                // 이전 선택 색상 복구
+                if (
+                    selectedRoadEntity &&
+                    selectedRoadEntity.polygon
+                ) {
+                    selectedRoadEntity.polygon.material =
+                        normalColor;
+                }
+
+                selectedRoadEntity = null;
+
+                if (
+                    !Cesium.defined(pickedObject) ||
+                    !pickedObject.id ||
+                    !roadDataSource.entities.contains(
+                        pickedObject.id
+                    )
+                ) {
+                    infoPanel.style.display = "none";
+                    return;
+                }
+
+                var clickedEntity = pickedObject.id;
+
+                if (!clickedEntity.polygon) {
+                    infoPanel.style.display = "none";
+                    return;
+                }
+
+                selectedRoadEntity = clickedEntity;
+
+                // 선택 구역 강조
+                clickedEntity.polygon.material =
+                    selectedColor;
+
+                var zoneName =
+                    clickedEntity.scnuZoneName ||
+                    "이름 없음";
+
+                var featureId =
+                    clickedEntity.scnuFeatureId ||
+                    clickedEntity.id;
+
+                // 정보창 내용
+                infoPanel.replaceChildren();
+
+                var title = document.createElement("div");
+                title.textContent = "도로 구역 정보";
+                title.style.fontWeight = "bold";
+                title.style.fontSize = "16px";
+                title.style.marginBottom = "8px";
+
+                var nameRow = document.createElement("div");
+                nameRow.textContent =
+                    "구역명: " + zoneName;
+
+                var idRow = document.createElement("div");
+                idRow.textContent =
+                    "구역 ID: " + featureId;
+
+                infoPanel.appendChild(title);
+                infoPanel.appendChild(nameRow);
+                infoPanel.appendChild(idRow);
+
+                infoPanel.style.display = "block";
+
+                console.log(
+                    "선택한 도로 구역:",
+                    featureId,
+                    zoneName
+                );
+            },
+            Cesium.ScreenSpaceEventType.LEFT_CLICK
+        );
+
+        console.log(
+            "도로 구역 클릭 기능 적용 완료:",
+            roadDataSource.entities.values.length
+        );
+
+    } catch (error) {
+        console.error(
+            "도로 구역 로딩 실패:",
+            error
+        );
+    }
+}
+
+        function setupCampusCamera() {
+
+            if (
+                typeof Cesium === "undefined" ||
+                typeof ws3d === "undefined" ||
+                !ws3d.viewer
+            ) {
+                return;
+            }
+
+            // 중복 실행 방지
+            if (window.scnuCampusCameraCreated) {
+                return;
+            }
+
+            window.scnuCampusCameraCreated = true;
+
+            var viewer = ws3d.viewer;
+            var scene = viewer.scene;
+            var camera = viewer.camera;
+            var controller = scene.screenSpaceCameraController;
+
+            // 너무 가까이 들어가거나 대한민국 전체까지 축소되지 않도록 제한
+            controller.minimumZoomDistance = 50;
+            controller.maximumZoomDistance = 700;
+
+            // 순천대학교 중심좌표
+            var campusCenter = Cesium.Cartesian3.fromDegrees(
+            127.4797,
+                34.9687,
+                0
+            );
+
+            // 사용자가 볼 수 있는 범위
+            // 순천대학교와 주변 건물 정도를 포함
+            var allowedRectangle = Cesium.Rectangle.fromDegrees(
+                127.4748,  // 서쪽
+                34.9645,   // 남쪽
+                127.4855,  // 동쪽
+                34.9720    // 북쪽
+            );
+
+            var returningToCampus = false;
+
+            function focusCampus() {
+
+                returningToCampus = true;
+
+                camera.lookAt(
+                    campusCenter,
+                    new Cesium.HeadingPitchRange(
+                        Cesium.Math.toRadians(0),    // 방향
+                        Cesium.Math.toRadians(-42),  // 기울기
+                        850                         // 거리
+                    )
+                );
+
+                // 일반 카메라 조작 상태로 복귀
+                camera.lookAtTransform(
+                Cesium.Matrix4.IDENTITY
+                );
+
+                setTimeout(function () {
+                    returningToCampus = false;
+                }, 200);
+            }
+
+            // 처음 실행될 때 학교가 화면에 바로 나타남
+            focusCampus();
+
+            // 화면 중심이 허용 구역을 벗어나면 학교로 복귀
+            camera.moveEnd.addEventListener(function () {
+
+                if (returningToCampus) {
+                    return;
+                }
+
+                var centerScreen = new Cesium.Cartesian2(
+                    scene.canvas.clientWidth / 2,
+                    scene.canvas.clientHeight / 2
+                );
+
+                var centerPosition = camera.pickEllipsoid(
+                    centerScreen,
+                    scene.globe.ellipsoid
+                );
+
+                if (!centerPosition) {
+                    return;
+                }
+
+                var centerCartographic =
+                    Cesium.Cartographic.fromCartesian(centerPosition);
+
+                var isInside = Cesium.Rectangle.contains(
+                    allowedRectangle,
+                    centerCartographic
+                );
+
+                if (!isInside) {
+                    focusCampus();
+                }
+            });
+
+            console.log("순천대학교 카메라 범위 제한 완료");
+        }
+
+        console.log(map.getLayerAllElement());
+        
+        setTimeout(
+            function() {
+                map.onClick.addEventListener(buildingInfoEvent);
+                map.onClick.addEventListener(campusBoundaryEvent);
+            },
+            100);
+        var buildingInfoEvent = function(windowPosition, ecefPosition, cartographic, modelObject) {
+
+            if (modelObject) {
+
+                var mapElement = modelObject.element;
+                var attributes = modelObject.attributes;
+
+                if (attributes && mapElement) {
+
+                    // 클릭한 건물 강조
+                    mapElement.highlightFeatureByKey(attributes);
+
+                    // 브이월드 원본 건물 ID
+                    var vworldId = attributes.MODEL_NAME;
+
+                    // 우리가 만든 순천대 건물 정보 찾기
+                    var building = buildingData[vworldId];
+
+                    if (building) {
+
+                        console.log("브이월드 ID :", vworldId);
+                        console.log("우리 ID :", building.id);
+                        console.log("건물명 :", building.name);
+
+                        // 기존 테스트창에도 우리 ID 표시
+                        buildingId.value = building.id;
+
+                        document.getElementById("panelBuildingName").innerText = building.name;
+                        document.getElementById("panelBuildingId").innerText = building.id;
+
+                        document.getElementById("panelPopulation").innerText =
+                            building.population != null ? building.population + "명" : "데이터 없음";
+
+                        document.getElementById("panelCongestion").innerText =
+                            building.congestion != null ? building.congestion + "%" : "데이터 없음";
+
+                        document.getElementById("panelPower").innerText =
+                            building.power != null ? building.power + " kW" : "데이터 없음";
+
+                        document.getElementById("panelTraffic").innerText =
+                            building.traffic != null ? building.traffic + "대" : "데이터 없음";
+
+                        document.getElementById("buildingPanel").classList.add("active");
+
+                    } else {
+
+                        console.log("미등록 건물 :", vworldId);
+
+                        // 아직 등록하지 않은 건물은 원래 ID 표시
+                        buildingId.value = vworldId;
+                    }
+
+                    buildingType.value = mapElement.elementType;
+                    buildingLayerName.value = mapElement.id;
+                }
+            }
+        };
+        
+        function closeBuildingPanel() {
+            document
+                .getElementById("buildingPanel")
+                .classList.remove("active");
+        }
+
+        // 순천대학교 캠퍼스 경계 좌표 저장
+        var campusBoundaryCoords = [];
+
+        var campusBoundaryEvent = function(
+            windowPosition,
+            ecefPosition,
+            cartographic
+        ) {
+
+            if (!cartographic) return;
+
+            var lon = Number(cartographic.longitudeDD.toFixed(7));
+            var lat = Number(cartographic.latitudeDD.toFixed(7));
+
+            campusBoundaryCoords.push([lon, lat]);
+
+            console.log(
+                "경계 좌표 " + campusBoundaryCoords.length + " :",
+                lon,
+                lat
+            );
+
+            console.log(
+                "전체 좌표 :",
+                JSON.stringify(campusBoundaryCoords)
+            );
+        };
+
+        var campusBoundaryCoords = [];
+
+        var campusBoundaryEvent = function(
+            windowPosition,
+            ecefPosition,
+            cartographic
+        ) {
+            if (!cartographic) return;
+
+            var lon = Number(cartographic.longitudeDD.toFixed(7));
+            var lat = Number(cartographic.latitudeDD.toFixed(7));
+
+            campusBoundaryCoords.push([lon, lat]);
+
+            console.log(
+                "경계 좌표 " + campusBoundaryCoords.length + " :",
+                lon,
+                lat
+            );
+
+            console.log(
+                "전체 좌표 :",
+                JSON.stringify(campusBoundaryCoords)
+            );
+        };
+
+        function updateSystemClock() {
+            const now = new Date();
+
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, "0");
+            const day = String(now.getDate()).padStart(2, "0");
+
+            const hours = String(now.getHours()).padStart(2, "0");
+            const minutes = String(now.getMinutes()).padStart(2, "0");
+            const seconds = String(now.getSeconds()).padStart(2, "0");
+
+            document.getElementById("systemClock").innerText =
+                `${year}.${month}.${day} ${hours}:${minutes}:${seconds}`;
+        }
+
+updateSystemClock();
+setInterval(updateSystemClock, 1000);
+        function $id(id) {
+            return document.getElementById(id);
+        }
+
+        //팝업 올리기 구현
+        function openBookmarkPopup() {
+            var name = "iframe_popup";
+            var infopop = document.getElementById(name);
+            if (infopop == null) {
+                infopop = document.createElement("iframe");
+                infopop.src = "";
+                infopop.style.display = "none";
+                infopop.frameBorder = "0";
+                infopop.scrolling = "no";
+
+                document.getElementById("vmap").appendChild(infopop);
+                infopop.setAttribute("id", name);
+                infopop.setAttribute("name", name);
+                infopop.frameBorder = "0";
+                infopop.scrolling = "no";
+                infopop.style.position = "absolute";
+                infopop.style.overflow = "hidden";
+                infopop.style["background-color"] = "white";
+                infopop.style.margin = "auto";
+            }
+
+            infopop.style.width = "250px";
+            infopop.style.height = "120px";
+            infopop.style.left = "5px";
+            infopop.style.top = "5px";
+            infopop.style.zIndex = 2000; //Z index의 경우 2000이상 설정해야 함
+            infopop.setAttribute("src", "https://map.vworld.kr/images/v4map/map/logo.png");
+
+            infopop.style.display = "inline-block";
+        }
+    </script>
+</body>
+
+</html>
