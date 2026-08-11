@@ -27,13 +27,12 @@ import {
   Zap,
 } from "lucide-react";
 import { CityModel } from "./CityModel";
-import { D4WingFloorSelect } from "./components/D4WingFloorSelect";
-import { D4RoomGridSelect } from "./components/D4RoomGridSelect";
-import { D4WingDetailCard } from "./components/D4WingDetailCard";
-import { MiniStatusWidget } from "./components/MiniStatusWidget";
+import { D4SectionExperience } from "./vworld/D4SectionExperience";
+import {
+  createPlanDraftFromExisting,
+} from "./features/energy/installations/installationPlanApi.mjs";
 import trafficData from "./utils/trafficData.json";
-import { D4_BUILDING_DATA, D4_ROOMS, isD4ElementId, getWingById } from "./utils/d4BuildingData.mjs";
-import { getCurrentRoomStatus, isRoomInUse } from "./utils/d4RoomStatus.mjs";
+import { isD4ElementId } from "./utils/d4BuildingData.mjs";
 import { computeFeelsLike } from "./utils/feelsLike.mjs";
 import {
   calculateMayPvOutput,
@@ -166,10 +165,7 @@ export default function App() {
   const [popupError, setPopupError] = useState(null);
   const [trafficStats, setTrafficStats] = useState({ entered: 0, exited: 0, current_cars: 0, total_spaces: 50, is_running: false });
   const [buildingViewMode, setBuildingViewMode] = useState("campus");
-  const [selectedEnergyRoomId, setSelectedEnergyRoomId] = useState(D4_ROOMS[0].id);
-  const [d4Step, setD4Step] = useState("wings"); // 'wings' | 'rooms'
-  const [d4ActiveWingId, setD4ActiveWingId] = useState(D4_BUILDING_DATA.wings[0].id);
-  const [d4SelectedFloor, setD4SelectedFloor] = useState(3);
+  const [installationRefreshKey, setInstallationRefreshKey] = useState(0);
   const [weatherUpdatedAt, setWeatherUpdatedAt] = useState(null);
   const [isBuildingDetailCollapsed, setIsBuildingDetailCollapsed] = useState(false);
   const [isReasonsCollapsed, setIsReasonsCollapsed] = useState(false);
@@ -255,22 +251,6 @@ export default function App() {
       }),
     [currentData.roofArea, roofRatio],
   );
-  const selectedEnergyRoom = useMemo(
-    () => D4_ROOMS.find((room) => room.id === selectedEnergyRoomId) ?? D4_ROOMS[0],
-    [selectedEnergyRoomId],
-  );
-  const selectedRoomStatus = useMemo(
-    () => getCurrentRoomStatus(selectedEnergyRoom, currentTime),
-    [currentTime, selectedEnergyRoom],
-  );
-  const roomUsageById = useMemo(() => {
-    const usage = new Map();
-    D4_ROOMS.forEach((room) => {
-      usage.set(room.id, isRoomInUse(room, currentTime));
-    });
-    return usage;
-  }, [currentTime]);
-
   const activeAlerts = useMemo(() => {
     if (!activeWeather) return [];
     return ALERT_RULES.filter((rule) => rule.check(activeWeather));
@@ -344,24 +324,6 @@ export default function App() {
     return diffMin <= 0 ? "방금 전" : `${diffMin}분 전`;
   }, [currentTime, weatherUpdatedAt]);
 
-  const d4ActiveWing = useMemo(() => getWingById(d4ActiveWingId), [d4ActiveWingId]);
-
-  const d4ActiveWingRooms = useMemo(
-    () => D4_ROOMS.filter((room) => room.wing === d4ActiveWingId && room.isSelectable),
-    [d4ActiveWingId],
-  );
-
-  const d4WingUsagePercent = useMemo(() => {
-    if (d4ActiveWingRooms.length === 0) return 0;
-    const inUse = d4ActiveWingRooms.filter((room) => roomUsageById.get(room.id)).length;
-    return Math.round((inUse / d4ActiveWingRooms.length) * 100);
-  }, [d4ActiveWingRooms, roomUsageById]);
-
-  const d4FloorRooms = useMemo(
-    () => D4_ROOMS.filter((room) => room.wing === d4ActiveWingId && room.floor === d4SelectedFloor),
-    [d4ActiveWingId, d4SelectedFloor],
-  );
-
   // const period = currentTime.getHours() < 12 ? "오전" : "오후";
 
   const formattedTime = currentTime.toLocaleTimeString("ko-KR", {
@@ -383,46 +345,18 @@ export default function App() {
     setPopupError(null);
   }, []);
 
+  const createInstallationPlanDraft = useCallback(
+    (context) => createPlanDraftFromExisting(context),
+    [],
+  );
+
   const openD4Section = useCallback(() => {
     setSelectedId("");
     setPopupData(null);
     setPopupError(null);
     setBuildingViewMode("section");
-    setD4Step("wings");
     setIsPanelOpen(false);
   }, []);
-
-  const handleSelectD4Room = useCallback((roomId) => {
-    setSelectedEnergyRoomId(roomId);
-  }, []);
-
-  const handleSelectD4Floor = useCallback((wingId, floor) => {
-    setD4ActiveWingId(wingId);
-    const selectableRooms = D4_ROOMS.filter((room) => room.wing === wingId && room.floor === floor && room.isSelectable);
-    if (selectableRooms.length === 0) return; // 등록된 강의실 없는 층
-    setD4SelectedFloor(floor);
-    setD4Step("rooms");
-    setSelectedEnergyRoomId(selectableRooms[0].id);
-  }, []);
-
-  const handleChangeD4Wing = useCallback((wingId) => {
-    setD4ActiveWingId(wingId);
-    const wing = getWingById(wingId);
-    setD4SelectedFloor((current) => {
-      const nextFloor = wing.hasBasement ? Math.min(current, wing.floors) : Math.min(Math.max(current, 1), wing.floors);
-      const selectableRooms = D4_ROOMS.filter((room) => room.wing === wingId && room.floor === nextFloor && room.isSelectable);
-      if (selectableRooms.length > 0) setSelectedEnergyRoomId(selectableRooms[0].id);
-      return nextFloor;
-    });
-  }, []);
-
-  const handleChangeD4Floor = useCallback((floor) => {
-    setD4SelectedFloor(floor);
-    const selectableRooms = D4_ROOMS.filter((room) => room.wing === d4ActiveWingId && room.floor === floor && room.isSelectable);
-    if (selectableRooms.length > 0) setSelectedEnergyRoomId(selectableRooms[0].id);
-  }, [d4ActiveWingId]);
-
-  const handleBackToD4Wings = useCallback(() => setD4Step("wings"), []);
 
   const handleExitD4Section = useCallback(() => {
     setBuildingViewMode("campus");
@@ -524,76 +458,13 @@ export default function App() {
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(1,1,2,0.02)_0%,rgba(1,1,2,0.08)_50%,rgba(1,1,2,0.16)_100%)]" />
 
       {buildingViewMode === "section" && (
-        <div
-          className="pointer-events-auto absolute inset-0 z-30 flex items-center justify-center gap-6 overflow-x-auto px-6 xl:px-12"
-          style={{
-            backgroundColor: "color-mix(in srgb, var(--colors-canvas) 25%, transparent)",
-            backdropFilter: "blur(4px)",
-          }}
-        >
-          {d4Step === "wings" ? (
-            <>
-              <div className="shrink-0">
-                <D4WingDetailCard
-                  building={D4_BUILDING_DATA}
-                  wing={d4ActiveWing}
-                  activeWingId={d4ActiveWingId}
-                  onSelectWing={setD4ActiveWingId}
-                  usagePercent={d4WingUsagePercent}
-                  todayEnergyKwh={d4ActiveWing.todayEnergyKwh}
-                  currentHour={currentTime.getHours()}
-                />
-              </div>
-              <div className="h-full min-w-0 flex-1">
-                <D4WingFloorSelect
-                  building={D4_BUILDING_DATA}
-                  activeWingId={d4ActiveWingId}
-                  onSelectWing={setD4ActiveWingId}
-                  onSelectFloor={handleSelectD4Floor}
-                  onBack={handleExitD4Section}
-                />
-              </div>
-              <div className="shrink-0">
-                <MiniStatusWidget
-                  formattedTime={formattedTime}
-                  formattedDate={formattedDate}
-                  isDaytime={sunState.visible}
-                  systemStatusLabel={systemStatusInfo.label}
-                  activeWeather={activeWeather}
-                  airQualityStatus={weatherData?.summary?.air_quality_status}
-                />
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="h-full min-w-0 flex-1">
-                <D4RoomGridSelect
-                  building={D4_BUILDING_DATA}
-                  wing={d4ActiveWing}
-                  floor={d4SelectedFloor}
-                  rooms={d4FloorRooms}
-                  roomUsageById={roomUsageById}
-                  selectedRoom={selectedEnergyRoom}
-                  selectedRoomStatus={selectedRoomStatus}
-                  onSelectRoom={handleSelectD4Room}
-                  onChangeWing={handleChangeD4Wing}
-                  onChangeFloor={handleChangeD4Floor}
-                  onBack={handleBackToD4Wings}
-                />
-              </div>
-              <div className="shrink-0">
-                <MiniStatusWidget
-                  formattedTime={formattedTime}
-                  formattedDate={formattedDate}
-                  isDaytime={sunState.visible}
-                  systemStatusLabel={systemStatusInfo.label}
-                  activeWeather={activeWeather}
-                  airQualityStatus={weatherData?.summary?.air_quality_status}
-                />
-              </div>
-            </>
-          )}
-        </div>
+        <D4SectionExperience
+          buildingId="D4"
+          onClose={handleExitD4Section}
+          onPlanSaved={() => setInstallationRefreshKey((value) => value + 1)}
+          createInstallationPlanDraft={createInstallationPlanDraft}
+          planRefreshKey={installationRefreshKey}
+        />
       )}
 
       {/* 패널 토글 버튼 */}
