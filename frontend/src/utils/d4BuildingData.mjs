@@ -247,7 +247,7 @@ export const D4_BUILDING_DATA = {
     { id: "left", label: "실험동", floors: 5, x: -2.25, width: 3.25, depth: 4.3, totalFloorAreaSqm: 9860, todayEnergyKwh: 240, hasBasement: false },
     { id: "right", label: "교수동", floors: 6, x: 2.25, width: 3.25, depth: 4.3, totalFloorAreaSqm: 12540, todayEnergyKwh: 310, hasBasement: true },
   ],
-  bridges: [{ floor: 3 }, { floor: 5 }],
+  bridges: [{ floor: 2 }, { floor: 5 }],
 };
 
 export function getWingById(wingId) {

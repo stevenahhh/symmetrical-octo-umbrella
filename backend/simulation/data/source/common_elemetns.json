@@ -1,0 +1,1795 @@
+{
+  "metadata": {
+    "project": "campus_digital_twin",
+    "layer": "common",
+    "description": "건물 중심 zone과 도로/횡단보도/교차로/건물 element 공통 식별자. geometry는 추후 3D/GIS 팀이 채움.",
+    "source_files": [
+      "ID부여.pdf",
+      "도로명,교차로명,횡단보도명.pdf",
+      "campus_map_image"
+    ],
+    "notes": [
+      "ID부여.pdf에 RD_060, RD_072가 중복되어 있어 고유키 유지를 위해 공대1호관뒷길은 RD_064, 공학대로3길은 RD_075로 보정함.",
+      "zone_id는 건물군 중심으로 이미지 기반 추정 배정했으며 추후 GIS 좌표/팀 협의로 수정 가능."
+    ]
+  },
+  "zones": [
+    {
+      "zone_id": "zone_A",
+      "zone_name": "A계열_대학본부_생활관_운동장권",
+      "description": "대학본부, 약학대학, 학생생활관, 운동장·체육시설 및 주변 도로를 포함하는 중심-남동 생활/행정 구역",
+      "building_ids": [
+        "A1",
+        "A2",
+        "A3",
+        "A4",
+        "A5",
+        "A6",
+        "A7",
+        "A8",
+        "A9",
+        "A10",
+        "A11",
+        "A12",
+        "A13",
+        "A14",
+        "A15",
+        "A16",
+        "A17",
+        "A18",
+        "A19"
+      ]
+    },
+    {
+      "zone_id": "zone_B",
+      "zone_name": "B계열_박물관_70주년기념관_생명대권",
+      "description": "박물관, 70주년기념관, 생명산업과학대, 산학협력관 및 주변 도로를 포함하는 동북/생명대 구역",
+      "building_ids": ["B1", "B2", "B3", "B4", "B5", "B6", "B7", "B9"]
+    },
+    {
+      "zone_id": "zone_C",
+      "zone_name": "C계열_도서관_실습관_농업센터권",
+      "description": "도서관, 친환경농업센터, 공동실험실습관, 북문 및 주변 도로를 포함하는 북부 학습/실습 구역",
+      "building_ids": ["C1", "C2", "C3", "C4", "C5", "C6"]
+    },
+    {
+      "zone_id": "zone_D",
+      "zone_name": "D계열_공과대학권",
+      "description": "공과대학 1·2·3호관, 창업보육센터 및 공학대로 주변 도로를 포함하는 공학 구역",
+      "building_ids": ["D1", "D2", "D3", "D4"]
+    },
+    {
+      "zone_id": "zone_E",
+      "zone_name": "E계열_사범대_인문예술_사회과학_학생회관권",
+      "description": "학생회관, 기초교육관, 사범대, 미래창조관, 사회과학대, 인문예술대 및 주변 도로를 포함하는 서부 교육/인문사회 구역",
+      "building_ids": ["E1", "E2", "E3", "E4", "E5", "E6", "E7", "E8"]
+    },
+    {
+      "zone_id": "zone_F",
+      "zone_name": "F계열_국제문화_평생교육_테니스장권",
+      "description": "국제문화컨벤션관, 평생교육원, 학생테니스장, 열린광장 등 남서부 부속시설 구역",
+      "building_ids": ["F1", "F2", "F3", "F4"]
+    }
+  ],
+  "elements": [
+    {
+      "element_id": "BLD_A1",
+      "name": "대학본부",
+      "element_type": "building",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_A2",
+      "name": "약학대학",
+      "element_type": "building",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_A3",
+      "name": "천연물신약연구소",
+      "element_type": "building",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_A4",
+      "name": "학생생활관 부속동",
+      "element_type": "building",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_A5",
+      "name": "학생생활관 진리관",
+      "element_type": "building",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_A6",
+      "name": "학생생활관 창조관",
+      "element_type": "building",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_A7",
+      "name": "학생생활관 관리동",
+      "element_type": "building",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_A8",
+      "name": "학생생활관 향림관",
+      "element_type": "building",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_A9",
+      "name": "학생생활관 청운관",
+      "element_type": "building",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_A10",
+      "name": "인재관",
+      "element_type": "building",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_A11",
+      "name": "제2중앙공급실",
+      "element_type": "building",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_A12",
+      "name": "우정원",
+      "element_type": "building",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_A13",
+      "name": "웅지관",
+      "element_type": "building",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_A14",
+      "name": "남문",
+      "element_type": "facility",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_A15",
+      "name": "운동장",
+      "element_type": "facility",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_A16",
+      "name": "교직원테니스장",
+      "element_type": "facility",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_A17",
+      "name": "체육관",
+      "element_type": "building",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_A18",
+      "name": "열린광장",
+      "element_type": "facility",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_A19",
+      "name": "정문",
+      "element_type": "facility",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_B1",
+      "name": "박물관",
+      "element_type": "building",
+      "zone_id": "zone_B",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_B2",
+      "name": "70주년기념관",
+      "element_type": "building",
+      "zone_id": "zone_B",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_B3",
+      "name": "생명산업과학대학 1호관",
+      "element_type": "building",
+      "zone_id": "zone_B",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_B4",
+      "name": "생명산업과학대학 2호관",
+      "element_type": "building",
+      "zone_id": "zone_B",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_B5",
+      "name": "생명산업과학대학 온실",
+      "element_type": "building",
+      "zone_id": "zone_B",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_B6",
+      "name": "제1중앙공급실",
+      "element_type": "building",
+      "zone_id": "zone_B",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_B7",
+      "name": "산학협력관",
+      "element_type": "building",
+      "zone_id": "zone_B",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_B9",
+      "name": "학교단",
+      "element_type": "building",
+      "zone_id": "zone_B",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_C1",
+      "name": "도서관",
+      "element_type": "building",
+      "zone_id": "zone_C",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_C2",
+      "name": "친환경농업센터",
+      "element_type": "building",
+      "zone_id": "zone_C",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_C3",
+      "name": "공동실험실습관",
+      "element_type": "building",
+      "zone_id": "zone_C",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_C4",
+      "name": "환경친화형물질공정기술혁신센터",
+      "element_type": "building",
+      "zone_id": "zone_C",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_C5",
+      "name": "순천대학교 어린이집",
+      "element_type": "building",
+      "zone_id": "zone_C",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_C6",
+      "name": "북문",
+      "element_type": "facility",
+      "zone_id": "zone_C",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_D1",
+      "name": "창업보육센터",
+      "element_type": "building",
+      "zone_id": "zone_D",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_D2",
+      "name": "공과대학 1호관",
+      "element_type": "building",
+      "zone_id": "zone_D",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_D3",
+      "name": "공과대학 2호관",
+      "element_type": "building",
+      "zone_id": "zone_D",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_D4",
+      "name": "공과대학 3호관",
+      "element_type": "building",
+      "zone_id": "zone_D",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_E1",
+      "name": "학생회관",
+      "element_type": "building",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_E2",
+      "name": "기초교육관",
+      "element_type": "building",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_E3",
+      "name": "사범대학 1호관",
+      "element_type": "building",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_E4",
+      "name": "사범대학 2호관",
+      "element_type": "building",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_E5",
+      "name": "사범대학 3호관",
+      "element_type": "building",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_E6",
+      "name": "미래창조관",
+      "element_type": "building",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_E7",
+      "name": "사회과학대학",
+      "element_type": "building",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_E8",
+      "name": "인문예술대학",
+      "element_type": "building",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_F1",
+      "name": "국제문화컨벤션관",
+      "element_type": "building",
+      "zone_id": "zone_F",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_F2",
+      "name": "평생교육원",
+      "element_type": "building",
+      "zone_id": "zone_F",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_F3",
+      "name": "학생테니스장",
+      "element_type": "facility",
+      "zone_id": "zone_F",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "BLD_F4",
+      "name": "열린광장",
+      "element_type": "facility",
+      "zone_id": "zone_F",
+      "geometry": null,
+      "source": "campus_map_image",
+      "notes": "순천대학교 캠퍼스맵 이미지 기반 건물/시설 ID"
+    },
+    {
+      "element_id": "RD_001",
+      "name": "생명대1호관4길",
+      "element_type": "road",
+      "zone_id": "zone_B",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "생명대 1호관 북측 구간"
+    },
+    {
+      "element_id": "RD_002",
+      "name": "생명대1호관3길",
+      "element_type": "road",
+      "zone_id": "zone_B",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "생명대 1호관 동측 구간"
+    },
+    {
+      "element_id": "RD_003",
+      "name": "생명대1호관2길",
+      "element_type": "road",
+      "zone_id": "zone_B",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "생명대 1호관 서측 구간"
+    },
+    {
+      "element_id": "RD_004",
+      "name": "생명대1호관1길",
+      "element_type": "road",
+      "zone_id": "zone_B",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "생명대 1호관 남측 구간"
+    },
+    {
+      "element_id": "RD_005",
+      "name": "생명대로2길",
+      "element_type": "road",
+      "zone_id": "zone_B",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "70주년기념관 북측 메인 도로"
+    },
+    {
+      "element_id": "RD_006",
+      "name": "산단앞길",
+      "element_type": "road",
+      "zone_id": "zone_B",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "산학협력단(B7) 전면"
+    },
+    {
+      "element_id": "RD_007",
+      "name": "기념관뒷길",
+      "element_type": "road",
+      "zone_id": "zone_B",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "70주년기념관 동측 후면"
+    },
+    {
+      "element_id": "RD_008",
+      "name": "박물관뒷길",
+      "element_type": "road",
+      "zone_id": "zone_B",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "박물관 북측 후면"
+    },
+    {
+      "element_id": "RD_009",
+      "name": "산단초입로",
+      "element_type": "road",
+      "zone_id": "zone_B",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "산학협력단 진입로"
+    },
+    {
+      "element_id": "RD_010",
+      "name": "박물관옆길",
+      "element_type": "road",
+      "zone_id": "zone_B",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "박물관 서측 측면"
+    },
+    {
+      "element_id": "RD_011",
+      "name": "중앙로",
+      "element_type": "road",
+      "zone_id": "zone_B",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "캠퍼스 외곽 메인 중앙로"
+    },
+    {
+      "element_id": "RD_012",
+      "name": "기념관앞길",
+      "element_type": "road",
+      "zone_id": "zone_B",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "70주년기념관 정면"
+    },
+    {
+      "element_id": "RD_015",
+      "name": "인재관앞길",
+      "element_type": "road",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "인재관(A10) 남측 정면"
+    },
+    {
+      "element_id": "RD_016",
+      "name": "인재관뒷길",
+      "element_type": "road",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "인재관(A10) 북측 후면"
+    },
+    {
+      "element_id": "RD_017",
+      "name": "학생생활관길",
+      "element_type": "road",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "생활관 관리동(A7) 인근 도로"
+    },
+    {
+      "element_id": "RD_018",
+      "name": "청운뒷길",
+      "element_type": "road",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "청운관(A9) 북측 후면"
+    },
+    {
+      "element_id": "RD_019",
+      "name": "청운대로",
+      "element_type": "road",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "청운관 중심을 관통하는 메인 도로"
+    },
+    {
+      "element_id": "RD_020",
+      "name": "향림대로",
+      "element_type": "road",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "향림관(A8) 전면 메인 도로"
+    },
+    {
+      "element_id": "RD_021",
+      "name": "향림관뒷길",
+      "element_type": "road",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "향림관(A8) 남측 후면"
+    },
+    {
+      "element_id": "RD_023",
+      "name": "기초교육관대로",
+      "element_type": "road",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "기초교육관(E2) 전면 대로"
+    },
+    {
+      "element_id": "RD_024",
+      "name": "진리관뒷길",
+      "element_type": "road",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "진리관(A5) 남측 후면"
+    },
+    {
+      "element_id": "RD_025",
+      "name": "구령대2길",
+      "element_type": "road",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "대운동장 동측 외곽 도로"
+    },
+    {
+      "element_id": "RD_026",
+      "name": "대학본부뒷길",
+      "element_type": "road",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "대학본부(A1) 후면 도로"
+    },
+    {
+      "element_id": "RD_027",
+      "name": "기숙사부속길",
+      "element_type": "road",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "생활관 A4, A5동 인접 도로"
+    },
+    {
+      "element_id": "RD_028",
+      "name": "대학본부대로",
+      "element_type": "road",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "대학본부 앞 중심 관통로"
+    },
+    {
+      "element_id": "RD_029",
+      "name": "구령대1길",
+      "element_type": "road",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "대운동장 동측 내측 도로"
+    },
+    {
+      "element_id": "RD_030",
+      "name": "대학본부앞길",
+      "element_type": "road",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "대학본부(A1) 정면 도로"
+    },
+    {
+      "element_id": "RD_031",
+      "name": "낙우송대로",
+      "element_type": "road",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "대학본부와 대운동장 사이 대로"
+    },
+    {
+      "element_id": "RD_032",
+      "name": "대운동장길",
+      "element_type": "road",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "대운동장 진입 및 주변 도로"
+    },
+    {
+      "element_id": "RD_033",
+      "name": "학생회관대로",
+      "element_type": "road",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "학생회관(E1) 앞 메인 대로"
+    },
+    {
+      "element_id": "RD_034",
+      "name": "기념관옆길",
+      "element_type": "road",
+      "zone_id": "zone_B",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "70주년기념관 서측 도로"
+    },
+    {
+      "element_id": "RD_035",
+      "name": "약대앞길",
+      "element_type": "road",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "약학대학(A2) 정면 도로"
+    },
+    {
+      "element_id": "RD_036",
+      "name": "창조대로",
+      "element_type": "road",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "창조관(A6) 전면 메인 도로"
+    },
+    {
+      "element_id": "RD_037",
+      "name": "웅지관대로",
+      "element_type": "road",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "웅지관(A13) 전면 대로"
+    },
+    {
+      "element_id": "RD_038",
+      "name": "사범대1길",
+      "element_type": "road",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "사범대학(E3) 북측 도로"
+    },
+    {
+      "element_id": "RD_039",
+      "name": "사범대중앙로",
+      "element_type": "road",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "사범대 구역 중심 통로"
+    },
+    {
+      "element_id": "RD_040",
+      "name": "사범대앞길",
+      "element_type": "road",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "사범대학 1호관 정면"
+    },
+    {
+      "element_id": "RD_041",
+      "name": "인예대앞길",
+      "element_type": "road",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "인문예술관(E8) 정면 도로"
+    },
+    {
+      "element_id": "RD_042",
+      "name": "인예대샛길",
+      "element_type": "road",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "인문예술관 측면 좁은 길"
+    },
+    {
+      "element_id": "RD_043",
+      "name": "사범대2길",
+      "element_type": "road",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "사범대 1호관 서측 도로"
+    },
+    {
+      "element_id": "RD_044",
+      "name": "사범대3길",
+      "element_type": "road",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "사범대 1호관 남측 도로"
+    },
+    {
+      "element_id": "RD_045",
+      "name": "사범대학3호관대로",
+      "element_type": "road",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "사범대 3호관(E5) 전면 도로"
+    },
+    {
+      "element_id": "RD_046",
+      "name": "사과대길",
+      "element_type": "road",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "사회과학관(E7) 북측 도로"
+    },
+    {
+      "element_id": "RD_047",
+      "name": "기초교육관뒷길",
+      "element_type": "road",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "기초교육관(E2) 북측 후면"
+    },
+    {
+      "element_id": "RD_048",
+      "name": "기초교육관앞길",
+      "element_type": "road",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "기초교육관(E2) 남측 정면"
+    },
+    {
+      "element_id": "RD_049",
+      "name": "사과대앞길",
+      "element_type": "road",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "사회과학관(E7) 정면 도로"
+    },
+    {
+      "element_id": "RD_050",
+      "name": "미래창조대로",
+      "element_type": "road",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "미래창조관(E6) 정면 대로"
+    },
+    {
+      "element_id": "RD_051",
+      "name": "대형버스주차장길",
+      "element_type": "road",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "학생회관 인근 버스 주차장 도로"
+    },
+    {
+      "element_id": "RD_052",
+      "name": "사과대중길",
+      "element_type": "road",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "사회과학관 중앙 통로"
+    },
+    {
+      "element_id": "RD_053",
+      "name": "사과대주차장길",
+      "element_type": "road",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "사회과학관 주차장 진입로"
+    },
+    {
+      "element_id": "RD_054",
+      "name": "미래창조샛길",
+      "element_type": "road",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "미래창조관(E6) 측면 소로"
+    },
+    {
+      "element_id": "RD_055",
+      "name": "미래창조앞길",
+      "element_type": "road",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "미래창조관(E6) 정면 입구"
+    },
+    {
+      "element_id": "RD_056",
+      "name": "미래창조초입로",
+      "element_type": "road",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "미래창조관 진입 도로"
+    },
+    {
+      "element_id": "RD_057",
+      "name": "공대3호관3로",
+      "element_type": "road",
+      "zone_id": "zone_D",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "공과대학 3호관(D4) 북측"
+    },
+    {
+      "element_id": "RD_058",
+      "name": "공대3호관2로",
+      "element_type": "road",
+      "zone_id": "zone_D",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "공과대학 3호관 중심 통로"
+    },
+    {
+      "element_id": "RD_059",
+      "name": "학군단앞길",
+      "element_type": "road",
+      "zone_id": "zone_D",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "학군단(D5) 전면 도로"
+    },
+    {
+      "element_id": "RD_060",
+      "name": "공대1호관1로",
+      "element_type": "road",
+      "zone_id": "zone_D",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "공과대학 1호관 남측 도로"
+    },
+    {
+      "element_id": "RD_061",
+      "name": "공대1호관2로",
+      "element_type": "road",
+      "zone_id": "zone_D",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "공과대학 1호관 동측 도로"
+    },
+    {
+      "element_id": "RD_062",
+      "name": "공대1호관3로",
+      "element_type": "road",
+      "zone_id": "zone_D",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "공과대학 1호관 북측 통로"
+    },
+    {
+      "element_id": "RD_063",
+      "name": "공대1호관4로",
+      "element_type": "road",
+      "zone_id": "zone_D",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "공과대학 1호관 서측 도로"
+    },
+    {
+      "element_id": "RD_064",
+      "name": "공대1호관뒷길",
+      "element_type": "road",
+      "zone_id": "zone_D",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "공과대학 1호관(D2) 후면"
+    },
+    {
+      "element_id": "RD_065",
+      "name": "우주항공대로",
+      "element_type": "road",
+      "zone_id": "zone_D",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "공대 구역 동서 관통 메인 대로"
+    },
+    {
+      "element_id": "RD_066",
+      "name": "공대3호관1로",
+      "element_type": "road",
+      "zone_id": "zone_D",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "공과대학 3호관 남측 도로"
+    },
+    {
+      "element_id": "RD_067",
+      "name": "공대2호관2로",
+      "element_type": "road",
+      "zone_id": "zone_D",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "공과대학 2호관(D3) 북측"
+    },
+    {
+      "element_id": "RD_068",
+      "name": "공대2호관3로",
+      "element_type": "road",
+      "zone_id": "zone_D",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "공과대학 2호관 중심 통로"
+    },
+    {
+      "element_id": "RD_069",
+      "name": "공대3호관4로",
+      "element_type": "road",
+      "zone_id": "zone_D",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "공과대학 3호관 서측 도로"
+    },
+    {
+      "element_id": "RD_070",
+      "name": "공대2호관4로",
+      "element_type": "road",
+      "zone_id": "zone_D",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "공과대학 2호관 서측 도로"
+    },
+    {
+      "element_id": "RD_071",
+      "name": "공대2호관1로",
+      "element_type": "road",
+      "zone_id": "zone_D",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "공과대학 2호관 남측 도로"
+    },
+    {
+      "element_id": "RD_072",
+      "name": "후문초입로",
+      "element_type": "road",
+      "zone_id": "zone_D",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "공대 남서측 외곽 도로"
+    },
+    {
+      "element_id": "RD_073",
+      "name": "공대1호관샛길",
+      "element_type": "road",
+      "zone_id": "zone_D",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "공과대학 1호관 인근 좁은 길"
+    },
+    {
+      "element_id": "RD_074",
+      "name": "공학대로2길",
+      "element_type": "road",
+      "zone_id": "zone_D",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "공대 1호관과 2호관 사이 도로"
+    },
+    {
+      "element_id": "RD_075",
+      "name": "공학대로3길",
+      "element_type": "road",
+      "zone_id": "zone_D",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "공대 남서측 외곽 도로"
+    },
+    {
+      "element_id": "RD_076",
+      "name": "공학대로1길",
+      "element_type": "road",
+      "zone_id": "zone_D",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "공대 구역 북측 메인 도로"
+    },
+    {
+      "element_id": "RD_077",
+      "name": "사범대뒷길",
+      "element_type": "road",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "사범대 2호관(E4) 후면"
+    },
+    {
+      "element_id": "RD_078",
+      "name": "사범대샛길",
+      "element_type": "road",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "사범대와 도서관 사이 좁은 길"
+    },
+    {
+      "element_id": "RD_079",
+      "name": "실습관2길",
+      "element_type": "road",
+      "zone_id": "zone_C",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "공동실험실습관(C3) 2길"
+    },
+    {
+      "element_id": "RD_080",
+      "name": "실습관3길",
+      "element_type": "road",
+      "zone_id": "zone_C",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "공동실험실습관(C3) 3길"
+    },
+    {
+      "element_id": "RD_081",
+      "name": "농업센터1길",
+      "element_type": "road",
+      "zone_id": "zone_C",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "친환경농업센터(C2) 1길"
+    },
+    {
+      "element_id": "RD_082",
+      "name": "실습관1길",
+      "element_type": "road",
+      "zone_id": "zone_C",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "공동실험실습관(C3) 1길"
+    },
+    {
+      "element_id": "RD_083",
+      "name": "농업센터2길",
+      "element_type": "road",
+      "zone_id": "zone_C",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "친환경농업센터(C2) 2길"
+    },
+    {
+      "element_id": "RD_084",
+      "name": "농업센터4길",
+      "element_type": "road",
+      "zone_id": "zone_C",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "친환경농업센터(C2) 4길"
+    },
+    {
+      "element_id": "RD_085",
+      "name": "농업센터3길",
+      "element_type": "road",
+      "zone_id": "zone_C",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "친환경농업센터(C2) 3길"
+    },
+    {
+      "element_id": "RD_086",
+      "name": "실습관대로",
+      "element_type": "road",
+      "zone_id": "zone_C",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "공동실험실습관 전면 대로"
+    },
+    {
+      "element_id": "RD_087",
+      "name": "도서관주차장길",
+      "element_type": "road",
+      "zone_id": "zone_C",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "도서관(C1) 주차장 진입로"
+    },
+    {
+      "element_id": "RD_088",
+      "name": "농업센터대로",
+      "element_type": "road",
+      "zone_id": "zone_C",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "친환경농업센터 전면 대로"
+    },
+    {
+      "element_id": "RD_090",
+      "name": "중앙공급실초입길",
+      "element_type": "road",
+      "zone_id": "zone_B",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "제1중앙공급실 진입 도로"
+    },
+    {
+      "element_id": "RD_091",
+      "name": "생명대로1길",
+      "element_type": "road",
+      "zone_id": "zone_B",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "생명대 구역 남측 경계 도로"
+    },
+    {
+      "element_id": "RD_092",
+      "name": "사과대초입로",
+      "element_type": "road",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "사회과학관(E7) 진입로"
+    },
+    {
+      "element_id": "CW_001",
+      "name": "산단3주차장보도",
+      "element_type": "crosswalk",
+      "zone_id": "zone_B",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "산단 3주차장 횡단보도"
+    },
+    {
+      "element_id": "CW_002",
+      "name": "산단2주차장보도",
+      "element_type": "crosswalk",
+      "zone_id": "zone_B",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "산단 2주차장 횡단보도"
+    },
+    {
+      "element_id": "CW_003",
+      "name": "산단1주차장보도",
+      "element_type": "crosswalk",
+      "zone_id": "zone_B",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "산단 1주차장 횡단보도"
+    },
+    {
+      "element_id": "CW_004",
+      "name": "산단초입보도",
+      "element_type": "crosswalk",
+      "zone_id": "zone_B",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "산학협력단 입구 횡단보도"
+    },
+    {
+      "element_id": "CW_005",
+      "name": "기념관앞보도",
+      "element_type": "crosswalk",
+      "zone_id": "zone_B",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "70주년기념관 정문 앞 보도"
+    },
+    {
+      "element_id": "CW_006",
+      "name": "박물관삼거리보도",
+      "element_type": "crosswalk",
+      "zone_id": "zone_B",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "박물관삼거리 교차로 내 보도"
+    },
+    {
+      "element_id": "CW_007",
+      "name": "정문보도",
+      "element_type": "crosswalk",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "캠퍼스 정문 횡단보도"
+    },
+    {
+      "element_id": "CW_008",
+      "name": "대형버스2보도",
+      "element_type": "crosswalk",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "대형버스 주차장 하단 보도"
+    },
+    {
+      "element_id": "CW_009",
+      "name": "기초교육관앞보도",
+      "element_type": "crosswalk",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "기초교육관 정면 횡단보도"
+    },
+    {
+      "element_id": "CW_010",
+      "name": "대학본부뒷길보도",
+      "element_type": "crosswalk",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "대학본부 후면 횡단보도"
+    },
+    {
+      "element_id": "CW_011",
+      "name": "대형버스1보도",
+      "element_type": "crosswalk",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "대형버스 주차장 상단 보도"
+    },
+    {
+      "element_id": "CW_012",
+      "name": "대학본부앞보도",
+      "element_type": "crosswalk",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "대학본부 정면 횡단보도"
+    },
+    {
+      "element_id": "CW_013",
+      "name": "기념관옆보도",
+      "element_type": "crosswalk",
+      "zone_id": "zone_B",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "70주년기념관 서측 횡단보도"
+    },
+    {
+      "element_id": "CW_014",
+      "name": "중앙교차로1보도",
+      "element_type": "crosswalk",
+      "zone_id": "zone_B",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "중앙교차로 북측 횡단보도"
+    },
+    {
+      "element_id": "CW_015",
+      "name": "학생회관앞보도",
+      "element_type": "crosswalk",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "학생회관 정면 횡단보도"
+    },
+    {
+      "element_id": "CW_016",
+      "name": "약대앞보도",
+      "element_type": "crosswalk",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "약학대학 정면 횡단보도"
+    },
+    {
+      "element_id": "CW_017",
+      "name": "인예대앞보도",
+      "element_type": "crosswalk",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "인문예술관 정면 횡단보도"
+    },
+    {
+      "element_id": "CW_018",
+      "name": "사과대사거리보도",
+      "element_type": "crosswalk",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "사과대사거리 중심 횡단보도"
+    },
+    {
+      "element_id": "CW_019",
+      "name": "공대3호관앞보도",
+      "element_type": "crosswalk",
+      "zone_id": "zone_D",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "공과대학 3호관 정면 보도"
+    },
+    {
+      "element_id": "CW_020",
+      "name": "창업센터보도",
+      "element_type": "crosswalk",
+      "zone_id": "zone_D",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "창업보육센터(D1) 정면 보도"
+    },
+    {
+      "element_id": "CW_021",
+      "name": "공대2호관앞보도",
+      "element_type": "crosswalk",
+      "zone_id": "zone_D",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "공과대학 2호관 정면 보도"
+    },
+    {
+      "element_id": "CW_022",
+      "name": "공학교차로보도",
+      "element_type": "crosswalk",
+      "zone_id": "zone_D",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "공학교차로 중심 횡단보도"
+    },
+    {
+      "element_id": "CW_023",
+      "name": "사범대앞보도",
+      "element_type": "crosswalk",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "사범대 구역 진입 횡단보도"
+    },
+    {
+      "element_id": "CW_024",
+      "name": "중앙교차로2보도",
+      "element_type": "crosswalk",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "중앙교차로 남측 횡단보도"
+    },
+    {
+      "element_id": "ND_001",
+      "name": "박물관삼거리",
+      "element_type": "intersection",
+      "zone_id": "zone_B",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "박물관과 정문 사이 교차점"
+    },
+    {
+      "element_id": "ND_002",
+      "name": "창조삼거리",
+      "element_type": "intersection",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "창조관(A6) 앞 교차로"
+    },
+    {
+      "element_id": "ND_003",
+      "name": "청운삼거리",
+      "element_type": "intersection",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "청운관(A9) 앞 교차로"
+    },
+    {
+      "element_id": "ND_004",
+      "name": "청운인재삼거리",
+      "element_type": "intersection",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "청운관과 인재관 사이 교차점"
+    },
+    {
+      "element_id": "ND_005",
+      "name": "향림삼거리",
+      "element_type": "intersection",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "향림관(A8) 앞 교차로"
+    },
+    {
+      "element_id": "ND_006",
+      "name": "중앙교차로",
+      "element_type": "intersection",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "캠퍼스 중심부 메인 교차로"
+    },
+    {
+      "element_id": "ND_007",
+      "name": "약대사거리",
+      "element_type": "intersection",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "약학대학 앞 사거리"
+    },
+    {
+      "element_id": "ND_008",
+      "name": "대학본부사거리",
+      "element_type": "intersection",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "대학본부 서측 사거리"
+    },
+    {
+      "element_id": "ND_009",
+      "name": "낙우송삼거리",
+      "element_type": "intersection",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "낙우송대로 중심 교차점"
+    },
+    {
+      "element_id": "ND_010",
+      "name": "매화삼거리",
+      "element_type": "intersection",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "낙우송대로 하단 교차점"
+    },
+    {
+      "element_id": "ND_011",
+      "name": "대운동장삼거리",
+      "element_type": "intersection",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "대운동장 진입로 교차점"
+    },
+    {
+      "element_id": "ND_012",
+      "name": "공학사거리",
+      "element_type": "intersection",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "공대와 사과대 경계 교차로"
+    },
+    {
+      "element_id": "ND_013",
+      "name": "사범대학1호관삼거리",
+      "element_type": "intersection",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "사범대 1호관 앞 교차점"
+    },
+    {
+      "element_id": "ND_014",
+      "name": "사범대중앙삼거리",
+      "element_type": "intersection",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "사범대 구역 중심 교차점"
+    },
+    {
+      "element_id": "ND_015",
+      "name": "학생회관삼거리",
+      "element_type": "intersection",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "학생회관 앞 삼거리"
+    },
+    {
+      "element_id": "ND_016",
+      "name": "사범대학3호관삼거리",
+      "element_type": "intersection",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "사범대 3호관 앞 교차점"
+    },
+    {
+      "element_id": "ND_017",
+      "name": "인예대삼거리",
+      "element_type": "intersection",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "인문예술관 앞 교차점"
+    },
+    {
+      "element_id": "ND_018",
+      "name": "사과대사거리",
+      "element_type": "intersection",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "사회과학관 앞 사거리"
+    },
+    {
+      "element_id": "ND_019",
+      "name": "미래창조사거리",
+      "element_type": "intersection",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "미래창조관 앞 교차로"
+    },
+    {
+      "element_id": "ND_020",
+      "name": "공대3호관삼거리",
+      "element_type": "intersection",
+      "zone_id": "zone_D",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "공대 3호관 구역 교차점"
+    },
+    {
+      "element_id": "ND_021",
+      "name": "공학교차로",
+      "element_type": "intersection",
+      "zone_id": "zone_D",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "공과대학 중심부 교차로"
+    },
+    {
+      "element_id": "ND_022",
+      "name": "후문삼거리",
+      "element_type": "intersection",
+      "zone_id": "zone_D",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "캠퍼스 후문 교차점"
+    },
+    {
+      "element_id": "ND_023",
+      "name": "실습관삼거리",
+      "element_type": "intersection",
+      "zone_id": "zone_C",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "공동실험실습관 앞 삼거리"
+    },
+    {
+      "element_id": "ND_024",
+      "name": "농업센터삼거리",
+      "element_type": "intersection",
+      "zone_id": "zone_C",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "친환경농업센터 앞 삼거리"
+    },
+    {
+      "element_id": "ND_025",
+      "name": "생명대제2삼거리",
+      "element_type": "intersection",
+      "zone_id": "zone_B",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "생명대 구역 중간 삼거리"
+    },
+    {
+      "element_id": "ND_026",
+      "name": "생명대제1삼거리",
+      "element_type": "intersection",
+      "zone_id": "zone_B",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "생명대 구역 입구 삼거리"
+    },
+    {
+      "element_id": "ND_027",
+      "name": "대형버스사거리",
+      "element_type": "intersection",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "버스 주차장 입구 사거리"
+    },
+    {
+      "element_id": "ND_028",
+      "name": "기초교육관삼거리",
+      "element_type": "intersection",
+      "zone_id": "zone_E",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "기초교육관 정면 교차점"
+    },
+    {
+      "element_id": "ND_029",
+      "name": "기숙사사거리",
+      "element_type": "intersection",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "생활관 구역 진입 사거리"
+    },
+    {
+      "element_id": "ND_030",
+      "name": "구령대삼거리",
+      "element_type": "intersection",
+      "zone_id": "zone_A",
+      "geometry": null,
+      "source": "ID부여.pdf",
+      "notes": "운동장 동측 교차점"
+    }
+  ]
+}

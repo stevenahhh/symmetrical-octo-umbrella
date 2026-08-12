@@ -1,0 +1,8 @@
+{
+  "authoritative_edges_exported": 0,
+  "netconvert_available": false,
+  "campus_net_built": false,
+  "error": null,
+  "ready": false,
+  "note": "Derived/unapproved geometry is deliberately excluded from SUMO network generation."
+}

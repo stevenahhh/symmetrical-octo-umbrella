@@ -1,0 +1,22 @@
+{
+  "distance_thresholds": {"caution": 5, "warning": 3, "danger": 1.5},
+  "ttc_thresholds": {"caution": 5, "warning": 3, "danger": 1.5},
+  "speed_limits": {"car": 8.33, "person": 2.0, "scooter": 6.94},
+  "hard_braking_threshold": 3.5,
+  "prediction_horizon_seconds": 6,
+  "prediction_step_seconds": 0.25,
+  "interaction_search_radius": 15,
+  "risk_search_radius": 60,
+  "path_intersection_time_tolerance": 2,
+  "near_miss_distance": 1.25,
+  "near_miss_ttc": 1.5,
+  "collision_radius": 0.75,
+  "agent_dimensions": {
+    "car": {"shape": "oriented_box", "length": 4.5, "width": 1.8},
+    "person": {"shape": "circle", "radius": 0.35},
+    "scooter": {"shape": "capsule", "length": 1.8, "width": 0.65}
+  },
+  "parameter_note": "Project-local engineering assumptions. They are configurable and are not claimed as copied paper parameters.",
+  "event_cooldown_seconds": 8,
+  "max_events": 200
+}

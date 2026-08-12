@@ -11,10 +11,11 @@ test("add, select, rotate, tilt, resize, orient, drag, delete, and one-step undo
   state = addArray(state);
   assert.equal(state.committedArrays.length, 2);
   assert.equal(state.selectedArrayId, "D4-array-2");
-  state = updateSelectedArray(state, { azimuthDeg: 180, tiltDeg: 25, rows: 3, columns: 6, orientation: "landscape" });
-  assert.deepEqual(Object.fromEntries(["azimuthDeg", "tiltDeg", "rows", "columns", "orientation"].map((key) => [key, state.committedArrays[1][key]])), { azimuthDeg: 180, tiltDeg: 25, rows: 3, columns: 6, orientation: "landscape" });
-  state = moveSelectedArray(state, { xMeters: 21, yMeters: 12 });
-  assert.deepEqual(state.committedArrays[1].originMeters, { xMeters: 21, yMeters: 12 });
+  state = updateSelectedArray(state, { azimuthDeg: 90, tiltDeg: 20, rows: 1, columns: 3, orientation: "portrait" });
+  assert.deepEqual(Object.fromEntries(["azimuthDeg", "tiltDeg", "rows", "columns", "orientation"].map((key) => [key, state.committedArrays[1][key]])), { azimuthDeg: 90, tiltDeg: 20, rows: 1, columns: 3, orientation: "portrait" });
+  state = moveSelectedArray(state, { xMeters: 8, yMeters: 60.65 });
+  assert.deepEqual(state.committedArrays[1].originMeters, { xMeters: 8, yMeters: 60.65 });
+  assert.equal(state.committedArrays[1].roofZoneId, "D4-roof-north-bottom-cement");
   state = deleteSelectedArray(state);
   assert.equal(state.committedArrays.length, 1);
   state = undoLatestEdit(state);
@@ -50,7 +51,7 @@ test("new array IDs use the edited building prefix", () => {
 });
 
 test("summary reports module count, panel area, and capacity", () => {
-  assert.deepEqual(summarizeLayout(createRoofEditorState(fixture())), { arrayCount: 1, moduleCount: 16, areaSquareMeters: 35.28, capacityKwp: 7.056 });
+  assert.deepEqual(summarizeLayout(createRoofEditorState(fixture())), { arrayCount: 1, moduleCount: 4, areaSquareMeters: 8.82, capacityKwp: 1.764 });
 });
 
 test("malformed document fails explicitly instead of creating stale state", () => {

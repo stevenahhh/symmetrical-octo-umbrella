@@ -15,6 +15,8 @@ import { VWorldCampusStatus } from "./VWorldCampusStatus";
 import { RepresentativePlanOverlayController } from "./RepresentativePlanOverlayController";
 import { CAMPUS_REPRESENTATIVE_BUILDING_IDS } from "./representativePlanOverlay.mjs";
 import { replaceRepresentativePlanObjects } from "./representativePlanVWorld.mjs";
+import { createCampusGltfOverlay, removeCampusGltfOverlay } from "./campusGltfOverlay.mjs";
+import { createVWorldTrafficSimulation } from "./trafficSimulationOverlay.mjs";
 
 const D4SectionExperience = lazy(() =>
   import("./D4SectionExperience").then((module) => ({
@@ -89,6 +91,8 @@ export default function VWorldRenderer({
   const overlayObjectIdsRef = useRef([]);
   const highlightedRoadZoneRef = useRef(null);
   const highlightedRoadZoneIdsRef = useRef([]);
+  const campusGltfModelRef = useRef(null);
+  const trafficSimulationRef = useRef(null);
   const [isLoading, setIsLoading] = useState(true);
   const [hasLoadError, setHasLoadError] = useState(false);
   const [isD4SectionOpen, setIsD4SectionOpen] = useState(false);
@@ -158,6 +162,19 @@ export default function VWorldRenderer({
 
         createCampusBoundary(vw);
         createD4VWorldModel(vw);
+        try {
+          campusGltfModelRef.current = await createCampusGltfOverlay(map);
+          if (isDisposed) {
+            removeCampusGltfOverlay(map, campusGltfModelRef.current);
+            campusGltfModelRef.current = null;
+            return;
+          }
+          if (campusGltfModelRef.current) removeD4VWorldModel(map);
+        } catch (error) {
+          console.warn("Campus GLB overlay could not be loaded; keeping the D4 fallback model.", error);
+        }
+        trafficSimulationRef.current?.dispose();
+        trafficSimulationRef.current = createVWorldTrafficSimulation({ map });
         handleOverlayDataChange(overlayDataRef.current);
         createD4CoordinateMarker(vw);
 
@@ -241,6 +258,8 @@ export default function VWorldRenderer({
 
     return () => {
       isDisposed = true;
+      trafficSimulationRef.current?.dispose();
+      trafficSimulationRef.current = null;
       if (!map) return;
 
       if (handleMapClick) {
@@ -252,6 +271,8 @@ export default function VWorldRenderer({
       highlightedRoadZoneIdsRef.current = [];
       highlightedRoadZoneRef.current = null;
       removeD4VWorldModel(map);
+      removeCampusGltfOverlay(map, campusGltfModelRef.current);
+      campusGltfModelRef.current = null;
       overlayObjectIdsRef.current = replaceRepresentativePlanObjects({
         map,
         vw: vwRef.current,

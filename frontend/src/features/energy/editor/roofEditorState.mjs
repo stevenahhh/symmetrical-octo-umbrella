@@ -1,4 +1,4 @@
-import { validateRoofArrays } from "../domain/roofGeometry.mjs";
+import { pointInPolygon, validateRoofArrays } from "../domain/roofGeometry.mjs";
 
 const clone = (value) => structuredClone(value);
 
@@ -45,22 +45,26 @@ export function selectArray(state, arrayId) {
   return state.previewArrays.some((item) => item.id === arrayId) ? { ...state, selectedArrayId: arrayId } : state;
 }
 
-function nextOrigin(state) {
+function nextLayout(state) {
   const candidates = [
-    { xMeters: 20, yMeters: 17 }, { xMeters: 10, yMeters: 17 },
-    { xMeters: 20, yMeters: 10 }, { xMeters: 10, yMeters: 34 },
+    { originMeters: { xMeters: 24.5, yMeters: 61.8 }, roofZoneId: "D4-roof-west-main", azimuthDeg: 90 },
+    { originMeters: { xMeters: 24.5, yMeters: 72.8 }, roofZoneId: "D4-roof-west-main", azimuthDeg: 90 },
+    { originMeters: { xMeters: 8, yMeters: 60.65 }, roofZoneId: "D4-roof-north-bottom-cement", azimuthDeg: 180 },
+    { originMeters: { xMeters: 15.5, yMeters: 60.65 }, roofZoneId: "D4-roof-north-bottom-cement", azimuthDeg: 180 },
+    { originMeters: { xMeters: 7.3, yMeters: 79.5 }, roofZoneId: "D4-roof-north-top-cement", azimuthDeg: 180 },
+    { originMeters: { xMeters: 4.15, yMeters: 69.25 }, roofZoneId: "D4-roof-north-left-cement", azimuthDeg: 90 },
   ];
-  return candidates.find((origin) => {
-    const candidate = makeArray(state, "candidate", origin);
+  return candidates.find((layout) => {
+    const candidate = makeArray(state, "candidate", layout);
     return validateRoofArrays({ roof: state.roof, arrays: [...state.committedArrays, candidate], modules: state.modules, layoutRules: state.layoutRules }).length === 0;
-  }) ?? { xMeters: 15.5, yMeters: 42 };
+  }) ?? candidates[0];
 }
 
-function makeArray(state, id, originMeters) {
+function makeArray(state, id, layout) {
   return {
-    id, scenarioId: state.scenarioId, roofId: state.roof.id, roofZoneId: state.roof.zones[0].id,
-    moduleId: state.modules[0].id, originMeters, rows: 2, columns: 8,
-    azimuthDeg: 180, tiltDeg: 25, orientation: "portrait",
+    id, scenarioId: state.scenarioId, roofId: state.roof.id, roofZoneId: layout.roofZoneId,
+    moduleId: state.modules[0].id, originMeters: layout.originMeters, rows: 1, columns: 4,
+    azimuthDeg: layout.azimuthDeg, tiltDeg: 25, orientation: "portrait",
   };
 }
 
@@ -70,13 +74,18 @@ export function addArray(state) {
   let suffix = 2;
   while (usedIds.has(`${prefix}${suffix}`)) suffix += 1;
   const id = `${prefix}${suffix}`;
-  const arrays = [...state.committedArrays, makeArray(state, id, nextOrigin(state))];
+  const arrays = [...state.committedArrays, makeArray(state, id, nextLayout(state))];
   return { ...checkedState(state, arrays), selectedArrayId: id };
 }
 
 export function updateSelectedArray(state, changes) {
   if (!state.selectedArrayId) return state;
-  const arrays = state.committedArrays.map((item) => item.id === state.selectedArrayId ? { ...item, ...changes } : item);
+  const matchingZone = changes.originMeters
+    ? state.roof.zones.find((zone) => pointInPolygon(changes.originMeters, zone.polygonMeters))
+    : null;
+  const arrays = state.committedArrays.map((item) => item.id === state.selectedArrayId
+    ? { ...item, ...changes, ...(matchingZone ? { roofZoneId: matchingZone.id } : {}) }
+    : item);
   return checkedState(state, arrays);
 }
 

@@ -1,0 +1,11 @@
+{
+  "status": "derived correspondences for transform regression; not independent survey control points",
+  "acceptance_rmse_meters": 2.0,
+  "control_points": [
+    {"id": "GATE_MAIN", "simulation": [610.437, -147.974], "three": [166.695245982, 24.0, -0.883091061], "independent": false},
+    {"id": "BLD_D4", "simulation": [-24.137, 5.053], "three": [-229.416729412, 24.0, -96.405169272], "independent": false},
+    {"id": "BLD_C1", "simulation": [213.914, 6.114], "three": [-80.821212019, 24.0, -97.067463671], "independent": false},
+    {"id": "BLD_E1", "simulation": [289.081, -170.624], "three": [-33.900681309, 24.0, 13.255427445], "independent": false},
+    {"id": "SCOOTER_PARKING_01", "simulation": [386.377, -85.663], "three": [26.833150770, 24.0, -39.778686057], "independent": false}
+  ]
+}

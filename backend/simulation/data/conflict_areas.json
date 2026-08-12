@@ -1,0 +1,827 @@
+{
+  "metadata": {
+    "status": "derived until crosswalk and lane geometries are authoritative"
+  },
+  "conflict_areas": [
+    {
+      "conflict_area_id": "CA_CW_022",
+      "crosswalk_id": "CW_022",
+      "crosswalk_edge_ids": [
+        "EDGE_0030_walk",
+        "EDGE_0082_walk",
+        "EDGE_0084_walk",
+        "EDGE_0086_walk"
+      ],
+      "intersecting_vehicle_lanes": [
+        "EDGE_0005_vehicle",
+        "EDGE_0015_vehicle",
+        "EDGE_0029_vehicle",
+        "EDGE_0031_vehicle",
+        "EDGE_0033_vehicle",
+        "EDGE_0051_vehicle",
+        "EDGE_0055_vehicle",
+        "EDGE_0081_vehicle",
+        "EDGE_0083_vehicle",
+        "EDGE_0085_vehicle",
+        "EDGE_0087_vehicle",
+        "EDGE_0089_vehicle",
+        "EDGE_0241_vehicle",
+        "EDGE_0243_vehicle"
+      ],
+      "participants": [
+        "car",
+        "person",
+        "scooter"
+      ],
+      "source": "derived",
+      "confidence": 0.35,
+      "derived": true,
+      "geometry_note": "5 m square around metadata-mapped crosswalk node; not a surveyed crosswalk polygon",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              187.024,
+              -21.078
+            ],
+            [
+              192.024,
+              -21.078
+            ],
+            [
+              192.024,
+              -16.078
+            ],
+            [
+              187.024,
+              -16.078
+            ],
+            [
+              187.024,
+              -21.078
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "conflict_area_id": "CA_CW_019",
+      "crosswalk_id": "CW_019",
+      "crosswalk_edge_ids": [
+        "EDGE_0058_walk",
+        "EDGE_0072_walk",
+        "EDGE_0078_walk",
+        "EDGE_0080_walk"
+      ],
+      "intersecting_vehicle_lanes": [
+        "EDGE_0039_vehicle",
+        "EDGE_0047_vehicle",
+        "EDGE_0053_vehicle",
+        "EDGE_0057_vehicle",
+        "EDGE_0059_vehicle",
+        "EDGE_0061_vehicle",
+        "EDGE_0063_vehicle",
+        "EDGE_0065_vehicle",
+        "EDGE_0067_vehicle",
+        "EDGE_0069_vehicle",
+        "EDGE_0071_vehicle",
+        "EDGE_0075_vehicle",
+        "EDGE_0077_vehicle",
+        "EDGE_0079_vehicle",
+        "EDGE_0091_vehicle"
+      ],
+      "participants": [
+        "car",
+        "person",
+        "scooter"
+      ],
+      "source": "derived",
+      "confidence": 0.35,
+      "derived": true,
+      "geometry_note": "5 m square around metadata-mapped crosswalk node; not a surveyed crosswalk polygon",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              48.903,
+              -57.081
+            ],
+            [
+              53.903,
+              -57.081
+            ],
+            [
+              53.903,
+              -52.081
+            ],
+            [
+              48.903,
+              -52.081
+            ],
+            [
+              48.903,
+              -57.081
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "conflict_area_id": "CA_CW_015",
+      "crosswalk_id": "CW_015",
+      "crosswalk_edge_ids": [
+        "EDGE_0128_walk",
+        "EDGE_0254_walk",
+        "EDGE_0256_walk",
+        "EDGE_0340_walk"
+      ],
+      "intersecting_vehicle_lanes": [
+        "EDGE_0123_vehicle",
+        "EDGE_0125_vehicle",
+        "EDGE_0127_vehicle",
+        "EDGE_0169_vehicle",
+        "EDGE_0177_vehicle",
+        "EDGE_0237_vehicle",
+        "EDGE_0239_vehicle",
+        "EDGE_0245_vehicle",
+        "EDGE_0249_vehicle",
+        "EDGE_0251_vehicle",
+        "EDGE_0253_vehicle",
+        "EDGE_0255_vehicle",
+        "EDGE_0339_vehicle"
+      ],
+      "participants": [
+        "car",
+        "person",
+        "scooter"
+      ],
+      "source": "derived",
+      "confidence": 0.35,
+      "derived": true,
+      "geometry_note": "5 m square around metadata-mapped crosswalk node; not a surveyed crosswalk polygon",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              248.882,
+              -165.288
+            ],
+            [
+              253.882,
+              -165.288
+            ],
+            [
+              253.882,
+              -160.288
+            ],
+            [
+              248.882,
+              -160.288
+            ],
+            [
+              248.882,
+              -165.288
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "conflict_area_id": "CA_CW_006",
+      "crosswalk_id": "CW_006",
+      "crosswalk_edge_ids": [
+        "EDGE_0156_walk",
+        "EDGE_0160_walk",
+        "EDGE_0196_walk",
+        "EDGE_0198_walk"
+      ],
+      "intersecting_vehicle_lanes": [
+        "EDGE_0135_vehicle",
+        "EDGE_0151_vehicle",
+        "EDGE_0153_vehicle",
+        "EDGE_0155_vehicle",
+        "EDGE_0157_vehicle",
+        "EDGE_0159_vehicle",
+        "EDGE_0161_vehicle",
+        "EDGE_0163_vehicle",
+        "EDGE_0195_vehicle",
+        "EDGE_0197_vehicle",
+        "EDGE_0199_vehicle"
+      ],
+      "participants": [
+        "car",
+        "person",
+        "scooter"
+      ],
+      "source": "derived",
+      "confidence": 0.35,
+      "derived": true,
+      "geometry_note": "5 m square around metadata-mapped crosswalk node; not a surveyed crosswalk polygon",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              544.672,
+              -132.81
+            ],
+            [
+              549.672,
+              -132.81
+            ],
+            [
+              549.672,
+              -127.81
+            ],
+            [
+              544.672,
+              -127.81
+            ],
+            [
+              544.672,
+              -132.81
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "conflict_area_id": "CA_CW_016",
+      "crosswalk_id": "CW_016",
+      "crosswalk_edge_ids": [
+        "EDGE_0158_walk",
+        "EDGE_0164_walk",
+        "EDGE_0290_walk",
+        "EDGE_0298_walk",
+        "EDGE_0300_walk"
+      ],
+      "intersecting_vehicle_lanes": [
+        "EDGE_0135_vehicle",
+        "EDGE_0139_vehicle",
+        "EDGE_0145_vehicle",
+        "EDGE_0151_vehicle",
+        "EDGE_0153_vehicle",
+        "EDGE_0155_vehicle",
+        "EDGE_0157_vehicle",
+        "EDGE_0159_vehicle",
+        "EDGE_0161_vehicle",
+        "EDGE_0163_vehicle",
+        "EDGE_0277_vehicle",
+        "EDGE_0287_vehicle",
+        "EDGE_0289_vehicle",
+        "EDGE_0291_vehicle",
+        "EDGE_0297_vehicle",
+        "EDGE_0299_vehicle",
+        "EDGE_0301_vehicle"
+      ],
+      "participants": [
+        "car",
+        "person",
+        "scooter"
+      ],
+      "source": "derived",
+      "confidence": 0.35,
+      "derived": true,
+      "geometry_note": "5 m square around metadata-mapped crosswalk node; not a surveyed crosswalk polygon",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              453.889,
+              -111.22
+            ],
+            [
+              458.889,
+              -111.22
+            ],
+            [
+              458.889,
+              -106.22
+            ],
+            [
+              453.889,
+              -106.22
+            ],
+            [
+              453.889,
+              -111.22
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "conflict_area_id": "CA_CW_012",
+      "crosswalk_id": "CW_012",
+      "crosswalk_edge_ids": [
+        "EDGE_0166_walk",
+        "EDGE_0176_walk",
+        "EDGE_0178_walk"
+      ],
+      "intersecting_vehicle_lanes": [
+        "EDGE_0111_vehicle",
+        "EDGE_0117_vehicle",
+        "EDGE_0143_vehicle",
+        "EDGE_0165_vehicle",
+        "EDGE_0167_vehicle",
+        "EDGE_0169_vehicle",
+        "EDGE_0171_vehicle",
+        "EDGE_0175_vehicle",
+        "EDGE_0177_vehicle",
+        "EDGE_0339_vehicle"
+      ],
+      "participants": [
+        "car",
+        "person",
+        "scooter"
+      ],
+      "source": "derived",
+      "confidence": 0.35,
+      "derived": true,
+      "geometry_note": "5 m square around metadata-mapped crosswalk node; not a surveyed crosswalk polygon",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              350.359,
+              -180.074
+            ],
+            [
+              355.359,
+              -180.074
+            ],
+            [
+              355.359,
+              -175.074
+            ],
+            [
+              350.359,
+              -175.074
+            ],
+            [
+              350.359,
+              -180.074
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "conflict_area_id": "CA_CW_018",
+      "crosswalk_id": "CW_018",
+      "crosswalk_edge_ids": [
+        "EDGE_0184_walk",
+        "EDGE_0202_walk",
+        "EDGE_0214_walk",
+        "EDGE_0216_walk",
+        "EDGE_0218_walk"
+      ],
+      "intersecting_vehicle_lanes": [
+        "EDGE_0129_vehicle",
+        "EDGE_0179_vehicle",
+        "EDGE_0181_vehicle",
+        "EDGE_0183_vehicle",
+        "EDGE_0201_vehicle",
+        "EDGE_0203_vehicle",
+        "EDGE_0205_vehicle",
+        "EDGE_0207_vehicle",
+        "EDGE_0209_vehicle",
+        "EDGE_0211_vehicle",
+        "EDGE_0213_vehicle",
+        "EDGE_0215_vehicle",
+        "EDGE_0217_vehicle",
+        "EDGE_0219_vehicle",
+        "EDGE_0221_vehicle",
+        "EDGE_0223_vehicle",
+        "EDGE_0225_vehicle"
+      ],
+      "participants": [
+        "car",
+        "person",
+        "scooter"
+      ],
+      "source": "derived",
+      "confidence": 0.35,
+      "derived": true,
+      "geometry_note": "5 m square around metadata-mapped crosswalk node; not a surveyed crosswalk polygon",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              189.597,
+              -265.9
+            ],
+            [
+              194.597,
+              -265.9
+            ],
+            [
+              194.597,
+              -260.9
+            ],
+            [
+              189.597,
+              -260.9
+            ],
+            [
+              189.597,
+              -265.9
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "conflict_area_id": "CA_CW_003",
+      "crosswalk_id": "CW_003",
+      "crosswalk_edge_ids": [
+        "EDGE_0190_walk",
+        "EDGE_0258_walk",
+        "EDGE_0260_walk"
+      ],
+      "intersecting_vehicle_lanes": [
+        "EDGE_0189_vehicle",
+        "EDGE_0191_vehicle",
+        "EDGE_0193_vehicle",
+        "EDGE_0257_vehicle",
+        "EDGE_0259_vehicle",
+        "EDGE_0261_vehicle",
+        "EDGE_0263_vehicle",
+        "EDGE_0265_vehicle",
+        "EDGE_0269_vehicle"
+      ],
+      "participants": [
+        "car",
+        "person",
+        "scooter"
+      ],
+      "source": "derived",
+      "confidence": 0.35,
+      "derived": true,
+      "geometry_note": "5 m square around metadata-mapped crosswalk node; not a surveyed crosswalk polygon",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              607.977,
+              -1.168
+            ],
+            [
+              612.977,
+              -1.168
+            ],
+            [
+              612.977,
+              3.832
+            ],
+            [
+              607.977,
+              3.832
+            ],
+            [
+              607.977,
+              -1.168
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "conflict_area_id": "CA_CW_002",
+      "crosswalk_id": "CW_002",
+      "crosswalk_edge_ids": [
+        "EDGE_0192_walk",
+        "EDGE_0262_walk",
+        "EDGE_0264_walk"
+      ],
+      "intersecting_vehicle_lanes": [
+        "EDGE_0189_vehicle",
+        "EDGE_0191_vehicle",
+        "EDGE_0193_vehicle",
+        "EDGE_0257_vehicle",
+        "EDGE_0259_vehicle",
+        "EDGE_0261_vehicle",
+        "EDGE_0263_vehicle",
+        "EDGE_0265_vehicle",
+        "EDGE_0267_vehicle",
+        "EDGE_0269_vehicle"
+      ],
+      "participants": [
+        "car",
+        "person",
+        "scooter"
+      ],
+      "source": "derived",
+      "confidence": 0.35,
+      "derived": true,
+      "geometry_note": "5 m square around metadata-mapped crosswalk node; not a surveyed crosswalk polygon",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              596.407,
+              21.917
+            ],
+            [
+              601.407,
+              21.917
+            ],
+            [
+              601.407,
+              26.917
+            ],
+            [
+              596.407,
+              26.917
+            ],
+            [
+              596.407,
+              21.917
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "conflict_area_id": "CA_CW_007",
+      "crosswalk_id": "CW_007",
+      "crosswalk_edge_ids": [
+        "EDGE_0200_walk"
+      ],
+      "intersecting_vehicle_lanes": [
+        "EDGE_0161_vehicle",
+        "EDGE_0195_vehicle",
+        "EDGE_0197_vehicle",
+        "EDGE_0199_vehicle"
+      ],
+      "participants": [
+        "car",
+        "person",
+        "scooter"
+      ],
+      "source": "derived",
+      "confidence": 0.35,
+      "derived": true,
+      "geometry_note": "5 m square around metadata-mapped crosswalk node; not a surveyed crosswalk polygon",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              607.937,
+              -150.474
+            ],
+            [
+              612.937,
+              -150.474
+            ],
+            [
+              612.937,
+              -145.474
+            ],
+            [
+              607.937,
+              -145.474
+            ],
+            [
+              607.937,
+              -150.474
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "conflict_area_id": "CA_CW_017",
+      "crosswalk_id": "CW_017",
+      "crosswalk_edge_ids": [
+        "EDGE_0212_walk",
+        "EDGE_0228_walk",
+        "EDGE_0308_walk",
+        "EDGE_0310_walk"
+      ],
+      "intersecting_vehicle_lanes": [
+        "EDGE_0093_vehicle",
+        "EDGE_0201_vehicle",
+        "EDGE_0203_vehicle",
+        "EDGE_0205_vehicle",
+        "EDGE_0207_vehicle",
+        "EDGE_0209_vehicle",
+        "EDGE_0211_vehicle",
+        "EDGE_0227_vehicle",
+        "EDGE_0229_vehicle",
+        "EDGE_0307_vehicle",
+        "EDGE_0309_vehicle",
+        "EDGE_0311_vehicle"
+      ],
+      "participants": [
+        "car",
+        "person",
+        "scooter"
+      ],
+      "source": "derived",
+      "confidence": 0.35,
+      "derived": true,
+      "geometry_note": "5 m square around metadata-mapped crosswalk node; not a surveyed crosswalk polygon",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              106.29,
+              -214.274
+            ],
+            [
+              111.29,
+              -214.274
+            ],
+            [
+              111.29,
+              -209.274
+            ],
+            [
+              106.29,
+              -209.274
+            ],
+            [
+              106.29,
+              -214.274
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "conflict_area_id": "CA_CW_023",
+      "crosswalk_id": "CW_023",
+      "crosswalk_edge_ids": [
+        "EDGE_0236_walk",
+        "EDGE_0244_walk",
+        "EDGE_0248_walk"
+      ],
+      "intersecting_vehicle_lanes": [
+        "EDGE_0083_vehicle",
+        "EDGE_0231_vehicle",
+        "EDGE_0233_vehicle",
+        "EDGE_0235_vehicle",
+        "EDGE_0241_vehicle",
+        "EDGE_0243_vehicle",
+        "EDGE_0245_vehicle",
+        "EDGE_0247_vehicle",
+        "EDGE_0249_vehicle"
+      ],
+      "participants": [
+        "car",
+        "person",
+        "scooter"
+      ],
+      "source": "derived",
+      "confidence": 0.35,
+      "derived": true,
+      "geometry_note": "5 m square around metadata-mapped crosswalk node; not a surveyed crosswalk polygon",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              207.954,
+              -105.92
+            ],
+            [
+              212.954,
+              -105.92
+            ],
+            [
+              212.954,
+              -100.92
+            ],
+            [
+              207.954,
+              -100.92
+            ],
+            [
+              207.954,
+              -105.92
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "conflict_area_id": "CA_CW_001",
+      "crosswalk_id": "CW_001",
+      "crosswalk_edge_ids": [
+        "EDGE_0266_walk",
+        "EDGE_0268_walk"
+      ],
+      "intersecting_vehicle_lanes": [
+        "EDGE_0259_vehicle",
+        "EDGE_0261_vehicle",
+        "EDGE_0263_vehicle",
+        "EDGE_0265_vehicle",
+        "EDGE_0267_vehicle",
+        "EDGE_0269_vehicle",
+        "EDGE_0273_vehicle",
+        "EDGE_0281_vehicle",
+        "EDGE_0283_vehicle"
+      ],
+      "participants": [
+        "car",
+        "person",
+        "scooter"
+      ],
+      "source": "derived",
+      "confidence": 0.35,
+      "derived": true,
+      "geometry_note": "5 m square around metadata-mapped crosswalk node; not a surveyed crosswalk polygon",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              546.567,
+              47.587
+            ],
+            [
+              551.567,
+              47.587
+            ],
+            [
+              551.567,
+              52.587
+            ],
+            [
+              546.567,
+              52.587
+            ],
+            [
+              546.567,
+              47.587
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "conflict_area_id": "CA_CW_014",
+      "crosswalk_id": "CW_014",
+      "crosswalk_edge_ids": [
+        "EDGE_0292_walk",
+        "EDGE_0302_walk"
+      ],
+      "intersecting_vehicle_lanes": [
+        "EDGE_0139_vehicle",
+        "EDGE_0145_vehicle",
+        "EDGE_0147_vehicle",
+        "EDGE_0291_vehicle",
+        "EDGE_0297_vehicle",
+        "EDGE_0299_vehicle",
+        "EDGE_0301_vehicle"
+      ],
+      "participants": [
+        "car",
+        "person",
+        "scooter"
+      ],
+      "source": "derived",
+      "confidence": 0.35,
+      "derived": true,
+      "geometry_note": "5 m square around metadata-mapped crosswalk node; not a surveyed crosswalk polygon",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              383.877,
+              -88.163
+            ],
+            [
+              388.877,
+              -88.163
+            ],
+            [
+              388.877,
+              -83.163
+            ],
+            [
+              383.877,
+              -83.163
+            ],
+            [
+              383.877,
+              -88.163
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

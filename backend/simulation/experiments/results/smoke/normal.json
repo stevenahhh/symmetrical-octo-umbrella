@@ -1,0 +1,107 @@
+{
+  "scenario": "normal",
+  "runs": [
+    {
+      "seed": 42,
+      "scenario": "normal",
+      "duration": 1.0,
+      "mean_ttc": null,
+      "min_ttc": null,
+      "mean_pet": null,
+      "min_pet": null,
+      "near_miss_count": 0,
+      "conflict_count": 0,
+      "collision_count": 0,
+      "average_travel_time": 1.0,
+      "average_waiting_time": 0.0,
+      "completed_trips": 0
+    },
+    {
+      "seed": 43,
+      "scenario": "normal",
+      "duration": 1.0,
+      "mean_ttc": null,
+      "min_ttc": null,
+      "mean_pet": null,
+      "min_pet": null,
+      "near_miss_count": 0,
+      "conflict_count": 0,
+      "collision_count": 0,
+      "average_travel_time": 1.0,
+      "average_waiting_time": 0.0,
+      "completed_trips": 0
+    }
+  ],
+  "aggregate": {
+    "mean_ttc": {
+      "mean": null,
+      "std": null,
+      "median": null,
+      "ci95_low": null,
+      "ci95_high": null
+    },
+    "min_ttc": {
+      "mean": null,
+      "std": null,
+      "median": null,
+      "ci95_low": null,
+      "ci95_high": null
+    },
+    "mean_pet": {
+      "mean": null,
+      "std": null,
+      "median": null,
+      "ci95_low": null,
+      "ci95_high": null
+    },
+    "min_pet": {
+      "mean": null,
+      "std": null,
+      "median": null,
+      "ci95_low": null,
+      "ci95_high": null
+    },
+    "near_miss_count": {
+      "mean": 0.0,
+      "std": 0.0,
+      "median": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0
+    },
+    "conflict_count": {
+      "mean": 0.0,
+      "std": 0.0,
+      "median": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0
+    },
+    "collision_count": {
+      "mean": 0.0,
+      "std": 0.0,
+      "median": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0
+    },
+    "average_travel_time": {
+      "mean": 1.0,
+      "std": 0.0,
+      "median": 1.0,
+      "ci95_low": 1.0,
+      "ci95_high": 1.0
+    },
+    "average_waiting_time": {
+      "mean": 0.0,
+      "std": 0.0,
+      "median": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0
+    },
+    "completed_trips": {
+      "mean": 0.0,
+      "std": 0.0,
+      "median": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0
+    }
+  }
+}

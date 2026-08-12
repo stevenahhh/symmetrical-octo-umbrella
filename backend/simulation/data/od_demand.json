@@ -1,0 +1,135 @@
+{
+  "metadata": {
+    "status": "demonstration demand; calibrate with campus counts/timetables",
+    "simulation_clock_start_hour": 8,
+    "simulation_seconds_per_day": 86400,
+    "coverage_mix": {"car": 0.6, "person": 0.72, "scooter": 0.72},
+    "route_diversity": {
+      "random_cost_range": [0.96, 1.04],
+      "usage_penalty_per_trip": 0.04,
+      "maximum_usage_penalty": 0.8
+    },
+    "coverage_note": "Development-only balancing across permitted POIs and alternative graph corridors; calibrate against observed campus OD before research use."
+  },
+  "dwell_seconds": {
+    "academic": [45, 120],
+    "library": [60, 180],
+    "student_center": [30, 90],
+    "administration": [40, 100],
+    "parking": [20, 45],
+    "scooter_parking": [15, 35],
+    "gate": [5, 12]
+  },
+  "time_profiles": [
+    {
+      "name": "morning_arrival",
+      "start": "08:00",
+      "end": "10:00",
+      "target_factor": {"car": 1.0, "person": 1.0, "scooter": 1.0},
+      "pairs": {
+        "person": [
+          ["EXTERNAL_MAIN_ROAD_SOUTH", "BLD_D4", 12],
+          ["EXTERNAL_MAIN_ROAD_SOUTH", "BLD_D2", 9],
+          ["EXTERNAL_BACK_GATE", "BLD_C1", 6],
+          ["PARKING_A", "BLD_D4", 8],
+          ["BLD_C1", "BLD_E1", 2]
+        ],
+        "car": [
+          ["EXTERNAL_MAIN_ROAD_SOUTH", "PARKING_A", 14],
+          ["EXTERNAL_MAIN_ROAD_SOUTH", "PARKING_B", 8],
+          ["EXTERNAL_BACK_GATE", "PARKING_A", 4],
+          ["PARKING_A", "EXTERNAL_MAIN_ROAD_SOUTH", 2]
+        ],
+        "scooter": [
+          ["EXTERNAL_MAIN_ROAD_SOUTH", "BLD_D4", 8],
+          ["BLD_E1", "BLD_D4", 5],
+          ["BLD_C1", "SCOOTER_PARKING_02", 4],
+          ["SCOOTER_PARKING_01", "BLD_D2", 4]
+        ]
+      }
+    },
+    {
+      "name": "lunch",
+      "start": "11:30",
+      "end": "13:30",
+      "target_factor": {"car": 0.75, "person": 1.05, "scooter": 0.95},
+      "pairs": {
+        "person": [
+          ["BLD_D4", "BLD_E1", 12],
+          ["BLD_D2", "BLD_E1", 10],
+          ["BLD_C1", "BLD_E1", 7],
+          ["BLD_E1", "BLD_C1", 5],
+          ["BLD_D3", "EXTERNAL_MAIN_ROAD_SOUTH", 3]
+        ],
+        "car": [
+          ["PARKING_A", "EXTERNAL_MAIN_ROAD_SOUTH", 8],
+          ["EXTERNAL_MAIN_ROAD_SOUTH", "PARKING_A", 5],
+          ["PARKING_B", "EXTERNAL_BACK_GATE", 3]
+        ],
+        "scooter": [
+          ["BLD_D4", "BLD_E1", 10],
+          ["BLD_E1", "BLD_C1", 8],
+          ["BLD_C1", "SCOOTER_PARKING_02", 6]
+        ]
+      }
+    },
+    {
+      "name": "leaving",
+      "start": "16:00",
+      "end": "19:00",
+      "target_factor": {"car": 1.1, "person": 1.15, "scooter": 1.0},
+      "pairs": {
+        "person": [
+          ["BLD_D4", "EXTERNAL_MAIN_ROAD_SOUTH", 12],
+          ["BLD_C1", "EXTERNAL_BACK_GATE", 8],
+          ["BLD_E1", "EXTERNAL_MAIN_ROAD_SOUTH", 8],
+          ["BLD_D2", "PARKING_A", 6]
+        ],
+        "car": [
+          ["PARKING_A", "EXTERNAL_MAIN_ROAD_SOUTH", 14],
+          ["PARKING_B", "EXTERNAL_MAIN_ROAD_SOUTH", 9],
+          ["PARKING_A", "EXTERNAL_BACK_GATE", 4]
+        ],
+        "scooter": [
+          ["BLD_D4", "EXTERNAL_MAIN_ROAD_SOUTH", 7],
+          ["BLD_C1", "SCOOTER_PARKING_01", 8],
+          ["BLD_E1", "EXTERNAL_BACK_GATE", 5]
+        ]
+      }
+    },
+    {
+      "name": "daytime",
+      "start": "00:00",
+      "end": "23:59",
+      "target_factor": {"car": 0.8, "person": 0.9, "scooter": 0.85},
+      "pairs": {
+        "person": [
+          ["BLD_D4", "BLD_C1", 8],
+          ["BLD_C1", "BLD_E1", 8],
+          ["BLD_E1", "BLD_D3", 7],
+          ["EXTERNAL_MAIN_ROAD_SOUTH", "BLD_D4", 5],
+          ["BLD_D2", "EXTERNAL_MAIN_ROAD_SOUTH", 4]
+        ],
+        "car": [
+          ["EXTERNAL_MAIN_ROAD_SOUTH", "PARKING_A", 8],
+          ["PARKING_A", "EXTERNAL_MAIN_ROAD_SOUTH", 8],
+          ["EXTERNAL_BACK_GATE", "PARKING_B", 4],
+          ["PARKING_B", "EXTERNAL_BACK_GATE", 4]
+        ],
+        "scooter": [
+          ["BLD_E1", "BLD_C1", 8],
+          ["BLD_C1", "BLD_D4", 7],
+          ["BLD_D4", "SCOOTER_PARKING_02", 5],
+          ["SCOOTER_PARKING_01", "BLD_E1", 5]
+        ]
+      }
+    }
+  ],
+  "scenario_profile": {
+    "rush_hour": "morning_arrival",
+    "morning_rush": "morning_arrival",
+    "class_change": "daytime",
+    "lunch_time": "lunch",
+    "leaving_campus": "leaving"
+  }
+}

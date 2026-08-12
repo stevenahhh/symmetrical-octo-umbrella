@@ -1,0 +1,102 @@
+{
+  "traffic_lights": [
+    {
+      "signal_id": "SIG_019",
+      "crosswalk_id": "CW_019",
+      "x": 51.403,
+      "z": -54.581,
+      "state": "green"
+    },
+    {
+      "signal_id": "SIG_022",
+      "crosswalk_id": "CW_022",
+      "x": 189.523,
+      "z": -18.578,
+      "state": "green"
+    },
+    {
+      "signal_id": "SIG_012",
+      "crosswalk_id": "CW_012",
+      "x": 352.859,
+      "z": -177.574,
+      "state": "green"
+    },
+    {
+      "signal_id": "SIG_006",
+      "crosswalk_id": "CW_006",
+      "x": 547.172,
+      "z": -130.309,
+      "state": "green"
+    },
+    {
+      "signal_id": "SIG_018",
+      "crosswalk_id": "CW_018",
+      "x": 192.097,
+      "z": -263.4,
+      "state": "green"
+    },
+    {
+      "signal_id": "SIG_023",
+      "crosswalk_id": "CW_023",
+      "x": 210.454,
+      "z": -103.42,
+      "state": "green"
+    },
+    {
+      "signal_id": "SIG_003",
+      "crosswalk_id": "CW_003",
+      "x": 610.477,
+      "z": 1.332,
+      "state": "green"
+    },
+    {
+      "signal_id": "SIG_002",
+      "crosswalk_id": "CW_002",
+      "x": 598.907,
+      "z": 24.418,
+      "state": "green"
+    },
+    {
+      "signal_id": "SIG_001",
+      "crosswalk_id": "CW_001",
+      "x": 549.068,
+      "z": 50.086,
+      "state": "green"
+    },
+    {
+      "signal_id": "SIG_016",
+      "crosswalk_id": "CW_016",
+      "x": 456.389,
+      "z": -108.719,
+      "state": "green"
+    },
+    {
+      "signal_id": "SIG_017",
+      "crosswalk_id": "CW_017",
+      "x": 108.79,
+      "z": -211.774,
+      "state": "green"
+    },
+    {
+      "signal_id": "SIG_007",
+      "crosswalk_id": "CW_007",
+      "x": 610.436,
+      "z": -147.974,
+      "state": "green"
+    },
+    {
+      "signal_id": "SIG_014",
+      "crosswalk_id": "CW_014",
+      "x": 386.376,
+      "z": -85.663,
+      "state": "green"
+    },
+    {
+      "signal_id": "SIG_015",
+      "crosswalk_id": "CW_015",
+      "x": 251.382,
+      "z": -162.788,
+      "state": "green"
+    }
+  ]
+}

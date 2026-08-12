@@ -1,0 +1,127 @@
+{
+  "metadata": {
+    "status": "derived; replace with surveyed entrances"
+  },
+  "buildings": [
+    {
+      "building_id": "BLD_D4",
+      "building_name": "공과대학 3호관",
+      "source": "GLB center hint snapped to nearest derived route",
+      "entrances": [
+        {
+          "entrance_id": "ENT_D4_MAIN",
+          "position": [
+            -24.137,
+            0,
+            5.053
+          ],
+          "node_id": "POI_ENT_D4_MAIN",
+          "allowed_types": [
+            "person",
+            "scooter"
+          ]
+        }
+      ]
+    },
+    {
+      "building_id": "BLD_D3",
+      "building_name": "공과대학 2호관",
+      "source": "GLB center hint snapped to nearest derived route",
+      "entrances": [
+        {
+          "entrance_id": "ENT_D3_MAIN",
+          "position": [
+            93.848,
+            0,
+            -50.941
+          ],
+          "node_id": "POI_ENT_D3_MAIN",
+          "allowed_types": [
+            "person",
+            "scooter"
+          ]
+        }
+      ]
+    },
+    {
+      "building_id": "BLD_D2",
+      "building_name": "공과대학 1호관",
+      "source": "GLB center hint snapped to nearest derived route",
+      "entrances": [
+        {
+          "entrance_id": "ENT_D2_MAIN",
+          "position": [
+            130.494,
+            0,
+            43.46
+          ],
+          "node_id": "POI_ENT_D2_MAIN",
+          "allowed_types": [
+            "person",
+            "scooter"
+          ]
+        }
+      ]
+    },
+    {
+      "building_id": "BLD_C1",
+      "building_name": "도서관",
+      "source": "GLB center hint snapped to nearest derived route",
+      "entrances": [
+        {
+          "entrance_id": "ENT_C1_MAIN",
+          "position": [
+            213.914,
+            0,
+            6.114
+          ],
+          "node_id": "POI_ENT_C1_MAIN",
+          "allowed_types": [
+            "person",
+            "scooter"
+          ]
+        }
+      ]
+    },
+    {
+      "building_id": "BLD_E1",
+      "building_name": "학생회관",
+      "source": "GLB center hint snapped to nearest derived route",
+      "entrances": [
+        {
+          "entrance_id": "ENT_E1_MAIN",
+          "position": [
+            289.081,
+            0,
+            -170.624
+          ],
+          "node_id": "POI_ENT_E1_MAIN",
+          "allowed_types": [
+            "person",
+            "scooter"
+          ]
+        }
+      ]
+    },
+    {
+      "building_id": "BLD_A1",
+      "building_name": "대학본부",
+      "source": "GLB center hint snapped to nearest derived route",
+      "entrances": [
+        {
+          "entrance_id": "ENT_A1_MAIN",
+          "position": [
+            406.385,
+            0,
+            -229.926
+          ],
+          "node_id": "POI_ENT_A1_MAIN",
+          "allowed_types": [
+            "person",
+            "scooter"
+          ]
+        }
+      ]
+    }
+  ]
+}

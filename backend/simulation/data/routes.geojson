@@ -1,0 +1,2946 @@
+{
+  "type": "FeatureCollection",
+  "metadata": {
+    "coordinate_status": "local_metric_centerlines_derived_from_team_road_polygons",
+    "source": "docs/assets/data/road_zones_wgs84.geojson",
+    "source_crs": "EPSG:4326 (source metadata records EPSG:5179 before export)",
+    "reference": {
+      "longitude": 127.4764043,
+      "latitude": 34.9700548
+    },
+    "axes": "x=east, z=north, units=meters",
+    "method": "Each polygon is projected to local meters; its principal axis is clipped to the longest interior interval.",
+    "limitations": "The teammate archive has no authored centerline or pedestrian-path geometry. These deterministic centerlines stay inside the supplied road polygons and can be regenerated with backend/build_routes_from_road_zones.py."
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-001",
+        "name": "공대1호관1로 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_060"
+        ],
+        "source_feature_id": "RZ-001",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            120.27,
+            24.511
+          ],
+          [
+            160.794,
+            20.583
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-002",
+        "name": "공대1호관2로 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_061"
+        ],
+        "source_feature_id": "RZ-002",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            157.0,
+            25.099
+          ],
+          [
+            167.211,
+            51.724
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-003",
+        "name": "공대1호관3로 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_062"
+        ],
+        "source_feature_id": "RZ-003",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            134.726,
+            62.895
+          ],
+          [
+            172.441,
+            59.21
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-004",
+        "name": "공대1호관4로 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_063"
+        ],
+        "source_feature_id": "RZ-004",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            126.325,
+            28.87
+          ],
+          [
+            135.532,
+            61.094
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-005",
+        "name": "공대1호관뒷길 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_064"
+        ],
+        "source_feature_id": "RZ-005",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            130.754,
+            100.785
+          ],
+          [
+            206.054,
+            76.71
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-006",
+        "name": "공대1호관샛길 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_073"
+        ],
+        "source_feature_id": "RZ-006",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            189.911,
+            2.305
+          ],
+          [
+            204.879,
+            72.34
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-007",
+        "name": "공대2호관1로 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_071"
+        ],
+        "source_feature_id": "RZ-007",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            112.886,
+            -75.258
+          ],
+          [
+            125.999,
+            -35.385
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-008",
+        "name": "공대2호관2로 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_067"
+        ],
+        "source_feature_id": "RZ-008",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            112.465,
+            -26.618
+          ],
+          [
+            130.752,
+            -28.664
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-009",
+        "name": "공대2호관3로 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_068"
+        ],
+        "source_feature_id": "RZ-009",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            101.713,
+            -48.88
+          ],
+          [
+            110.654,
+            -19.459
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-010",
+        "name": "공대2호관4로 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_070"
+        ],
+        "source_feature_id": "RZ-010",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            93.848,
+            -50.941
+          ],
+          [
+            112.275,
+            -57.911
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-011",
+        "name": "공대3호관1로 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_066"
+        ],
+        "source_feature_id": "RZ-011",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            46.152,
+            43.39
+          ],
+          [
+            48.802,
+            -18.674
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-012",
+        "name": "공대3호관2로 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_058"
+        ],
+        "source_feature_id": "RZ-012",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -7.368,
+            61.786
+          ],
+          [
+            52.554,
+            47.024
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-013",
+        "name": "공대3호관3로 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_057"
+        ],
+        "source_feature_id": "RZ-013",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -31.053,
+            -27.97
+          ],
+          [
+            -13.869,
+            54.085
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-014",
+        "name": "공대3호관4로 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_069"
+        ],
+        "source_feature_id": "RZ-014",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -22.36,
+            -49.374
+          ],
+          [
+            24.433,
+            -59.741
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-015",
+        "name": "공대3호관삼거리 중심선",
+        "allowed_types": [
+          "car",
+          "person",
+          "scooter"
+        ],
+        "speed_limit": 15,
+        "loop": false,
+        "road_ids": [
+          "CW_019"
+        ],
+        "source_feature_id": "RZ-015",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            49.438,
+            -34.981
+          ],
+          [
+            53.368,
+            -74.181
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-016",
+        "name": "공학교차로 중심선",
+        "allowed_types": [
+          "car",
+          "person",
+          "scooter"
+        ],
+        "speed_limit": 15,
+        "loop": false,
+        "road_ids": [
+          "CW_022"
+        ],
+        "source_feature_id": "RZ-016",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            165.28,
+            -22.208
+          ],
+          [
+            213.767,
+            -14.948
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-017",
+        "name": "공학대로1길 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_076"
+        ],
+        "source_feature_id": "RZ-017",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            213.368,
+            4.014
+          ],
+          [
+            221.386,
+            34.842
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-018",
+        "name": "공학대로2길 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_074"
+        ],
+        "source_feature_id": "RZ-018",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            133.142,
+            -84.127
+          ],
+          [
+            166.624,
+            -41.185
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-019",
+        "name": "공학대로3길 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_075"
+        ],
+        "source_feature_id": "RZ-019",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            62.707,
+            -83.071
+          ],
+          [
+            95.306,
+            -92.949
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-020",
+        "name": "공학사거리 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 15,
+        "loop": false,
+        "road_ids": [],
+        "source_feature_id": "RZ-020",
+        "source_geometry": "MultiPolygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            107.382,
+            -124.795
+          ],
+          [
+            117.061,
+            -87.84
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-021",
+        "name": "구령대1길 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_029"
+        ],
+        "source_feature_id": "RZ-021",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            471.568,
+            -235.243
+          ],
+          [
+            478.957,
+            -207.486
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-022",
+        "name": "구령대2길 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_025"
+        ],
+        "source_feature_id": "RZ-022",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            456.045,
+            -303.789
+          ],
+          [
+            467.161,
+            -256.123
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-023",
+        "name": "구령대삼거리 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 15,
+        "loop": false,
+        "road_ids": [],
+        "source_feature_id": "RZ-023",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            465.465,
+            -239.006
+          ],
+          [
+            466.554,
+            -254.444
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-024",
+        "name": "기숙사사거리 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 15,
+        "loop": false,
+        "road_ids": [],
+        "source_feature_id": "RZ-024",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            320.298,
+            -258.54
+          ],
+          [
+            346.962,
+            -269.88
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-025",
+        "name": "기초교육관대로 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_023"
+        ],
+        "source_feature_id": "RZ-025",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            299.766,
+            -265.532
+          ],
+          [
+            315.941,
+            -264.2
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-026",
+        "name": "기초교육관뒷길 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_047"
+        ],
+        "source_feature_id": "RZ-026",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            219.732,
+            -222.501
+          ],
+          [
+            270.887,
+            -187.92
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-027",
+        "name": "기초교육관앞길 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_048"
+        ],
+        "source_feature_id": "RZ-027",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            238.12,
+            -251.365
+          ],
+          [
+            276.797,
+            -224.523
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-028",
+        "name": "낙우송대로 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_031"
+        ],
+        "source_feature_id": "RZ-028",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            438.167,
+            -185.877
+          ],
+          [
+            474.821,
+            -189.721
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-029",
+        "name": "낙우송삼거리 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 15,
+        "loop": false,
+        "road_ids": [],
+        "source_feature_id": "RZ-029",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            415.567,
+            -177.588
+          ],
+          [
+            436.615,
+            -186.404
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-030",
+        "name": "농업센터대로 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_088"
+        ],
+        "source_feature_id": "RZ-030",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            313.765,
+            29.403
+          ],
+          [
+            382.814,
+            -2.211
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-031",
+        "name": "대운동장길 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_032"
+        ],
+        "source_feature_id": "RZ-031",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            483.893,
+            -186.041
+          ],
+          [
+            500.388,
+            -135.349
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-032",
+        "name": "대운동장삼거리 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 15,
+        "loop": false,
+        "road_ids": [],
+        "source_feature_id": "RZ-032",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            496.253,
+            -129.426
+          ],
+          [
+            516.569,
+            -117.283
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-033",
+        "name": "대학본부대로 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_028"
+        ],
+        "source_feature_id": "RZ-033",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            330.648,
+            -247.397
+          ],
+          [
+            352.362,
+            -204.205
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-034",
+        "name": "대학본부뒷길 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_026"
+        ],
+        "source_feature_id": "RZ-034",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            352.287,
+            -216.498
+          ],
+          [
+            453.318,
+            -241.575
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-035",
+        "name": "대학본부사거리 중심선",
+        "allowed_types": [
+          "car",
+          "person",
+          "scooter"
+        ],
+        "speed_limit": 15,
+        "loop": false,
+        "road_ids": [
+          "CW_012"
+        ],
+        "source_feature_id": "RZ-035",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            342.838,
+            -191.576
+          ],
+          [
+            362.879,
+            -163.572
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-036",
+        "name": "대학본부앞길 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_030"
+        ],
+        "source_feature_id": "RZ-036",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            371.286,
+            -176.53
+          ],
+          [
+            407.088,
+            -182.649
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-037",
+        "name": "매화삼거리 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 15,
+        "loop": false,
+        "road_ids": [],
+        "source_feature_id": "RZ-037",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            480.009,
+            -206.2
+          ],
+          [
+            482.115,
+            -187.109
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-038",
+        "name": "미래창조대로 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_050"
+        ],
+        "source_feature_id": "RZ-038",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            208.505,
+            -270.436
+          ],
+          [
+            259.047,
+            -275.955
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-039",
+        "name": "미래창조사거리 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 15,
+        "loop": false,
+        "road_ids": [],
+        "source_feature_id": "RZ-039",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            271.522,
+            -244.969
+          ],
+          [
+            281.611,
+            -282.139
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-040",
+        "name": "미래창조초입로 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_056"
+        ],
+        "source_feature_id": "RZ-040",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            257.413,
+            -333.929
+          ],
+          [
+            273.397,
+            -284.224
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-041",
+        "name": "박물관뒷길 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_008"
+        ],
+        "source_feature_id": "RZ-041",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            580.754,
+            -7.384
+          ],
+          [
+            625.692,
+            -21.448
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-042",
+        "name": "박물관삼거리 중심선",
+        "allowed_types": [
+          "car",
+          "person",
+          "scooter"
+        ],
+        "speed_limit": 15,
+        "loop": false,
+        "road_ids": [
+          "CW_006"
+        ],
+        "source_feature_id": "RZ-042",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            533.902,
+            -134.006
+          ],
+          [
+            560.442,
+            -126.613
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-043",
+        "name": "박물관옆길 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_010"
+        ],
+        "source_feature_id": "RZ-043",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            557.669,
+            -115.315
+          ],
+          [
+            569.481,
+            -60.032
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-044",
+        "name": "사과대길 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_046"
+        ],
+        "source_feature_id": "RZ-044",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            119.402,
+            -226.3
+          ],
+          [
+            173.893,
+            -258.556
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-045",
+        "name": "사과대사거리 중심선",
+        "allowed_types": [
+          "car",
+          "person",
+          "scooter"
+        ],
+        "speed_limit": 15,
+        "loop": false,
+        "road_ids": [
+          "CW_018"
+        ],
+        "source_feature_id": "RZ-045",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            178.046,
+            -254.139
+          ],
+          [
+            206.148,
+            -272.661
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-046",
+        "name": "사과대앞길 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_049"
+        ],
+        "source_feature_id": "RZ-046",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            157.521,
+            -266.074
+          ],
+          [
+            168.414,
+            -276.879
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-047",
+        "name": "사과대주차장길 중심선",
+        "allowed_types": [
+          "car"
+        ],
+        "speed_limit": 10,
+        "loop": false,
+        "road_ids": [
+          "RD_053"
+        ],
+        "source_feature_id": "RZ-047",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            151.055,
+            -307.602
+          ],
+          [
+            160.244,
+            -277.391
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-048",
+        "name": "사과대중길 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_052"
+        ],
+        "source_feature_id": "RZ-048",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            106.972,
+            -303.143
+          ],
+          [
+            154.791,
+            -312.75
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-049",
+        "name": "사과대초입로 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_092"
+        ],
+        "source_feature_id": "RZ-049",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            87.542,
+            -273.927
+          ],
+          [
+            99.268,
+            -226.396
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-050",
+        "name": "사범대2길 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_043"
+        ],
+        "source_feature_id": "RZ-050",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            170.472,
+            -162.589
+          ],
+          [
+            180.211,
+            -110.628
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-051",
+        "name": "사범대3길 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_044"
+        ],
+        "source_feature_id": "RZ-051",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            165.208,
+            -163.357
+          ],
+          [
+            196.398,
+            -182.31
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-052",
+        "name": "사범대샛길 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_078"
+        ],
+        "source_feature_id": "RZ-052",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            221.659,
+            -39.072
+          ],
+          [
+            235.223,
+            -88.484
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-053",
+        "name": "사범대중앙로 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_039"
+        ],
+        "source_feature_id": "RZ-053",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            204.885,
+            -122.519
+          ],
+          [
+            212.908,
+            -134.895
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-054",
+        "name": "사범대중앙삼거리 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 15,
+        "loop": false,
+        "road_ids": [],
+        "source_feature_id": "RZ-054",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            210.858,
+            -144.352
+          ],
+          [
+            232.116,
+            -158.315
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-055",
+        "name": "사범대학1호관삼거리 중심선",
+        "allowed_types": [
+          "car",
+          "person",
+          "scooter"
+        ],
+        "speed_limit": 15,
+        "loop": false,
+        "road_ids": [
+          "CW_023"
+        ],
+        "source_feature_id": "RZ-055",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            190.66,
+            -116.35
+          ],
+          [
+            230.248,
+            -90.49
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-056",
+        "name": "사범대학3호관대로 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_045"
+        ],
+        "source_feature_id": "RZ-056",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            190.158,
+            -247.266
+          ],
+          [
+            198.903,
+            -208.0
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-057",
+        "name": "사범대학3호관삼거리 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 15,
+        "loop": false,
+        "road_ids": [],
+        "source_feature_id": "RZ-057",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            202.773,
+            -189.118
+          ],
+          [
+            209.464,
+            -159.41
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-058",
+        "name": "산단1주차장 중심선",
+        "allowed_types": [
+          "car",
+          "person",
+          "scooter"
+        ],
+        "speed_limit": 10,
+        "loop": false,
+        "road_ids": [
+          "CW_003"
+        ],
+        "source_feature_id": "RZ-058",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            586.923,
+            8.038
+          ],
+          [
+            634.031,
+            -5.375
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-059",
+        "name": "산단2주차장 중심선",
+        "allowed_types": [
+          "car",
+          "person",
+          "scooter"
+        ],
+        "speed_limit": 10,
+        "loop": false,
+        "road_ids": [
+          "CW_002"
+        ],
+        "source_feature_id": "RZ-059",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            583.44,
+            27.444
+          ],
+          [
+            614.373,
+            21.391
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-060",
+        "name": "산단3주차장 중심선",
+        "allowed_types": [
+          "car",
+          "person",
+          "scooter"
+        ],
+        "speed_limit": 10,
+        "loop": false,
+        "road_ids": [
+          "CW_001"
+        ],
+        "source_feature_id": "RZ-060",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            547.497,
+            23.388
+          ],
+          [
+            550.638,
+            76.785
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-061",
+        "name": "산단앞길 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_006"
+        ],
+        "source_feature_id": "RZ-061",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            575.89,
+            14.616
+          ],
+          [
+            581.203,
+            34.229
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-062",
+        "name": "생명대1호관1길 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_004"
+        ],
+        "source_feature_id": "RZ-062",
+        "source_geometry": "MultiPolygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            494.579,
+            -11.889
+          ],
+          [
+            556.615,
+            -25.771
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-063",
+        "name": "생명대1호관2길 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_003"
+        ],
+        "source_feature_id": "RZ-063",
+        "source_geometry": "MultiPolygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            560.83,
+            -26.11
+          ],
+          [
+            571.123,
+            12.064
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-064",
+        "name": "생명대1호관3길 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_002"
+        ],
+        "source_feature_id": "RZ-064",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            503.502,
+            26.833
+          ],
+          [
+            569.272,
+            11.262
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-065",
+        "name": "생명대1호관4길 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_001"
+        ],
+        "source_feature_id": "RZ-065",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            486.597,
+            16.971
+          ],
+          [
+            500.721,
+            29.491
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-066",
+        "name": "생명대로1길 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_091"
+        ],
+        "source_feature_id": "RZ-066",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            465.949,
+            -87.106
+          ],
+          [
+            491.124,
+            -9.043
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-067",
+        "name": "생명대로2길 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_005"
+        ],
+        "source_feature_id": "RZ-067",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            488.06,
+            -45.216
+          ],
+          [
+            522.825,
+            -22.437
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-068",
+        "name": "생명대제2삼거리 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 15,
+        "loop": false,
+        "road_ids": [],
+        "source_feature_id": "RZ-068",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            385.474,
+            -54.11
+          ],
+          [
+            391.755,
+            -15.288
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-069",
+        "name": "실습관대로 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_086"
+        ],
+        "source_feature_id": "RZ-069",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            248.187,
+            43.253
+          ],
+          [
+            311.488,
+            26.964
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-070",
+        "name": "약대사거리 중심선",
+        "allowed_types": [
+          "car",
+          "person",
+          "scooter"
+        ],
+        "speed_limit": 15,
+        "loop": false,
+        "road_ids": [
+          "CW_016"
+        ],
+        "source_feature_id": "RZ-070",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            417.464,
+            -103.316
+          ],
+          [
+            495.313,
+            -114.123
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-071",
+        "name": "약대앞길 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_035"
+        ],
+        "source_feature_id": "RZ-071",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            422.263,
+            -166.82
+          ],
+          [
+            439.93,
+            -123.498
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-072",
+        "name": "우주항공대로 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_065"
+        ],
+        "source_feature_id": "RZ-072",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            125.031,
+            -2.255
+          ],
+          [
+            142.657,
+            -11.624
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-073",
+        "name": "웅지관대로 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_037"
+        ],
+        "source_feature_id": "RZ-073",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            451.864,
+            -308.309
+          ],
+          [
+            479.638,
+            -359.544
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-074",
+        "name": "인예대삼거리 중심선",
+        "allowed_types": [
+          "car",
+          "person",
+          "scooter"
+        ],
+        "speed_limit": 15,
+        "loop": false,
+        "road_ids": [
+          "CW_017"
+        ],
+        "source_feature_id": "RZ-074",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            98.068,
+            -199.049
+          ],
+          [
+            119.512,
+            -224.499
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-075",
+        "name": "인예대샛길 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_042"
+        ],
+        "source_feature_id": "RZ-075",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            53.881,
+            -202.129
+          ],
+          [
+            92.563,
+            -212.883
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-076",
+        "name": "인예대앞길 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_041"
+        ],
+        "source_feature_id": "RZ-076",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            97.661,
+            -197.743
+          ],
+          [
+            108.639,
+            -129.249
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-077",
+        "name": "인재관앞길 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_015"
+        ],
+        "source_feature_id": "RZ-077",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            274.76,
+            -344.043
+          ],
+          [
+            332.074,
+            -358.931
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-078",
+        "name": "정문앞길 중심선",
+        "allowed_types": [
+          "car",
+          "person",
+          "scooter"
+        ],
+        "speed_limit": 15,
+        "loop": false,
+        "road_ids": [
+          "CW_007"
+        ],
+        "source_feature_id": "RZ-078",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            569.29,
+            -137.087
+          ],
+          [
+            651.583,
+            -158.86
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-079",
+        "name": "중앙교차로 중심선",
+        "allowed_types": [
+          "car",
+          "person",
+          "scooter"
+        ],
+        "speed_limit": 15,
+        "loop": false,
+        "road_ids": [
+          "CW_014"
+        ],
+        "source_feature_id": "RZ-079",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            373.343,
+            -71.0
+          ],
+          [
+            399.41,
+            -100.326
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-080",
+        "name": "진리관뒷길 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_024"
+        ],
+        "source_feature_id": "RZ-080",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            348.232,
+            -270.912
+          ],
+          [
+            388.963,
+            -280.304
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-081",
+        "name": "창조대로 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_036"
+        ],
+        "source_feature_id": "RZ-081",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            318.791,
+            -304.3
+          ],
+          [
+            330.404,
+            -278.508
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-082",
+        "name": "창조삼거리 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 15,
+        "loop": false,
+        "road_ids": [],
+        "source_feature_id": "RZ-082",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            309.698,
+            -348.079
+          ],
+          [
+            324.537,
+            -307.865
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-083",
+        "name": "청운대로 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_019"
+        ],
+        "source_feature_id": "RZ-083",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            352.519,
+            -375.003
+          ],
+          [
+            363.031,
+            -343.328
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-084",
+        "name": "청운인재삼거리 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 15,
+        "loop": false,
+        "road_ids": [],
+        "source_feature_id": "RZ-084",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            331.103,
+            -370.158
+          ],
+          [
+            343.404,
+            -367.892
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-085",
+        "name": "학군단앞길 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_059"
+        ],
+        "source_feature_id": "RZ-085",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            111.516,
+            29.659
+          ],
+          [
+            122.166,
+            66.428
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-086",
+        "name": "학생생활관길 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_017"
+        ],
+        "source_feature_id": "RZ-086",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            333.392,
+            -327.222
+          ],
+          [
+            386.765,
+            -341.652
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-087",
+        "name": "학생회관대로 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_033"
+        ],
+        "source_feature_id": "RZ-087",
+        "source_geometry": "MultiPolygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            273.071,
+            -167.652
+          ],
+          [
+            333.169,
+            -178.808
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-088",
+        "name": "학생회관삼거리 중심선",
+        "allowed_types": [
+          "car",
+          "person",
+          "scooter"
+        ],
+        "speed_limit": 15,
+        "loop": false,
+        "road_ids": [
+          "CW_015"
+        ],
+        "source_feature_id": "RZ-088",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            240.217,
+            -158.71
+          ],
+          [
+            262.547,
+            -166.867
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-089",
+        "name": "향림관뒷길 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_021"
+        ],
+        "source_feature_id": "RZ-089",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            380.116,
+            -371.879
+          ],
+          [
+            408.698,
+            -382.513
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-090",
+        "name": "향림삼거리 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 15,
+        "loop": false,
+        "road_ids": [],
+        "source_feature_id": "RZ-090",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            382.655,
+            -365.026
+          ],
+          [
+            402.744,
+            -317.568
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-091",
+        "name": "후문삼거리 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 15,
+        "loop": false,
+        "road_ids": [],
+        "source_feature_id": "RZ-091",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            230.368,
+            39.672
+          ],
+          [
+            234.875,
+            77.205
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route_id": "campus_rz-092",
+        "name": "후문초입로 중심선",
+        "allowed_types": [
+          "car",
+          "scooter"
+        ],
+        "speed_limit": 25,
+        "loop": false,
+        "road_ids": [
+          "RD_072"
+        ],
+        "source_feature_id": "RZ-092",
+        "source_geometry": "Polygon",
+        "centerline_method": "principal-axis-clipped"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            234.575,
+            78.757
+          ],
+          [
+            247.143,
+            117.968
+          ]
+        ]
+      }
+    }
+  ]
+}
