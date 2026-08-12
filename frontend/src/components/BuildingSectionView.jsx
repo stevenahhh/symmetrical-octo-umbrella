@@ -33,14 +33,14 @@ export function BuildingSectionView({
   }, [rooms]);
 
   useEffect(() => {
-    camera.position.set(8.4, 7.4, 8.8);
-    camera.lookAt(new THREE.Vector3(0, 2.8, 0));
+    camera.position.set(-5.5, 4.5, 6.4);
+    camera.lookAt(new THREE.Vector3(0, 2.4, 0));
     camera.updateProjectionMatrix();
   }, [camera]);
 
   return (
-    <group position={[0, -2.6, 0]} rotation={[0, -0.72, 0]}>
-      <Html position={[-5.6, 6.6, -2.6]} transform distanceFactor={14}>
+    <group position={[3.5, -2.6, 0]} rotation={[0, -0.72, 0]}>
+      <Html position={[-1, 6.6, -2.6]} transform distanceFactor={14}>
         <div className="w-[280px] rounded-lg border border-white/20 bg-black/55 px-4 py-3 text-white shadow-xl backdrop-blur-md">
           <div className="text-[12px] font-[800] uppercase tracking-[0.08em] text-white/65">
             D4 BUILDING SECTION
@@ -123,7 +123,7 @@ export function BuildingSectionView({
                       emissiveIntensity={selected ? 0.18 : 0}
                     />
                   </mesh>
-                  <Html position={[0, height / 2 + 0.16, 0]} center distanceFactor={10}>
+                  <Html position={[0, height / 2 + 0.16, 0]} center distanceFactor={8}>
                     <button
                       type="button"
                       className={`min-w-[48px] rounded-md border px-2 py-1 text-[12px] font-[900] shadow-lg ${selected ? "border-amber-200 bg-amber-300 text-slate-950" : "border-white/25 bg-slate-950/75 text-white"}`}

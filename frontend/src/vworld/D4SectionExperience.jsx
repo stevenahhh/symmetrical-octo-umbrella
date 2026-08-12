@@ -69,7 +69,7 @@ export function D4SectionExperience({
   return createPortal(
     <div className="fixed inset-0 z-[100] min-h-0 overflow-hidden bg-[#09111d]" aria-label="D4 공과대학 3호관 상세 경험">
       {experienceMode === "rooms" ? (
-        <Canvas camera={{ position: [8.4, 7.4, 8.8], fov: 48 }} shadows>
+        <Canvas camera={{ position: [-5.5, 4.5, 6.4], fov: 48 }} shadows>
           <color attach="background" args={["#09111d"]} />
           <ambientLight intensity={1.1} />
           <directionalLight castShadow intensity={2.1} position={[12, 18, 9]} shadow-mapSize-width={2048} shadow-mapSize-height={2048} />
@@ -80,7 +80,7 @@ export function D4SectionExperience({
             selectedRoomId={selectedRoom.id}
             onSelectRoom={selectRoom}
           />
-          <OrbitControls ref={controlsRef} enableDamping minDistance={4} maxDistance={42} />
+          <OrbitControls ref={controlsRef} enableDamping minDistance={4} maxDistance={42} target={[0, 2.4, 0]} />
         </Canvas>
   ) : isPlanEditorOpen ? (
     <>
