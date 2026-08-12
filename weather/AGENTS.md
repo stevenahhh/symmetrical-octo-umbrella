@@ -60,13 +60,12 @@ weather/
 ## COMMANDS
 
 ```powershell
-cd weather
-python -m venv venv
-.\venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
-uvicorn api.app:app --host 127.0.0.1 --port 8000 --reload
-python main.py
-python -m compileall -q api collectors domain processors main.py config.py
+python -m venv weather\venv
+.\weather\venv\Scripts\Activate.ps1
+python -m pip install -r weather\requirements.txt
+python -m uvicorn weather.api.app:app --host 127.0.0.1 --port 8000 --reload
+python weather/main.py
+python -m compileall -q weather/api weather/collectors weather/domain weather/processors weather/main.py weather/config.py
 ```
 
 ## CHECKS

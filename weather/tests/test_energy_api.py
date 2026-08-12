@@ -25,11 +25,13 @@ def client(tmp_path, monkeypatch) -> TestClient:
     return TestClient(create_app())
 
 
-def test_existing_routes_and_explicit_vite_cors(tmp_path, monkeypatch) -> None:
+def test_existing_routes_and_local_vite_cors(tmp_path, monkeypatch) -> None:
     with client(tmp_path, monkeypatch) as api:
         assert api.get("/health").json() == {"status": "ok"}
         assert api.get("/").status_code == 200
         headers = {"Origin": "http://localhost:5173", "Access-Control-Request-Method": "GET"}
+        assert api.options("/energy/buildings", headers=headers).headers["access-control-allow-origin"] == headers["Origin"]
+        headers["Origin"] = "http://127.0.0.1:5199"
         assert api.options("/energy/buildings", headers=headers).headers["access-control-allow-origin"] == headers["Origin"]
         headers["Origin"] = "https://example.com"
         assert "access-control-allow-origin" not in api.options("/energy/buildings", headers=headers).headers
