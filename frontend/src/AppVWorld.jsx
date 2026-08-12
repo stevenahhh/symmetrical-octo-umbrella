@@ -450,6 +450,7 @@ export default function App() {
       </div>
 
       <div
+        id="vworld-available-area"
         className="pointer-events-none absolute bottom-0 left-0 top-0 z-[1] transition-[right,background-color] duration-300"
         style={{
           right: isPanelOpen ? "var(--dashboard-panel-width)" : "0px",

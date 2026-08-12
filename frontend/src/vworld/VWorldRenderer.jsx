@@ -1,5 +1,5 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
-import { focusMapAt } from "./cameraFocus.mjs";
+import { createBuildingCameraController } from "./cameraFocus.mjs";
 import { D4_COORDINATE_HIT_TOLERANCE_DEGREES, isCoordinateMarkerHit } from "./coordinateMarkerHit.mjs";
 import { D4_COORDINATE_MARKER } from "./d4CoordinateMarker.mjs";
 import { createD4VWorldModel, removeD4VWorldModel } from "./d4VWorldModel.mjs";
@@ -21,6 +21,7 @@ const D4SectionExperience = lazy(() =>
 );
 
 const VWORLD_MAP_ID = "vmap";
+const VWORLD_AVAILABLE_AREA_ID = "vworld-available-area";
 const VWORLD_MAP_INSTANCE_KEY = "__scnuVWorldMapInstance";
 const CAMPUS_BOUNDARY_ID = "SCNU_CAMPUS_AREA";
 const D4_MARKER_ID = "SCNU_D4_COORDINATE_MARKER";
@@ -85,6 +86,7 @@ export default function VWorldRenderer({
   const vwRef = useRef(null);
   const overlayDataRef = useRef([]);
   const overlayObjectIdsRef = useRef([]);
+  const cameraControllerRef = useRef(null);
   const [isLoading, setIsLoading] = useState(true);
   const [hasLoadError, setHasLoadError] = useState(false);
   const [isD4SectionOpen, setIsD4SectionOpen] = useState(false);
@@ -146,6 +148,12 @@ export default function VWorldRenderer({
         // current mount to it so StrictMode/remount overlay callbacks can render.
         mapRef.current = map;
         vwRef.current = vw;
+        cameraControllerRef.current = createBuildingCameraController({
+          map,
+          vw,
+          viewport: document.getElementById(VWORLD_MAP_ID),
+          availableArea: document.getElementById(VWORLD_AVAILABLE_AREA_ID),
+        });
         applyVWorldSunSimulation(simulationDateRef.current);
 
         const poiLayer = map.getLayerElement("POI_GROUP");
@@ -169,7 +177,7 @@ export default function VWorldRenderer({
           );
 
           if (nativeSelection) {
-            focusMapAt(map, vw, {
+            cameraControllerRef.current.focus({
               longitude: cartographic?.longitudeDD,
               latitude: cartographic?.latitudeDD,
             });
@@ -188,7 +196,7 @@ export default function VWorldRenderer({
               onSelectionRef.current,
             );
             setIsD4SectionOpen(true);
-            focusMapAt(map, vw, {
+            cameraControllerRef.current.focus({
               longitude: D4_COORDINATE_MARKER.longitude,
               latitude: D4_COORDINATE_MARKER.latitude,
             });
@@ -226,8 +234,10 @@ export default function VWorldRenderer({
       });
       mapRef.current = null;
       vwRef.current = null;
+      cameraControllerRef.current?.dispose();
+      cameraControllerRef.current = null;
     };
-  }, []);
+  }, [handleOverlayDataChange]);
 
   return (
     <div className="relative h-full w-full">
