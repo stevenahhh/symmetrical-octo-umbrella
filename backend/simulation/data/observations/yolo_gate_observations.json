@@ -1,0 +1,34 @@
+{
+  "observations": [
+    {
+      "timestamp": "2026-05-04 21:33:43",
+      "location": "MAIN_GATE",
+      "type": "car",
+      "direction": "in",
+      "count": 1.0,
+      "source": "yolo",
+      "world_x": null,
+      "world_z": null
+    },
+    {
+      "timestamp": "2026-05-04 21:37:06",
+      "location": "MAIN_GATE",
+      "type": "car",
+      "direction": "in",
+      "count": 1.0,
+      "source": "yolo",
+      "world_x": null,
+      "world_z": null
+    },
+    {
+      "timestamp": "2026-05-04 21:38:34",
+      "location": "MAIN_GATE",
+      "type": "car",
+      "direction": "out",
+      "count": 1.0,
+      "source": "yolo",
+      "world_x": null,
+      "world_z": null
+    }
+  ]
+}

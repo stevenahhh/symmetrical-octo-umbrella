@@ -10,7 +10,7 @@ import { addArray, createRoofEditorState, deleteSelectedArray, dismissInvalidPre
 const DEFAULT_SCENARIO_ID = "D4-scenario-south-2x8";
 const initialStatus = { busy: false, kind: "idle", message: "" };
 
-export function RoofEditor({ buildingId = "D4", scenarioId = DEFAULT_SCENARIO_ID, installationPlanId, installationPlanClient, onPlanSaved }) {
+export function RoofEditor({ buildingId = "D4", scenarioId = DEFAULT_SCENARIO_ID, installationPlanId, installationPlanClient, onPlanSaved, onBackToPlans }) {
   const [editor, setEditor] = useState(() => !installationPlanId && buildingId === "D4" && scenarioId === DEFAULT_SCENARIO_ID
     ? createRoofEditorState(structuredClone(D4_ROOF_SCENARIO_FIXTURE)) : null);
   const [status, setStatus] = useState(initialStatus);
@@ -106,11 +106,14 @@ export function RoofEditor({ buildingId = "D4", scenarioId = DEFAULT_SCENARIO_ID
 
   if (!editor) return <div className="absolute inset-0 grid place-items-center bg-[#07101b] text-sm text-white" role={status.kind === "error" ? "alert" : "status"}>{status.message || "옥상 데이터를 불러오는 중입니다."}</div>;
 
-  return <div className="absolute inset-0 bg-[#07101b]" aria-label={`${buildingId} 태양광 설치 모드`}>
-    <RoofEditorScene state={editor} onSelect={(id) => setEditor((current) => selectArray(current, id))} onMove={(origin) => setEditor((current) => moveSelectedArray(current, origin))} />
-    <div className="pointer-events-none absolute left-4 top-20 z-10 hidden rounded-lg border border-white/15 bg-black/55 px-4 py-3 text-xs font-semibold leading-5 text-white/80 backdrop-blur-md sm:block">
-      <strong className="block text-sm text-white">옥상 로컬 좌표 · m</strong>배열 전체를 드래그해 이동합니다.<br />회색 영역은 계단실 장애물입니다.
+  return <div className="absolute inset-0 flex min-h-0 flex-col bg-[#07101b] md:flex-row" aria-label={`${buildingId} 태양광 설치 모드`}>
+    <div className="relative min-h-0 min-w-0 flex-1">
+      <RoofEditorScene state={editor} onSelect={(id) => setEditor((current) => selectArray(current, id))} onMove={(origin) => setEditor((current) => moveSelectedArray(current, origin))} />
+      <div className="pointer-events-none absolute left-3 top-16 z-10 flex items-center gap-2 rounded-md border border-white/15 bg-black/65 px-3 py-2 text-xs font-bold text-white/90 backdrop-blur-sm sm:left-4 sm:top-20">
+        <span className="h-3.5 w-3.5 rounded-sm border border-red-200 bg-[#ef4444]" />
+        <span>색상 : 설치 가능 구역</span>
+      </div>
     </div>
-    <RoofEditorControls buildingId={buildingId} arrays={editor.previewArrays} selectedArray={selectedArray} summary={summary} canSave={editor.canSave && !editor.violations.length} canUndo={Boolean(editor.undoArrays)} status={status} violations={editor.violations} onAdd={() => setEditor((current) => addArray(current))} onSelect={(id) => setEditor((current) => selectArray(current, id))} onUpdate={(changes) => setEditor((current) => updateSelectedArray(current, changes))} onDelete={() => setEditor((current) => deleteSelectedArray(current))} onUndo={() => setEditor((current) => undoLatestEdit(current))} onSave={save} onReload={reload} />
+    <RoofEditorControls buildingId={buildingId} arrays={editor.previewArrays} selectedArray={selectedArray} summary={summary} canSave={editor.canSave && !editor.violations.length} canUndo={Boolean(editor.undoArrays)} status={status} violations={editor.violations} onAdd={() => setEditor((current) => addArray(current))} onSelect={(id) => setEditor((current) => selectArray(current, id))} onUpdate={(changes) => setEditor((current) => updateSelectedArray(current, changes))} onDelete={() => setEditor((current) => deleteSelectedArray(current))} onUndo={() => setEditor((current) => undoLatestEdit(current))} onSave={save} onReload={reload} onBackToPlans={onBackToPlans} />
   </div>;
 }

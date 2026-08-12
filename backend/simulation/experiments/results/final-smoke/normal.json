@@ -1,0 +1,159 @@
+{
+  "scenario": "normal",
+  "runs": [
+    {
+      "seed": 7,
+      "scenario": "normal",
+      "duration": 5.0,
+      "mean_ttc": 3.63046511627907,
+      "min_ttc": 1.08,
+      "mean_pet": 0.0,
+      "min_pet": 0.0,
+      "near_miss_count": 1,
+      "conflict_count": 44,
+      "collision_count": 0,
+      "average_travel_time": 5.0,
+      "average_waiting_time": 0.41125,
+      "completed_trips": 0,
+      "agent_metrics": {
+        "car": {
+          "count": 30,
+          "average_speed": 2.2460446271171803,
+          "average_waiting_time": 0.28666666666666646,
+          "near_miss_count": 1,
+          "conflict_count": 33,
+          "hard_brake_count": 5
+        },
+        "person": {
+          "count": 100,
+          "average_speed": 0.9900318500055143,
+          "average_waiting_time": 0.528,
+          "near_miss_count": 1,
+          "conflict_count": 40,
+          "hard_brake_count": 0
+        },
+        "scooter": {
+          "count": 30,
+          "average_speed": 1.5496322238158022,
+          "average_waiting_time": 0.14666666666666658,
+          "near_miss_count": 0,
+          "conflict_count": 15,
+          "hard_brake_count": 0
+        }
+      }
+    },
+    {
+      "seed": 8,
+      "scenario": "normal",
+      "duration": 5.0,
+      "mean_ttc": 6.1258333333333335,
+      "min_ttc": 0.83,
+      "mean_pet": null,
+      "min_pet": null,
+      "near_miss_count": 2,
+      "conflict_count": 49,
+      "collision_count": 0,
+      "average_travel_time": 5.0,
+      "average_waiting_time": 0.4124999999999999,
+      "completed_trips": 0,
+      "agent_metrics": {
+        "car": {
+          "count": 30,
+          "average_speed": 2.2225399653447533,
+          "average_waiting_time": 0.2066666666666665,
+          "near_miss_count": 3,
+          "conflict_count": 26,
+          "hard_brake_count": 1
+        },
+        "person": {
+          "count": 100,
+          "average_speed": 0.9462065295841064,
+          "average_waiting_time": 0.584,
+          "near_miss_count": 1,
+          "conflict_count": 35,
+          "hard_brake_count": 0
+        },
+        "scooter": {
+          "count": 30,
+          "average_speed": 1.8478471242222703,
+          "average_waiting_time": 0.04666666666666661,
+          "near_miss_count": 0,
+          "conflict_count": 37,
+          "hard_brake_count": 1
+        }
+      }
+    }
+  ],
+  "aggregate": {
+    "mean_ttc": {
+      "mean": 4.878149224806202,
+      "std": 1.7644917878364543,
+      "median": 4.878149224806202,
+      "ci95_low": 2.4326883720930237,
+      "ci95_high": 7.32361007751938
+    },
+    "min_ttc": {
+      "mean": 0.9550000000000001,
+      "std": 0.17677669529663695,
+      "median": 0.9550000000000001,
+      "ci95_low": 0.71,
+      "ci95_high": 1.2000000000000002
+    },
+    "mean_pet": {
+      "mean": 0.0,
+      "std": 0.0,
+      "median": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0
+    },
+    "min_pet": {
+      "mean": 0.0,
+      "std": 0.0,
+      "median": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0
+    },
+    "near_miss_count": {
+      "mean": 1.5,
+      "std": 0.7071067811865476,
+      "median": 1.5,
+      "ci95_low": 0.5200000000000001,
+      "ci95_high": 2.48
+    },
+    "conflict_count": {
+      "mean": 46.5,
+      "std": 3.5355339059327378,
+      "median": 46.5,
+      "ci95_low": 41.6,
+      "ci95_high": 51.4
+    },
+    "collision_count": {
+      "mean": 0.0,
+      "std": 0.0,
+      "median": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0
+    },
+    "average_travel_time": {
+      "mean": 5.0,
+      "std": 0.0,
+      "median": 5.0,
+      "ci95_low": 5.0,
+      "ci95_high": 5.0
+    },
+    "average_waiting_time": {
+      "mean": 0.411875,
+      "std": 0.0008838834764831263,
+      "median": 0.411875,
+      "ci95_low": 0.41065000000000007,
+      "ci95_high": 0.4130999999999999
+    },
+    "completed_trips": {
+      "mean": 0.0,
+      "std": 0.0,
+      "median": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0
+    }
+  }
+}

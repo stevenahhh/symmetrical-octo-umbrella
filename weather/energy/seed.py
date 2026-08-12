@@ -108,11 +108,24 @@ def _d4_rooms() -> tuple[SeedRoom, ...]:
 
 D4_BUILDINGS = (SeedBuilding(
     id="D4", display_name="D4 / \uacf5\ub300 3\ud638\uad00", rooms=_d4_rooms(),
-    roof_zones=(SeedRoofZone(
-        id="D4-roof-west-main", roof_id="D4-roof-west",
-        polygon=({"xMeters": 0, "yMeters": 0}, {"xMeters": 31, "yMeters": 0},
-                 {"xMeters": 31, "yMeters": 51.2}, {"xMeters": 0, "yMeters": 51.2}),
-    ),),
+    roof_zones=(
+        SeedRoofZone(id="D4-roof-west-main", roof_id="D4-roof-west", polygon=(
+            {"xMeters": 21, "yMeters": 59}, {"xMeters": 28, "yMeters": 59},
+            {"xMeters": 28, "yMeters": 76.5}, {"xMeters": 21, "yMeters": 76.5}),
+        ),
+        SeedRoofZone(id="D4-roof-north-top-cement", roof_id="D4-roof-west", polygon=(
+            {"xMeters": 2.5, "yMeters": 75}, {"xMeters": 10.5, "yMeters": 75},
+            {"xMeters": 10.5, "yMeters": 83.5}, {"xMeters": 2.5, "yMeters": 83.5}),
+        ),
+        SeedRoofZone(id="D4-roof-north-left-cement", roof_id="D4-roof-west", polygon=(
+            {"xMeters": 2.5, "yMeters": 63.5}, {"xMeters": 5.8, "yMeters": 63.5},
+            {"xMeters": 5.8, "yMeters": 75}, {"xMeters": 2.5, "yMeters": 75}),
+        ),
+        SeedRoofZone(id="D4-roof-north-bottom-cement", roof_id="D4-roof-west", polygon=(
+            {"xMeters": 3.2, "yMeters": 57.8}, {"xMeters": 20.7, "yMeters": 57.8},
+            {"xMeters": 20.7, "yMeters": 63.5}, {"xMeters": 3.2, "yMeters": 63.5}),
+        ),
+    ),
 ),)
 
 
@@ -151,7 +164,7 @@ CAMPUS_BUILDINGS = D4_BUILDINGS + (
 
 D4_SEED_COUNTS = {
     "buildings": 5, "rooms": 73, "timetable_events": 126, "load_profiles": 5,
-    "roof_zones": 4, "roof_obstacles": 1, "scenarios": 4,
+    "roof_zones": 7, "roof_obstacles": 0, "scenarios": 4,
     "panel_arrays": 4, "scenario_intervals": 0,
 }
 
@@ -189,7 +202,10 @@ def _seed_building(connection: sqlite3.Connection, building: SeedBuilding) -> No
         )
     for zone in building.roof_zones:
         connection.execute(
-            "INSERT OR IGNORE INTO roof_zones VALUES (?,?,?,?,?,?)",
+            "INSERT INTO roof_zones VALUES (?,?,?,?,?,?) "
+            "ON CONFLICT(roof_id,id) DO UPDATE SET building_id=excluded.building_id, "
+            "coordinate_system=excluded.coordinate_system, polygon_json=excluded.polygon_json, "
+            "edge_margin_m=excluded.edge_margin_m",
             (zone.id, zone.roof_id, building.id, "roof-local-meters",
              json.dumps(zone.polygon, ensure_ascii=False, separators=(",", ":")),
              zone.edge_margin_m),
@@ -218,13 +234,7 @@ def _seed_comparison_scenarios(connection: sqlite3.Connection) -> None:
 
 
 def _seed_d4_fixture(connection: sqlite3.Connection) -> None:
-    polygon = ({"xMeters": 2, "yMeters": 20}, {"xMeters": 6, "yMeters": 20},
-               {"xMeters": 6, "yMeters": 26}, {"xMeters": 2, "yMeters": 26})
-    connection.execute(
-        "INSERT OR IGNORE INTO roof_obstacles VALUES (?,?,?,?,?)",
-        ("D4-roof-west-stairwell", "D4-roof-west", "D4-roof-west-main",
-         json.dumps(polygon, separators=(",", ":")), 1.0),
-    )
+    connection.execute("DELETE FROM roof_obstacles WHERE roof_id=?", ("D4-roof-west",))
     connection.execute(
         "INSERT OR IGNORE INTO scenarios VALUES (?,?,?,?,?,?)",
         ("D4-scenario-south-2x8", "D4", "D4 south 2x8 fixture", "clear",
@@ -233,8 +243,17 @@ def _seed_d4_fixture(connection: sqlite3.Connection) -> None:
     connection.execute(
         "INSERT OR IGNORE INTO panel_arrays VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
         ("D4-array-south-2x8", "D4-scenario-south-2x8", "D4-roof-west",
-         "D4-roof-west-main", "module-default-441wp", 10., 10., 2, 8, 180.,
+         "D4-roof-west-main", "module-default-441wp", 24.5, 67., 1, 4, 90.,
          25., "portrait", 1.05, 2.1, 20., 441., .02),
+    )
+    connection.execute(
+        "UPDATE panel_arrays SET origin_x_m=?, origin_y_m=?, rows=?, columns=?, azimuth_deg=? "
+        "WHERE scenario_id IN (SELECT id FROM scenarios WHERE building_id=?)",
+        (24.5, 67., 1, 4, 90., "D4"),
+    )
+    connection.execute(
+        "UPDATE panel_arrays SET origin_y_m=? WHERE id=?",
+        (73., "D4-scenario-south-2x8-array-1"),
     )
 
 

@@ -21,6 +21,7 @@ import {
   X,
 } from "lucide-react";
 import VWorldRenderer from "./vworld/VWorldRenderer";
+import { TrafficSafetyPanel, useSimulationSocket } from "./simulation";
 import trafficData from "./utils/trafficData.json";
 import { EnergyDashboard } from "./features/energy/dashboard/EnergyDashboard";
 import { CampusComparison } from "./features/energy/campus/CampusComparisonPanel";
@@ -178,6 +179,7 @@ function SliderRow({ label, valueLabel, min, max, step = 1, value, onValueChange
 }
 
 export default function App() {
+  useSimulationSocket();
   const [selectedId, setSelectedId] = useState("");
   const [selectedBuildingId, setSelectedBuildingId] = useState("D4");
   const [editorRequest, setEditorRequest] = useState(null);
@@ -652,6 +654,7 @@ export default function App() {
 
             {activeTab === "safety" && (
               <div className="space-y-6">
+                <TrafficSafetyPanel />
                 <div className="pb-4 border-b border-[var(--colors-hairline)]/50">
                   <div className="text-base font-[700] text-[var(--colors-ink)] flex items-center gap-2">
                     <ShieldAlert size={18} className="text-[var(--colors-primary)]" />

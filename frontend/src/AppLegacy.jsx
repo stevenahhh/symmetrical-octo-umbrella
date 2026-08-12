@@ -27,6 +27,11 @@ import {
   Zap,
 } from "lucide-react";
 import { CityModel } from "./CityModel";
+import {
+  CampusTrafficSimulation,
+  TrafficSafetyPanel,
+  useSimulationSocket,
+} from "./simulation";
 import { D4SectionExperience } from "./vworld/D4SectionExperience";
 import {
   createPlanDraftFromExisting,
@@ -141,6 +146,7 @@ function SliderRow({ label, valueLabel, min, max, step = 1, value, onChange }) {
 }
 
 export default function App() {
+  useSimulationSocket();
   const orbitControlsRef = useRef(null);
   const [selectedId, setSelectedId] = useState("");
   const [selectedArea, setSelectedArea] = useState(1200);
@@ -439,6 +445,7 @@ export default function App() {
               onSelect={handleSelect}
               onBuildingClick={handleBuildingClick}
             />
+            <CampusTrafficSimulation />
           </Suspense>
           <OrbitControls
             ref={orbitControlsRef}
@@ -652,6 +659,7 @@ export default function App() {
 
             {activeTab === "safety" && (
               <div className="space-y-6">
+                <TrafficSafetyPanel />
                 <div className="pb-4 border-b border-[var(--colors-hairline)]/50">
                   <div className="text-base font-[700] text-[var(--colors-ink)] flex items-center gap-2">
                     <ShieldAlert size={18} className="text-[var(--colors-primary)]" />

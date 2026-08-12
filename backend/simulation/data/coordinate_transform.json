@@ -1,0 +1,11 @@
+{
+  "origin": {"x": -214.35, "y": 24.0, "z": -93.251},
+  "scale": 0.6242171526,
+  "rotation_degrees": 0.0,
+  "invert_z": true,
+  "wgs84_reference": {"longitude": 127.4764043, "latitude": 34.9700548},
+  "sumo_origin": {"x": 0.0, "z": 0.0},
+  "source": "derived from current GLB export scale and CityModel recentering",
+  "confidence": 0.5,
+  "independently_surveyed": false
+}

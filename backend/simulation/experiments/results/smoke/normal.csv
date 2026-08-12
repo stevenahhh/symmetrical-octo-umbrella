@@ -1,0 +1,3 @@
+seed,scenario,duration,mean_ttc,min_ttc,mean_pet,min_pet,near_miss_count,conflict_count,collision_count,average_travel_time,average_waiting_time,completed_trips
+42,normal,1.0,,,,,0,0,0,1.0,0.0,0
+43,normal,1.0,,,,,0,0,0,1.0,0.0,0

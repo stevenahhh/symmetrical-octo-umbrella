@@ -1,0 +1,33 @@
+{
+  "transform": {
+    "origin": {
+      "x": -214.3499999999109,
+      "y": 0.0,
+      "z": -93.25099999999027
+    },
+    "scale": 0.6242171525999721,
+    "rotation_degrees": -1.1322478177403536e-11,
+    "invert_z": true,
+    "wgs84_reference": {},
+    "sumo_origin": {
+      "x": 0.0,
+      "z": 0.0
+    }
+  },
+  "metrics": {
+    "point_count": 5,
+    "rmse": 2.8611012389808086e-10,
+    "max_error": 3.589986961050274e-10,
+    "residuals": [
+      3.2596319873052045e-10,
+      2.2963646403844078e-10,
+      3.589986961050274e-10,
+      2.3580666279690635e-10,
+      2.565643319279615e-10
+    ],
+    "acceptance_rmse_meters": 2.0
+  },
+  "independent_control_points": false,
+  "alignment_accepted": false,
+  "note": "Low RMSE is not survey validation unless every control point is independent."
+}

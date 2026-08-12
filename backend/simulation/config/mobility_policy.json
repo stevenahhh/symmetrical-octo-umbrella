@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "description": "Campus mobility permissions. Values are project policy, not observed campus regulations.",
+  "kinds": {
+    "vehicle_lane": {"allowed_types": ["car"], "scooter_policy": "forbidden"},
+    "sidewalk": {"allowed_types": ["person"], "scooter_policy": "forbidden"},
+    "crosswalk": {"allowed_types": ["person", "scooter"], "scooter_policy": "slow_or_dismount"},
+    "bike_lane": {"allowed_types": ["scooter"], "scooter_policy": "allowed"},
+    "scooter_lane": {"allowed_types": ["scooter"], "scooter_policy": "allowed"},
+    "shared_path": {"allowed_types": ["person", "scooter"], "scooter_policy": "allowed_low_speed"},
+    "allowed_road": {"allowed_types": ["car", "scooter"], "scooter_policy": "conditional"},
+    "pedestrian_gate": {"allowed_types": ["person", "scooter"], "scooter_policy": "slow_or_dismount"},
+    "vehicle_gate": {"allowed_types": ["car", "scooter"], "scooter_policy": "conditional"},
+    "building_entrance": {"allowed_types": ["person", "scooter"], "scooter_policy": "dismount_or_park_at_entrance"},
+    "parking_connection": {"allowed_types": ["car"], "scooter_policy": "forbidden"},
+    "parking_walk": {"allowed_types": ["person"], "scooter_policy": "forbidden"},
+    "scooter_parking_connection": {"allowed_types": ["scooter"], "scooter_policy": "required_destination"}
+  },
+  "legacy_aliases": {
+    "road": "allowed_road",
+    "shared_path_derived": "shared_path",
+    "gate_vehicle": "vehicle_gate",
+    "scooter_parking": "scooter_parking_connection"
+  },
+  "derived_lateral_offsets_m": {
+    "car": {},
+    "person": {"shared_path": 2.8, "sidewalk": 2.8},
+    "scooter": {"shared_path": 1.4, "sidewalk": 1.4, "bike_lane": 1.4, "scooter_lane": 1.4, "allowed_road": -1.0}
+  },
+  "offset_note": "Development-only visual/movement separation for routes derived from a vehicle centerline; not surveyed geometry.",
+  "source": "implementation_specific_policy",
+  "confidence": null
+}

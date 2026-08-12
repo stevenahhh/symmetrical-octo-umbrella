@@ -1,28 +1,29 @@
-import { D4_ROOF_SOURCE_BASELINE } from "../features/energy/domain/fixtures/d4RoofScenarioFixture.mjs";
-
 const D4_WEST_ROOF = Object.freeze({
-  centerLongitude: 127.4764043 - 0.00022,
+  centerLongitude: 127.4764043,
   centerLatitude: 34.9700548,
   widthMeters: 31,
-  depthMeters: 51.2,
-  longitudeSpanDegrees: D4_ROOF_SOURCE_BASELINE.vworldWingLongitudeSpanDegrees,
-  latitudeSpanDegrees: D4_ROOF_SOURCE_BASELINE.vworldWingLatitudeSpanDegrees,
-  distanceFromTerrain: 20.4,
+  depthMeters: 88,
+  modelWidthMeters: 36.86,
+  modelDepthMeters: 65.2,
+  headingDegrees: -14.5,
+  distanceFromTerrain: 11.7,
 });
 
 export function d4RoofLocalPointToVWorld({ xMeters, yMeters }) {
+  const localEast = ((xMeters / D4_WEST_ROOF.widthMeters) - 0.5) * D4_WEST_ROOF.modelWidthMeters;
+  const localNorth = ((yMeters / D4_WEST_ROOF.depthMeters) - 0.5) * D4_WEST_ROOF.modelDepthMeters;
+  const heading = D4_WEST_ROOF.headingDegrees * Math.PI / 180;
+  const east = localEast * Math.cos(heading) - localNorth * Math.sin(heading);
+  const north = localEast * Math.sin(heading) + localNorth * Math.cos(heading);
+  const longitudeMetersPerDegree = 111_320 * Math.cos(D4_WEST_ROOF.centerLatitude * Math.PI / 180);
   return {
-    longitude:
-      D4_WEST_ROOF.centerLongitude
-      + ((xMeters / D4_WEST_ROOF.widthMeters) - 0.5) * D4_WEST_ROOF.longitudeSpanDegrees,
-    latitude:
-      D4_WEST_ROOF.centerLatitude
-      + ((yMeters / D4_WEST_ROOF.depthMeters) - 0.5) * D4_WEST_ROOF.latitudeSpanDegrees,
+    longitude: D4_WEST_ROOF.centerLongitude + east / longitudeMetersPerDegree,
+    latitude: D4_WEST_ROOF.centerLatitude + north / 110_540,
   };
 }
 
 export function getVerifiedVWorldRoofTransform(buildingId, roofId, roofZoneId) {
-  if (buildingId !== "D4" || roofId !== "D4-roof-west" || roofZoneId !== "D4-roof-west-main") {
+  if (buildingId !== "D4" || roofId !== "D4-roof-west" || !roofZoneId?.startsWith("D4-roof-")) {
     return null;
   }
   return {

@@ -1,0 +1,126 @@
+{
+  "valid": true,
+  "summary": {
+    "nodes": 106,
+    "edges": 364,
+    "pois": 14,
+    "edge_kinds": {
+      "allowed_road": 172,
+      "building_entrance": 6,
+      "crosswalk": 47,
+      "parking_connection": 2,
+      "parking_walk": 2,
+      "pedestrian_gate": 4,
+      "scooter_parking_connection": 2,
+      "shared_path": 125,
+      "vehicle_gate": 4
+    },
+    "sources": {
+      "derived_from_vehicle_network": 364
+    },
+    "derived_edges": 364,
+    "non_derived_edges": 0,
+    "authoritative_edges": 0,
+    "crosswalk_edges": 47
+  },
+  "connectivity": {
+    "car": {
+      "edges": 178,
+      "active_nodes": 98,
+      "components": 1,
+      "largest_component_nodes": 98,
+      "connected_percent": 100.0
+    },
+    "person": {
+      "edges": 184,
+      "active_nodes": 104,
+      "components": 1,
+      "largest_component_nodes": 104,
+      "connected_percent": 100.0
+    },
+    "scooter": {
+      "edges": 360,
+      "active_nodes": 104,
+      "components": 1,
+      "largest_component_nodes": 104,
+      "connected_percent": 100.0
+    }
+  },
+  "errors": [],
+  "warnings": [
+    {
+      "code": "DUPLICATE_NODE_POSITION",
+      "position": [
+        155.649,
+        -292.496
+      ],
+      "node_ids": [
+        "ROAD_NODE_047",
+        "POI_PARKING_B"
+      ]
+    },
+    {
+      "code": "DUPLICATE_NODE_POSITION",
+      "position": [
+        610.477,
+        1.332
+      ],
+      "node_ids": [
+        "ROAD_NODE_058",
+        "POI_PARKING_A"
+      ]
+    },
+    {
+      "code": "DUPLICATE_NODE_POSITION",
+      "position": [
+        610.437,
+        -147.974
+      ],
+      "node_ids": [
+        "ROAD_NODE_078",
+        "POI_GATE_MAIN"
+      ]
+    },
+    {
+      "code": "DUPLICATE_NODE_POSITION",
+      "position": [
+        386.377,
+        -85.663
+      ],
+      "node_ids": [
+        "ROAD_NODE_079",
+        "POI_SCOOTER_PARKING_01"
+      ]
+    },
+    {
+      "code": "DUPLICATE_NODE_POSITION",
+      "position": [
+        251.382,
+        -162.788
+      ],
+      "node_ids": [
+        "ROAD_NODE_088",
+        "POI_SCOOTER_PARKING_02"
+      ]
+    },
+    {
+      "code": "DUPLICATE_NODE_POSITION",
+      "position": [
+        240.859,
+        98.363
+      ],
+      "node_ids": [
+        "ROAD_NODE_092",
+        "POI_GATE_BACK"
+      ]
+    },
+    {
+      "code": "CROSSWALK_WITHOUT_PEDESTRIAN_CONNECTION",
+      "feature_id": "EDGE_0262_walk"
+    },
+    {
+      "code": "CROSSWALK_WITHOUT_PEDESTRIAN_CONNECTION",
+      "feature_id": "EDGE_0300_walk"
+    }
+  ]
+}

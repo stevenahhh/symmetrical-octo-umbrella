@@ -1,0 +1,22 @@
+{
+  "default": "normal",
+  "scenarios": {
+    "normal": {"label": "일반", "counts": {"car": 30, "person": 100, "scooter": 30}, "speed_multiplier": 1.0, "jaywalking_probability": 0.01, "risk_events_enabled": true},
+    "rush_hour": {"label": "혼잡 시간", "counts": {"car": 45, "person": 140, "scooter": 40}, "speed_multiplier": 0.8, "jaywalking_probability": 0.03, "risk_events_enabled": true},
+    "morning_rush": {"label": "오전 등교", "counts": {"car": 45, "person": 140, "scooter": 40}, "speed_multiplier": 0.8, "jaywalking_probability": 0.03, "risk_events_enabled": true},
+    "class_change": {"label": "수업 교체", "counts": {"car": 18, "person": 150, "scooter": 36}, "speed_multiplier": 0.85, "jaywalking_probability": 0.04, "risk_events_enabled": true},
+    "lunch_time": {"label": "점심 시간", "counts": {"car": 21, "person": 120, "scooter": 32}, "speed_multiplier": 0.9, "jaywalking_probability": 0.03, "risk_events_enabled": true},
+    "leaving_campus": {"label": "하교 시간", "counts": {"car": 38, "person": 130, "scooter": 30}, "speed_multiplier": 0.9, "jaywalking_probability": 0.03, "risk_events_enabled": true},
+    "jaywalking": {"label": "무단횡단", "counts": {"car": 30, "person": 100, "scooter": 25}, "speed_multiplier": 1.0, "jaywalking_probability": 0.35, "risk_events_enabled": true},
+    "scooter_speeding": {"label": "킥보드 과속", "counts": {"car": 25, "person": 90, "scooter": 35}, "speed_multiplier": 1.0, "scooter_speed_multiplier": 1.8, "risk_events_enabled": true},
+    "scooter_wrong_way": {"label": "킥보드 역주행", "counts": {"car": 25, "person": 90, "scooter": 35}, "wrong_way_probability": 0.45, "risk_events_enabled": true},
+    "crosswalk_conflict": {"label": "횡단보도 상충", "counts": {"car": 35, "person": 120, "scooter": 30}, "jaywalking_probability": 0.2, "ignore_crosswalk_probability": 0.3, "risk_events_enabled": true},
+    "rainy_day": {"label": "우천", "counts": {"car": 30, "person": 80, "scooter": 15}, "weather": {"rain": true, "wind_speed": 3, "night": false}, "speed_multiplier": 0.75, "risk_events_enabled": true},
+    "rain": {"label": "우천", "counts": {"car": 30, "person": 80, "scooter": 15}, "weather": {"rain": true, "wind_speed": 3, "night": false}, "speed_multiplier": 0.75, "risk_events_enabled": true},
+    "night": {"label": "야간", "counts": {"car": 18, "person": 45, "scooter": 12}, "weather": {"rain": false, "wind_speed": 1, "night": true}, "speed_multiplier": 0.85, "risk_events_enabled": true},
+    "high_pedestrian_density": {"label": "보행자 밀집", "counts": {"car": 20, "person": 260, "scooter": 25}, "speed_multiplier": 0.75, "risk_events_enabled": true},
+    "high_scooter_density": {"label": "킥보드 밀집", "counts": {"car": 25, "person": 100, "scooter": 90}, "speed_multiplier": 0.9, "risk_events_enabled": true},
+    "vehicle_congestion": {"label": "차량 정체", "counts": {"car": 100, "person": 80, "scooter": 25}, "speed_multiplier": 0.55, "risk_events_enabled": true},
+    "emergency_vehicle": {"label": "긴급차량", "counts": {"car": 31, "person": 90, "scooter": 25}, "emergency_vehicle": true, "speed_multiplier": 1.0, "risk_events_enabled": true}
+  }
+}

@@ -7,12 +7,16 @@ import {
 
 test("maps the verified D4 west-roof local bounds onto its VWorld footprint", () => {
   assert.deepEqual(d4RoofLocalPointToVWorld({ xMeters: 0, yMeters: 0 }), {
-    longitude: 127.4760143,
-    latitude: 34.9698248,
+    longitude: 127.47611922040927,
+    latitude: 34.96981102299981,
   });
-  assert.deepEqual(d4RoofLocalPointToVWorld({ xMeters: 31, yMeters: 51.2 }), {
-    longitude: 127.4763543,
-    latitude: 34.9702848,
+  assert.deepEqual(d4RoofLocalPointToVWorld({ xMeters: 31, yMeters: 88 }), {
+    longitude: 127.47668937959072,
+    latitude: 34.97029857700019,
+  });
+  assert.deepEqual(d4RoofLocalPointToVWorld({ xMeters: 15.5, yMeters: 44 }), {
+    longitude: 127.4764043,
+    latitude: 34.9700548,
   });
 });
 
