@@ -1,4 +1,5 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { MapPin, X } from "lucide-react";
 import { focusMapAt } from "./cameraFocus.mjs";
 import { D4_COORDINATE_HIT_TOLERANCE_DEGREES, isCoordinateMarkerHit } from "./coordinateMarkerHit.mjs";
 import { D4_COORDINATE_MARKER } from "./d4CoordinateMarker.mjs";
@@ -8,6 +9,7 @@ import {
   activateNativeModelSelection,
 } from "./selectionActivation.mjs";
 import { applyVWorldSunSimulation } from "./sunSimulation.mjs";
+import { clearRoadZoneOverlays, findRoadZoneAt, setRoadZoneHighlighted } from "./roadZones.mjs";
 import { loadVWorldWebGlSdk } from "./webglSdkLoader.mjs";
 import { VWorldCampusStatus } from "./VWorldCampusStatus";
 import { RepresentativePlanOverlayController } from "./RepresentativePlanOverlayController";
@@ -85,10 +87,13 @@ export default function VWorldRenderer({
   const vwRef = useRef(null);
   const overlayDataRef = useRef([]);
   const overlayObjectIdsRef = useRef([]);
+  const highlightedRoadZoneRef = useRef(null);
+  const highlightedRoadZoneIdsRef = useRef([]);
   const [isLoading, setIsLoading] = useState(true);
   const [hasLoadError, setHasLoadError] = useState(false);
   const [isD4SectionOpen, setIsD4SectionOpen] = useState(false);
   const [detailRequest, setDetailRequest] = useState(null);
+  const [selectedRoadZoneName, setSelectedRoadZoneName] = useState(null);
 
   useEffect(() => {
     onSelectionRef.current = onSelection;
@@ -156,6 +161,13 @@ export default function VWorldRenderer({
         handleOverlayDataChange(overlayDataRef.current);
         createD4CoordinateMarker(vw);
 
+        const clearRoadZoneHighlight = () => {
+          if (!highlightedRoadZoneRef.current) return;
+          clearRoadZoneOverlays(map, highlightedRoadZoneIdsRef.current);
+          highlightedRoadZoneRef.current = null;
+          highlightedRoadZoneIdsRef.current = [];
+        };
+
         handleMapClick = (
           _windowPosition,
           _ecefPosition,
@@ -169,6 +181,8 @@ export default function VWorldRenderer({
           );
 
           if (nativeSelection) {
+            setSelectedRoadZoneName(null);
+            clearRoadZoneHighlight();
             focusMapAt(map, vw, {
               longitude: cartographic?.longitudeDD,
               latitude: cartographic?.latitudeDD,
@@ -183,6 +197,8 @@ export default function VWorldRenderer({
               D4_COORDINATE_HIT_TOLERANCE_DEGREES,
             )
           ) {
+            setSelectedRoadZoneName(null);
+            clearRoadZoneHighlight();
             activateCoordinateMarkerSelection(
               D4_COORDINATE_MARKER,
               onSelectionRef.current,
@@ -192,7 +208,22 @@ export default function VWorldRenderer({
               longitude: D4_COORDINATE_MARKER.longitude,
               latitude: D4_COORDINATE_MARKER.latitude,
             });
+            return;
           }
+
+          const roadZone = findRoadZoneAt(
+            cartographic?.longitudeDD,
+            cartographic?.latitudeDD,
+          );
+
+          if (highlightedRoadZoneRef.current?.id !== roadZone?.id) {
+            clearRoadZoneHighlight();
+            if (roadZone) {
+              highlightedRoadZoneIdsRef.current = setRoadZoneHighlighted(map, roadZone);
+              highlightedRoadZoneRef.current = roadZone;
+            }
+          }
+          setSelectedRoadZoneName(roadZone?.name ?? null);
         };
         map.onClick.addEventListener(handleMapClick);
 
@@ -217,6 +248,9 @@ export default function VWorldRenderer({
       }
       map.removeObjectById(D4_MARKER_ID);
       map.removeObjectById(CAMPUS_BOUNDARY_ID);
+      clearRoadZoneOverlays(map, highlightedRoadZoneIdsRef.current);
+      highlightedRoadZoneIdsRef.current = [];
+      highlightedRoadZoneRef.current = null;
       removeD4VWorldModel(map);
       overlayObjectIdsRef.current = replaceRepresentativePlanObjects({
         map,
@@ -279,6 +313,30 @@ export default function VWorldRenderer({
         >
           D4 공과대학 3호관 상세 보기
         </button>
+      )}
+      {!isD4SectionOpen && selectedRoadZoneName && (
+        <div
+          role="status"
+          className="dashboard-status-badge pointer-events-auto absolute bottom-6 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2 px-3 py-2 text-xs font-extrabold shadow-lg"
+        >
+          <MapPin size={14} className="text-[var(--colors-primary)]" />
+          도로 구역 · {selectedRoadZoneName}
+          <button
+            type="button"
+            onClick={() => {
+              if (highlightedRoadZoneRef.current && mapRef.current) {
+                clearRoadZoneOverlays(mapRef.current, highlightedRoadZoneIdsRef.current);
+              }
+              highlightedRoadZoneRef.current = null;
+              highlightedRoadZoneIdsRef.current = [];
+              setSelectedRoadZoneName(null);
+            }}
+            aria-label="도로 구역 정보 닫기"
+            className="ml-1 rounded p-0.5 text-[var(--colors-ink-subtle)] hover:text-[var(--colors-ink)]"
+          >
+            <X size={13} />
+          </button>
+        </div>
       )}
       {isD4SectionOpen && (
         <Suspense
