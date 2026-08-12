@@ -87,6 +87,13 @@ afterEach(() => {
   mocks.receivedBuildingIds.length = 0;
 });
 
+class ResizeObserver {
+  observe() {}
+  disconnect() {}
+}
+
+globalThis.ResizeObserver = ResizeObserver;
+
 describe("VWorldRenderer retained map integration", () => {
   it("rebinds a reused global map under StrictMode and renders the D4 representative polygon", async () => {
     mocks.vw = createVw();
