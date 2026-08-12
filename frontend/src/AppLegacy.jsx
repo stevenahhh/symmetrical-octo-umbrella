@@ -33,7 +33,12 @@ import {
   useSimulationSocket,
 } from "./simulation";
 import { D4SectionExperience } from "./vworld/D4SectionExperience";
+import { VWorldCampusStatus } from "./vworld/VWorldCampusStatus";
+import { EnergyDashboard } from "./features/energy/dashboard/EnergyDashboard";
+import { CampusComparison } from "./features/energy/campus/CampusComparisonPanel";
+import { BuildingAnalysis } from "./features/energy/analysis";
 import {
+  createInstallationPlanClient,
   createPlanDraftFromExisting,
 } from "./features/energy/installations/installationPlanApi.mjs";
 import trafficData from "./utils/trafficData.json";
@@ -149,6 +154,13 @@ export default function App() {
   useSimulationSocket();
   const orbitControlsRef = useRef(null);
   const [selectedId, setSelectedId] = useState("");
+  const [selectedBuildingId, setSelectedBuildingId] = useState("D4");
+  const [editorRequest, setEditorRequest] = useState(null);
+  const [installationPlans, setInstallationPlans] = useState([]);
+  const [representativePlanId, setRepresentativePlanId] = useState(null);
+  const [overlayRefreshKey, setOverlayRefreshKey] = useState(0);
+  const installationLoadGenerationRef = useRef(0);
+  const installationPlanClient = useMemo(() => createInstallationPlanClient(), []);
   const [selectedArea, setSelectedArea] = useState(1200);
   const [mode, setMode] = useState("simulation");
   const [weatherData, setWeatherData] = useState(null);
@@ -356,7 +368,8 @@ export default function App() {
     [],
   );
 
-  const openD4Section = useCallback(() => {
+  const openD4Section = useCallback((request = null) => {
+    setEditorRequest(request);
     setSelectedId("");
     setPopupData(null);
     setPopupError(null);
@@ -367,6 +380,65 @@ export default function App() {
   const handleExitD4Section = useCallback(() => {
     setBuildingViewMode("campus");
     setIsPanelOpen(true);
+    setEditorRequest(null);
+    setInstallationRefreshKey((value) => value + 1);
+    setOverlayRefreshKey((value) => value + 1);
+  }, []);
+
+  const selectBuilding = useCallback(({
+    elementId,
+    buildingId,
+    displayName,
+    area = 0,
+  }) => {
+    if (buildingId !== selectedBuildingId) {
+      installationLoadGenerationRef.current += 1;
+      setInstallationPlans([]);
+      setRepresentativePlanId(null);
+    }
+    setSelectedId(displayName);
+    setSelectedArea(area);
+    setSelectedBuildingId(buildingId);
+    setActiveTab("energy");
+    setPopupData(null);
+    setPopupError(null);
+    return elementId;
+  }, [selectedBuildingId]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const requestGeneration = installationLoadGenerationRef.current + 1;
+    installationLoadGenerationRef.current = requestGeneration;
+    let active = true;
+    setInstallationPlans([]);
+    setRepresentativePlanId(null);
+    Promise.all([
+      installationPlanClient.listDetails(selectedBuildingId, { signal: controller.signal }),
+      installationPlanClient.getRepresentative(selectedBuildingId, { signal: controller.signal }),
+    ]).then(([plans, representative]) => {
+      if (!active || installationLoadGenerationRef.current !== requestGeneration) return;
+      setInstallationPlans(plans);
+      setRepresentativePlanId(representative?.installationPlanId ?? null);
+    }).catch((loadError) => {
+      if (!active || installationLoadGenerationRef.current !== requestGeneration || loadError?.name === "AbortError") return;
+      setInstallationPlans([]);
+      setRepresentativePlanId(null);
+    });
+    return () => {
+      active = false;
+      controller.abort();
+    };
+  }, [installationPlanClient, installationRefreshKey, selectedBuildingId]);
+
+  const handleInstallationPlansChange = useCallback((plans) => {
+    installationLoadGenerationRef.current += 1;
+    setInstallationPlans(plans);
+  }, []);
+
+  const handleRepresentativeInstallationPlanChange = useCallback((representative) => {
+    installationLoadGenerationRef.current += 1;
+    setRepresentativePlanId(representative?.installationPlanId ?? null);
+    setOverlayRefreshKey((value) => value + 1);
   }, []);
 
   const handleBuildingClick = useCallback(async (obj) => {
@@ -379,6 +451,14 @@ export default function App() {
       setPopupData(null);
       return;
     }
+
+    const buildingId = elementId.slice("BLD_".length);
+    selectBuilding({
+      elementId,
+      buildingId,
+      displayName: obj?.userData?.buildingName ?? obj?.name ?? buildingId,
+      area: obj?.userData?.area ?? 0,
+    });
 
     if (isD4ElementId(elementId)) {
       openD4Section();
@@ -404,7 +484,7 @@ export default function App() {
     } finally {
       setPopupLoading(false);
     }
-  }, [openD4Section]);
+  }, [openD4Section, selectBuilding]);
 
   return (
     <div className="dashboard-root relative h-screen w-screen overflow-hidden bg-[var(--colors-canvas)] text-[var(--colors-ink)]">
@@ -464,12 +544,28 @@ export default function App() {
 
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(1,1,2,0.02)_0%,rgba(1,1,2,0.08)_50%,rgba(1,1,2,0.16)_100%)]" />
 
+      {buildingViewMode === "campus" && (
+        <VWorldCampusStatus
+          onSelection={(selection) => {
+            selectBuilding(selection);
+          }}
+        />
+      )}
+
       {buildingViewMode === "section" && (
         <D4SectionExperience
-          buildingId="D4"
+          buildingId={editorRequest?.buildingId ?? selectedBuildingId}
+          scenarioId={editorRequest?.scenarioId}
+          installationPlanId={editorRequest?.installationPlanId}
+          startInstallation={Boolean(editorRequest?.scenarioId || editorRequest?.installationPlanId)}
           onClose={handleExitD4Section}
-          onPlanSaved={() => setInstallationRefreshKey((value) => value + 1)}
+          onPlanSaved={() => {
+            setInstallationRefreshKey((value) => value + 1);
+            setOverlayRefreshKey((value) => value + 1);
+          }}
           createInstallationPlanDraft={createInstallationPlanDraft}
+          onPlansChange={handleInstallationPlansChange}
+          onRepresentativeChange={handleRepresentativeInstallationPlanChange}
           planRefreshKey={installationRefreshKey}
         />
       )}
@@ -705,7 +801,20 @@ export default function App() {
             )}
 
             {activeTab === "energy" && (
-              <div className="space-y-6">
+              <div className="space-y-4">
+                <BuildingAnalysis
+                  key={`${selectedBuildingId}:${representativePlanId ?? "none"}`}
+                  buildingId={selectedBuildingId}
+                  plans={installationPlans}
+                  representativePlanId={representativePlanId}
+                />
+                <CampusComparison
+                  onOpenRecommendation={(request) => {
+                    setSelectedBuildingId(request.buildingId);
+                    openD4Section(request);
+                  }}
+                />
+                <EnergyDashboard key={selectedBuildingId} buildingId={selectedBuildingId} />
                 <div className="pb-4 border-b border-[var(--colors-hairline)]/50">
                   <div className="text-base font-[700] text-[var(--colors-ink)] flex items-center gap-2">
                     <Zap size={18} className="text-[var(--colors-primary)]" />
