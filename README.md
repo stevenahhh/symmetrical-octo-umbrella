@@ -34,11 +34,11 @@
 #### 1) Weather Backend (`127.0.0.1:8000`)
 
 ```powershell
-cd "C:\Users\steve\Desktop\projects\qwe\symmetrical-octo-umbrella\weather"
-python -m venv venv
-.\venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
-uvicorn api.app:app --host 127.0.0.1 --port 8000 --reload
+cd "<저장소 경로>"
+python -m venv weather\venv
+.\weather\venv\Scripts\Activate.ps1
+python -m pip install -r weather\requirements.txt
+python -m uvicorn weather.api.app:app --host 127.0.0.1 --port 8000 --reload
 ```
 
 #### 2) Vision API (`127.0.0.1:8001`)
@@ -198,29 +198,26 @@ weather/.weather/Scripts/python.exe -m compileall -q weather/api weather/energy
 ## Weather Backend 실행 방법 (Python)
 
 1. **가상환경 생성 및 활성화**
-   - `weather` 디렉토리로 이동:
-     ```bash
-     cd weather
-     ```
+   - 저장소 루트에서 실행:
    - 가상환경 생성:
      ```bash
-     python -m venv venv
+     python -m venv weather/venv
      ```
    - 활성화 (Windows):
      ```bash
-     .\venv\Scripts\activate
+     .\weather\venv\Scripts\activate
      ```
 2. **패키지 설치**
    ```bash
-   pip install -r requirements.txt
+   pip install -r weather/requirements.txt
    ```
 3. **서버 실행**
    ```bash
-   python main.py
+   python weather/main.py
    ```
    *또는 FastAPI API 직접 실행:*
    ```bash
-   uvicorn api.app:app --reload
+   python -m uvicorn weather.api.app:app --reload
    ```
 
 ---
