@@ -16,11 +16,10 @@ const BUILDING_MAP = {
   도서관: "BLD_C1",
   학생회관: "BLD_E1",
   사범대: "BLD_E2",
-  공과대학: "BLD_D1",
-  공과대1호: "BLD_D1",
-  공과대2호: "BLD_D2",
-  공과대3호: "BLD_D3",
-  창업보육센터: "BLD_D4",
+  창업보육센터: "BLD_D1",
+  공과대1호: "BLD_D2",
+  공과대2호: "BLD_D3",
+  공과대3호: "BLD_D4",
 };
 
 const FOCUS_CAMERA_OFFSET = new THREE.Vector3(60, 50, 60);
