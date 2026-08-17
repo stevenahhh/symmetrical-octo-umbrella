@@ -481,8 +481,317 @@
             setupCampusCamera();
             applyWhiteContext();
             loadRoadZones();
+            loadWalkways();
+
+            loadD4Model();
+            loadWoongjiModel();
+            loadSanhakModel();
+            loadRotcModel();
 
         }, 1500);
+
+        function loadD4Model() {
+
+            var viewer = ws3d.viewer;
+
+            var lon = 127.4764211;
+            var lat = 34.9701045;
+
+            // 지면 높이 가져오기
+            var cartographic = Cesium.Cartographic.fromDegrees(lon, lat);
+            var groundHeight = viewer.scene.globe.getHeight(cartographic);
+
+            if (!Cesium.defined(groundHeight)) {
+                groundHeight = 0;
+            }
+
+            var heightOffset = -20.5;
+
+            var position = Cesium.Cartesian3.fromDegrees(
+                lon,
+                lat,
+                groundHeight + heightOffset
+            );
+
+            // ★ 네가 맞춘 방향값
+            var heading = Cesium.Math.toRadians(15);
+
+            var hpr = new Cesium.HeadingPitchRoll(
+            heading,
+                0,
+                0
+            );
+
+            var modelMatrix =
+                Cesium.Transforms.headingPitchRollToFixedFrame(
+                    position,
+                    hpr
+                );
+
+            // ★ 이것만 조절하면 됨
+            Cesium.Matrix4.multiplyByScale(
+                modelMatrix,
+                new Cesium.Cartesian3(
+                    0.8,   // X : 가로
+                    2.2,   // Y : 세로
+                    1.0    // Z : 높이
+                ),
+                modelMatrix
+            );
+
+            var options = {
+                url: "./assets/data/buildings/D4.glb",
+                modelMatrix: modelMatrix,
+                minimumPixelSize: 0
+            };
+
+            // VWorld에 들어있는 Cesium 버전에 맞춰 자동 선택
+            if (Cesium.Model.fromGltfAsync) {
+
+                Cesium.Model.fromGltfAsync(options)
+                    .then(function(model) {
+                        viewer.scene.primitives.add(model);
+                        console.log("D4 로딩 완료");
+                    })
+                    .catch(function(error) {
+                        console.error("D4 로딩 실패:", error);
+                    });
+
+            } else {
+
+                var model = Cesium.Model.fromGltf(options);
+                viewer.scene.primitives.add(model);
+
+                console.log("D4 로딩 완료");
+            }
+        }
+
+        function loadWoongjiModel() {
+
+            var viewer = ws3d.viewer;
+
+            var lon = 127.4817419; 
+            var lat = 34.9670287; 
+
+            var cartographic = Cesium.Cartographic.fromDegrees(lon, lat);
+            var groundHeight = viewer.scene.globe.getHeight(cartographic);
+
+            if (!Cesium.defined(groundHeight)) {
+                groundHeight = 0;
+            }
+
+            // 웅지관 높이 조절
+            var heightOffset = -78;
+
+            var position = Cesium.Cartesian3.fromDegrees(
+                lon,
+                lat,
+                groundHeight + heightOffset
+            );
+
+            // 웅지관 방향
+            var heading = Cesium.Math.toRadians(25);
+
+            var hpr = new Cesium.HeadingPitchRoll(
+                heading,
+                0,
+                0
+            );
+
+            var modelMatrix =
+                Cesium.Transforms.headingPitchRollToFixedFrame(
+                    position,
+                    hpr
+                );
+
+            // 웅지관 가로 / 세로 / 높이
+            Cesium.Matrix4.multiplyByScale(
+                modelMatrix,
+                new Cesium.Cartesian3(
+                    1.5,   // 가로
+                    1.0,   // 세로
+                    1.0    // 높이
+                ),
+                modelMatrix
+            );
+
+            var options = {
+                url: "./assets/data/buildings/웅지관.glb",
+                modelMatrix: modelMatrix,
+                minimumPixelSize: 0
+            };
+
+            if (Cesium.Model.fromGltfAsync) {
+
+                Cesium.Model.fromGltfAsync(options)
+                    .then(function(model) {
+                        viewer.scene.primitives.add(model);
+                        console.log("웅지관 로딩 완료");
+                    })
+                    .catch(function(error) {
+                        console.error("웅지관 로딩 실패:", error);
+                    });
+
+            } else {
+
+                var model = Cesium.Model.fromGltf(options);
+                viewer.scene.primitives.add(model);
+
+                console.log("웅지관 로딩 완료");
+            }
+        }
+
+        function loadSanhakModel() {
+
+            var viewer = ws3d.viewer;
+
+            // ★ 산학협력단 좌표 - 이따 찍은 좌표로 변경
+            var lon = 127.4830809;
+            var lat = 34.9704592;
+
+            var cartographic = Cesium.Cartographic.fromDegrees(lon, lat);
+            var groundHeight = viewer.scene.globe.getHeight(cartographic);
+
+            if (!Cesium.defined(groundHeight)) {
+                groundHeight = 0;
+            }
+
+            // ★ 높이
+            var heightOffset = -82;
+
+            var position = Cesium.Cartesian3.fromDegrees(
+                lon,
+                lat,
+                groundHeight + heightOffset
+            );
+
+            // ★ 방향
+            var heading = Cesium.Math.toRadians(-95);
+
+            var hpr = new Cesium.HeadingPitchRoll(
+                heading,
+                0,
+                0
+            );
+
+            var modelMatrix =
+                Cesium.Transforms.headingPitchRollToFixedFrame(
+                    position,
+                    hpr
+                );
+
+            // ★ 가로 / 세로 / 높이 비율
+            Cesium.Matrix4.multiplyByScale(
+                modelMatrix,
+                new Cesium.Cartesian3(
+            1.8,
+            1.5,
+            1.5
+                ),
+                modelMatrix
+            );
+
+            var options = {
+                url: "./assets/data/buildings/산학협력단.glb",
+                modelMatrix: modelMatrix,
+                minimumPixelSize: 0
+            };
+
+            if (Cesium.Model.fromGltfAsync) {
+
+                Cesium.Model.fromGltfAsync(options)
+                    .then(function(model) {
+                        viewer.scene.primitives.add(model);
+                        console.log("산학협력단 로딩 완료");
+                    })
+                    .catch(function(error) {
+                        console.error("산학협력단 로딩 실패:", error);
+                    });
+
+            } else {
+
+                var model = Cesium.Model.fromGltf(options);
+                viewer.scene.primitives.add(model);
+
+                console.log("산학협력단 로딩 완료");
+            }
+        }
+        
+        function loadRotcModel() {
+
+            var viewer = ws3d.viewer;
+
+            // ★ ROTC 좌표 - 이따 실제 좌표로 변경
+            var lon = 127.4771887;
+            var lat = 34.9705831;
+
+            var cartographic = Cesium.Cartographic.fromDegrees(lon, lat);
+            var groundHeight = viewer.scene.globe.getHeight(cartographic);
+
+            if (!Cesium.defined(groundHeight)) {
+                groundHeight = 0;
+            }
+
+            // ★ 높이
+            var heightOffset = -37;
+
+            var position = Cesium.Cartesian3.fromDegrees(
+                lon,
+                lat,
+                groundHeight + heightOffset
+            );
+
+            // ★ 방향
+            var heading = Cesium.Math.toRadians(15);
+
+            var hpr = new Cesium.HeadingPitchRoll(
+                heading,
+                0,
+                0
+            );
+
+            var modelMatrix =
+                Cesium.Transforms.headingPitchRollToFixedFrame(
+                    position,
+                    hpr
+                );
+
+            // ★ 가로 / 세로 / 높이
+            Cesium.Matrix4.multiplyByScale(
+                modelMatrix,
+                new Cesium.Cartesian3(
+                    1.0,
+                    1.4,
+                    1.0
+                ),
+                modelMatrix
+            );
+
+            var options = {
+                url: "./assets/data/buildings/ROTC.glb",
+                modelMatrix: modelMatrix,
+                minimumPixelSize: 0
+            };
+
+            if (Cesium.Model.fromGltfAsync) {
+
+                Cesium.Model.fromGltfAsync(options)
+                    .then(function(model) {
+                        viewer.scene.primitives.add(model);
+                        console.log("ROTC 로딩 완료");
+                    })
+                    .catch(function(error) {
+                        console.error("ROTC 로딩 실패:", error);
+                    });
+
+            } else {
+
+                var model = Cesium.Model.fromGltf(options);
+                viewer.scene.primitives.add(model);
+
+                console.log("ROTC 로딩 완료");
+            }
+        }
 
         function applyWhiteContext() {
 
@@ -646,7 +955,7 @@
 
         // 구역 경계선은 아주 약하게
         var outlineColor =
-            new Cesium.Color(0.30, 0.32, 0.35, 0.32);
+            new Cesium.Color(0.22, 0.24, 0.27, 0.95);
 
         var currentTime = Cesium.JulianDate.now();
 
@@ -657,8 +966,7 @@
             }
 
             entity.polygon.material = normalColor;
-            entity.polygon.outline = true;
-            entity.polygon.outlineColor = outlineColor;
+            entity.polygon.outline = false;
 
             // GeoJSON 속성 읽기
             var featureId = entity.id;
@@ -747,9 +1055,9 @@
                 ) {
                     selectedRoadEntity.polygon.material =
                         normalColor;
+                    
+                    selectedRoadEntity.polygon.outline = false;
                 }
-
-                selectedRoadEntity = null;
 
                 if (
                     !Cesium.defined(pickedObject) ||
@@ -775,13 +1083,10 @@
                 clickedEntity.polygon.material =
                     selectedColor;
 
-                var zoneName =
-                    clickedEntity.scnuZoneName ||
-                    "이름 없음";
+                clickedEntity.polygon.outline = true;
 
-                var featureId =
-                    clickedEntity.scnuFeatureId ||
-                    clickedEntity.id;
+                clickedEntity.polygon.outlineColor =
+                    selectedOutlineColor;
 
                 // 정보창 내용
                 infoPanel.replaceChildren();
@@ -827,6 +1132,293 @@
         );
     }
 }
+
+        // 건물 기준점
+        const campusBuildingPoints = [
+            {
+                name: "D4",
+                lon: 127.4764211,
+                lat: 34.9701045
+            },
+            {
+                name: "웅지관",
+                lon: 127.4817419,
+                lat: 34.9670287
+            },
+            {
+                name: "산학협력단",
+                lon: 127.4830809,
+                lat: 34.9704592
+            },
+            {
+                name: "ROTC",
+                lon: 127.4771887,
+                lat: 34.9705831
+            }
+        ];
+
+
+        function getNearestCampusName(lon, lat, suffix) {
+
+            var clicked =
+                Cesium.Cartesian3.fromDegrees(lon, lat);
+
+            var nearestName = null;
+            var nearestDistance = Infinity;
+
+            campusBuildingPoints.forEach(function(building) {
+
+                var buildingPosition =
+                    Cesium.Cartesian3.fromDegrees(
+                        building.lon,
+                        building.lat
+                    );
+
+                var distance =
+                    Cesium.Cartesian3.distance(
+                        clicked,
+                        buildingPosition
+                    );
+
+                if (distance < nearestDistance) {
+                    nearestDistance = distance;
+                    nearestName = building.name;
+                }
+            });
+
+            // 건물에서 45m 이내일 때만 건물명 사용
+            if (nearestDistance <= 45) {
+                return nearestName + " 앞 " + suffix;
+            }
+
+            return "교내 " + suffix;
+        }
+
+        async function loadWalkways() {
+
+            try {
+
+                var viewer = ws3d.viewer;
+
+                var walkwayDataSource =
+                    await Cesium.GeoJsonDataSource.load(
+                        "./assets/data/walkways_wgs84.geojson",
+                        {
+                            clampToGround: true
+                        }
+                    );
+
+                viewer.dataSources.add(walkwayDataSource);
+
+                var normalColor =
+                    new Cesium.Color(0.30, 0.32, 0.34, 0.12);
+
+                var selectedColor =
+                new Cesium.Color(1.0, 0.55, 0.05, 1.0);
+
+                var currentTime = Cesium.JulianDate.now();
+
+
+                walkwayDataSource.entities.values.forEach(function(entity) {
+
+                    if (!entity.polyline) {
+                        return;
+                    }
+
+                    entity.polyline.material = normalColor;
+                    entity.polyline.width = 5;
+
+                    // GeoJSON에 이미 명칭이 있으면 저장
+                    var originalName = null;
+
+                    if (
+                        entity.properties &&
+                        entity.properties["명칭"]
+                    ) {
+                        originalName =
+                            entity.properties["명칭"].getValue(
+                                currentTime
+                            );
+                    }
+
+                    entity.scnuOriginalName = originalName;
+                });
+
+
+                // 정보창
+                var infoPanel =
+                    document.getElementById("walkway-info");
+
+                if (!infoPanel) {
+
+                    infoPanel = document.createElement("div");
+                    infoPanel.id = "walkway-info";
+
+                    Object.assign(infoPanel.style, {
+                        position: "absolute",
+                        top: "160px",
+                        right: "20px",
+                        zIndex: "9999",
+
+                        minWidth: "220px",
+                        padding: "14px 16px",
+
+                        background: "rgba(28,31,35,0.92)",
+                        color: "#ffffff",
+
+                        border:
+                            "1px solid rgba(255,255,255,0.25)",
+
+                        borderRadius: "8px",
+
+                        fontFamily: "Arial, sans-serif",
+                        fontSize: "14px",
+
+                        boxShadow:
+                            "0 4px 14px rgba(0,0,0,0.25)",
+
+                        display: "none"
+                    });
+
+                    document.body.appendChild(infoPanel);
+                }
+
+
+                var selectedWalkway = null;
+
+
+                window.scnuWalkwayClickHandler =
+                    new Cesium.ScreenSpaceEventHandler(
+                        viewer.scene.canvas
+                    );
+
+
+                window.scnuWalkwayClickHandler.setInputAction(
+
+                    function(movement) {
+
+                        // 기존 선택 해제
+                        if (
+                            selectedWalkway &&
+                            selectedWalkway.polyline
+                        ) {
+                            selectedWalkway.polyline.material =
+                                normalColor;
+
+                            selectedWalkway.polyline.width = 5;
+                        }
+
+                        selectedWalkway = null;
+
+
+                        var pickedObject =
+                            viewer.scene.pick(
+                                movement.position
+                            );
+
+
+                        if (
+                            !Cesium.defined(pickedObject) ||
+                            !pickedObject.id ||
+                            !walkwayDataSource.entities.contains(
+                                pickedObject.id
+                            )
+                        ) {
+                            infoPanel.style.display = "none";
+                            return;
+                        }
+
+
+                        var clickedEntity = pickedObject.id;
+
+                        if (!clickedEntity.polyline) {
+                            return;
+                        }
+
+
+                        selectedWalkway = clickedEntity;
+
+                        clickedEntity.polyline.material =
+                            selectedColor;
+
+                        clickedEntity.polyline.width = 10;
+
+
+                        // ★ 실제 클릭 위치 좌표 구하기
+                        var earthPosition =
+                            viewer.camera.pickEllipsoid(
+                                movement.position,
+                                viewer.scene.globe.ellipsoid
+                            );
+
+                        var walkwayName = "교내 보행로";
+
+
+                        if (earthPosition) {
+
+                            var cartographic =
+                                Cesium.Cartographic.fromCartesian(
+                                    earthPosition
+                                );
+
+                            var lon =
+                                Cesium.Math.toDegrees(
+                                    cartographic.longitude
+                                );
+
+                            var lat =
+                                Cesium.Math.toDegrees(
+                                    cartographic.latitude
+                                );
+
+
+                            /*
+                            * 원래 GeoJSON에 명칭이 있으면
+                            * 그 명칭을 우선 사용
+                            */
+                            if (
+                                clickedEntity.scnuOriginalName &&
+                                clickedEntity.scnuOriginalName.trim()
+                            ) {
+
+                                walkwayName =
+                                    clickedEntity.scnuOriginalName;
+
+                            } else {
+
+                                walkwayName =
+                                    getNearestCampusName(
+                                        lon,
+                                        lat,
+                                        "보행로"
+                                    );
+                            }
+                        }
+
+                        console.log(
+                            "선택한 보행로:",
+                            walkwayName
+                        );
+                    },
+
+                    Cesium.ScreenSpaceEventType.LEFT_CLICK
+                );
+
+
+                console.log(
+                    "보행로 로딩 완료:",
+                    walkwayDataSource.entities.values.length
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "보행로 로딩 실패:",
+                    error
+                );
+            }
+        }
 
         function setupCampusCamera() {
 
@@ -944,6 +1536,14 @@
             },
             100);
         var buildingInfoEvent = function(windowPosition, ecefPosition, cartographic, modelObject) {
+            
+            if (cartographic) {
+                console.log(
+                    "건물 좌표:",
+                    cartographic.longitudeDD,
+                    cartographic.latitudeDD
+                );
+            }
 
             if (modelObject) {
 
