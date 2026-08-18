@@ -1,8 +1,16 @@
 import { Html, useGLTF } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import commonElements from "../../common/data/common_elemetns.json";
+
+// 클릭하지 않아도 카메라가 이 거리 안으로 들어오면 "가까이 간" 것으로 본다.
+// 클릭 시 자동으로 붙는 카메라 거리(FOCUS_CAMERA_OFFSET 기준 약 94유닛)보다 살짝
+// 넉넉하게 잡아서, 자동 포커스로 도착했을 때도 자연스럽게 이 범위 안에 들어오게 한다.
+// 빠져나갈 때는 더 넉넉한 거리(EXIT)를 써서 경계선에서 들어왔다 나갔다 깜빡이지
+// 않게 한다 — 진입은 ENTER, 이미 가까운 상태를 유지하는 건 EXIT 기준으로 판단.
+const PROXIMITY_ENTER_DISTANCE = 120;
+const PROXIMITY_EXIT_DISTANCE = 170;
 
 const BLOCKED_ELEMENT_IDS = new Set(["BLD_C1001"]);
 const BUILDING_MAP = {
@@ -101,6 +109,7 @@ export function CityModel({
   onSelect,
   selectedId,
   onBuildingClick,
+  onBuildingProximity,
   controlsRef,
   isNight = false,
   ...props
@@ -110,6 +119,7 @@ export function CityModel({
   const [targetPos, setTargetPos] = useState(null);
   const [isAutoFocusing, setIsAutoFocusing] = useState(false);
   const [labelScale, setLabelScale] = useState(1);
+  const closeElementIdRef = useRef(null);
 
   useEffect(() => {
     const controls = controlsRef?.current;
@@ -207,6 +217,33 @@ export function CityModel({
         camera.position.distanceTo(desiredCamPos) < 1.2
       ) {
         setIsAutoFocusing(false);
+      }
+    }
+
+    if (onBuildingProximity && labelAnchors.length > 0) {
+      let nearest = null;
+      let nearestDistance = Infinity;
+      for (const anchor of labelAnchors) {
+        // labelAnchors의 position은 재중심화 그룹(-center) 적용 전 좌표라서,
+        // 카메라와 같은 월드 좌표계로 맞추려면 center를 빼줘야 한다.
+        const worldX = anchor.position[0] - center.x;
+        const worldY = anchor.position[1];
+        const worldZ = anchor.position[2] - center.z;
+        const dx = camera.position.x - worldX;
+        const dy = camera.position.y - worldY;
+        const dz = camera.position.z - worldZ;
+        const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+        if (distance < nearestDistance) {
+          nearestDistance = distance;
+          nearest = anchor;
+        }
+      }
+
+      const threshold = closeElementIdRef.current ? PROXIMITY_EXIT_DISTANCE : PROXIMITY_ENTER_DISTANCE;
+      const nextCloseElementId = nearest && nearestDistance < threshold ? nearest.elementId : null;
+      if (nextCloseElementId !== closeElementIdRef.current) {
+        closeElementIdRef.current = nextCloseElementId;
+        onBuildingProximity(nextCloseElementId ? nearest : null);
       }
     }
   });

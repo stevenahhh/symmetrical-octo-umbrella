@@ -38,11 +38,11 @@ globalThis.fetch = vi.fn(async () => ({
 afterEach(() => cleanup());
 
 describe("Legacy and VWorld feature parity", () => {
-  it("renders the VWorld campus status and full energy surfaces", () => {
+  it("renders the VWorld campus status and full energy surfaces inside the energy tab", () => {
     render(<App />);
 
-    expect(screen.getByText("캠퍼스 설치 현황")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "에너지" }));
+    expect(screen.getByText("캠퍼스 설치 현황")).toBeTruthy();
     expect(screen.getByText("건물 에너지 분석")).toBeTruthy();
     expect(screen.getByText("캠퍼스 태양광 비교")).toBeTruthy();
     expect(screen.getByText("건물 에너지 시뮬레이션")).toBeTruthy();
