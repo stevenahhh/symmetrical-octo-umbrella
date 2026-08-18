@@ -4,10 +4,12 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>순천대학교 디지털 트윈</title>
-    <script type="text/javascript" src="https://map.vworld.kr/js/webglMapInit.js.do?version=3.0&apiKey=3329D00D-2732-339C-8B7D-D622F356E18C"></script>
+    <script type="text/javascript"
+        src="https://map.vworld.kr/js/webglMapInit.js.do?version=3.0&apiKey=3329D00D-2732-339C-8B7D-D622F356E18C"></script>
 
     <style>
-        html, body {
+        html,
+        body {
             width: 100%;
             height: 100%;
             margin: 0;
@@ -15,7 +17,7 @@
             overflow: hidden;
         }
 
-       #vmap {
+        #vmap {
             width: 100%;
             height: 100vh;
 
@@ -25,7 +27,7 @@
         table {
             display: none;
         }
-        
+
         #buildingPanel {
             position: absolute;
 
@@ -121,7 +123,7 @@
         .info-row strong {
             font-size: 16px;
         }
-        
+
         #systemHeader {
             position: absolute;
             top: 30px;
@@ -202,11 +204,9 @@
             pointer-events: none;
 
             background:
-                radial-gradient(
-                    circle at center,
+                radial-gradient(circle at center,
                     transparent 45%,
-                    rgba(0, 0, 0, 0.18) 100%
-                );
+                    rgba(0, 0, 0, 0.18) 100%);
         }
     </style>
 </head>
@@ -216,48 +216,48 @@
     <div id="mapGrid"></div>
 
     <div id="systemHeader">
-    <div class="system-title">SCNU DIGITAL TWIN</div>
-    <div class="system-description">
-        국립순천대학교 스마트 캠퍼스 통합 관제 시스템
-    </div>
+        <div class="system-title">SCNU DIGITAL TWIN</div>
+        <div class="system-description">
+            국립순천대학교 스마트 캠퍼스 통합 관제 시스템
+        </div>
 
-    <div class="system-status">
-        <span class="status-dot"></span>
-        SYSTEM ONLINE
-        <span class="status-divider">|</span>
-        <span id="systemClock">--:--:--</span>
+        <div class="system-status">
+            <span class="status-dot"></span>
+            SYSTEM ONLINE
+            <span class="status-divider">|</span>
+            <span id="systemClock">--:--:--</span>
+        </div>
     </div>
-</div>
     <div id="buildingPanel">
-    <button id="closePanel" onclick="closeBuildingPanel()">×</button>
+        <button id="closePanel" onclick="closeBuildingPanel()">×</button>
 
-    <div class="panel-subtitle">SCNU DIGITAL TWIN</div>
+        <div class="panel-subtitle">SCNU DIGITAL TWIN</div>
 
-    <h2 id="panelBuildingName">건물을 선택하세요</h2>
-    <div id="panelBuildingId">-</div>
+        <h2 id="panelBuildingName">건물을 선택하세요</h2>
+        <div id="panelBuildingId">-</div>
 
-    <div class="panel-line"></div>
+        <div class="panel-line"></div>
 
-    <div class="info-row">
-        <span>현재 인원</span>
-        <strong id="panelPopulation">-</strong>
+        <div class="info-row">
+            <span>현재 인원</span>
+            <strong id="panelPopulation">-</strong>
+        </div>
+
+        <div class="info-row">
+            <span>혼잡도</span>
+            <strong id="panelCongestion">-</strong>
+        </div>
+
+        <div class="info-row">
+            <span>전력 사용량</span>
+            <strong id="panelPower">-</strong>
+        </div>
+
+        <div class="info-row">
+            <span>차량 유입</span>
+            <strong id="panelTraffic">-</strong>
+        </div>
     </div>
-
-    <div class="info-row">
-        <span>혼잡도</span>
-        <strong id="panelCongestion">-</strong>
-    </div>
-
-    <div class="info-row">
-        <span>전력 사용량</span>
-        <strong id="panelPower">-</strong>
-    </div>
-
-    <div class="info-row">
-        <span>차량 유입</span>
-        <strong id="panelTraffic">-</strong>
-    </div>
-</div>
     <table>
         <tr>
             <td>아이디 : <input type="text" id="buildingId" name="buildingId" value=""></td>
@@ -277,162 +277,162 @@
             "SC090180": {
                 id: "D2",
                 name: "공과대학 1호관"
-            }, 
-            
+            },
+
             "SC090089": {
                 id: "D1",
                 name: "창업보육센터"
-            }, 
-            
+            },
+
             "SC030008": {
                 id: "C3",
                 name: "공동실험실습관"
-            }, 
-            
+            },
+
             "SC030418": {
                 id: "C2",
                 name: "친환경농업센터"
-            }, 
-            
+            },
+
             "SC030009": {
                 id: "C4",
                 name: "환경친화형물질공장기술혁신센터"
-            }, 
-            
+            },
+
             "SC030012": {
                 id: "B6",
                 name: "제1중앙공급실"
-            }, 
-            
+            },
+
             "SC030013": {
                 id: "B5",
                 name: "생명산업과학대학온실"
-            }, 
-            
+            },
+
             "SC030394": {
                 id: "B4",
                 name: "생명산업과학대학2호관"
-            }, 
-            
+            },
+
             "SC030448": {
                 id: "B3",
                 name: "생명산업과학대학1호관"
-            }, 
-            
+            },
+
             "SC030382": {
                 id: "B2",
                 name: "70주년기념관"
-            }, 
-            
+            },
+
             "SC030464": {
                 id: "B1",
                 name: "박물관"
-            }, 
-            
+            },
+
             "SC030058": {
                 id: "A17",
                 name: "체육관"
-            }, 
-            
+            },
+
             "SC030030": {
                 id: "A8",
                 name: "학생생활관 향림관"
-            }, 
-            
+            },
+
             "SC090108": {
                 id: "A9",
                 name: "학생생활관 청운관"
-            }, 
-            
+            },
+
             "SC090106": {
                 id: "A12",
                 name: "우정원"
-            }, 
-            
+            },
+
             "SC090104": {
                 id: "A11",
                 name: "제2중앙공급실"
-            }, 
-            
+            },
+
             "SC090105": {
                 id: "A10",
                 name: "인재관"
-            }, 
-            
+            },
+
             "SC090101": {
                 id: "A6",
                 name: "학생생활관 창조관"
-            }, 
-            
+            },
+
             "SC030028": {
                 id: "A7",
                 name: "학생생활관 관리동"
-            }, 
-            
+            },
+
             "SC030527": {
                 id: "A5",
                 name: "학생생활관 진리관"
-            }, 
-            
+            },
+
             "SC030493": {
                 id: "A1",
                 name: "대학본부"
-            }, 
-            
+            },
+
             "SC030523": {
                 id: "A2",
                 name: "약학대학"
-            }, 
-            
+            },
+
             "SC090098": {
                 id: "E1",
                 name: "학생회관"
-            }, 
-            
+            },
+
             "SC090102": {
                 id: "E2",
                 name: "기초교육관"
-            }, 
-            
+            },
+
             "SC090091": {
                 id: "E3",
                 name: "사범대학"
-            }, 
-            
+            },
+
             "SC030409": {
                 id: "C1",
                 name: "도서관"
-            }, 
-            
+            },
+
             "SC090094": {
                 id: "E8",
                 name: "인문예술대학"
-            }, 
+            },
 
             "SC090113": {
                 id: "E7",
                 name: "사회과학대학"
-            }, 
-            
+            },
+
             "SC090103": {
                 id: "E6",
                 name: "미래창조관"
-            }, 
-            
+            },
+
             "SC030061": {
                 id: "F1",
                 name: "국제문화컨벤션관"
             },
-            
+
             "SC030380": {
                 id: "F2",
                 name: "평생교육원"
             },
-            
+
             "SC030673": {
                 id: "F4",
                 name: "연립관사"
-            },   
+            },
         };
 
         // 기존 지도 코드
@@ -470,14 +470,14 @@
         map.setOption(options);
         map.start();
 
-        setTimeout(function() {
+        setTimeout(function () {
 
             var poiLayer = map.getLayerElement("POI_GROUP");
 
             if (poiLayer) {
                 poiLayer.hide();
             }
-            
+
             setupCampusCamera();
             applyWhiteContext();
             loadRoadZones();
@@ -487,6 +487,8 @@
             loadWoongjiModel();
             loadSanhakModel();
             loadRotcModel();
+
+            loadCrosswalkPolygons();
 
         }, 1500);
 
@@ -517,7 +519,7 @@
             var heading = Cesium.Math.toRadians(15);
 
             var hpr = new Cesium.HeadingPitchRoll(
-            heading,
+                heading,
                 0,
                 0
             );
@@ -549,11 +551,11 @@
             if (Cesium.Model.fromGltfAsync) {
 
                 Cesium.Model.fromGltfAsync(options)
-                    .then(function(model) {
+                    .then(function (model) {
                         viewer.scene.primitives.add(model);
                         console.log("D4 로딩 완료");
                     })
-                    .catch(function(error) {
+                    .catch(function (error) {
                         console.error("D4 로딩 실패:", error);
                     });
 
@@ -570,8 +572,8 @@
 
             var viewer = ws3d.viewer;
 
-            var lon = 127.4817419; 
-            var lat = 34.9670287; 
+            var lon = 127.4817419;
+            var lat = 34.9670287;
 
             var cartographic = Cesium.Cartographic.fromDegrees(lon, lat);
             var groundHeight = viewer.scene.globe.getHeight(cartographic);
@@ -624,11 +626,11 @@
             if (Cesium.Model.fromGltfAsync) {
 
                 Cesium.Model.fromGltfAsync(options)
-                    .then(function(model) {
+                    .then(function (model) {
                         viewer.scene.primitives.add(model);
                         console.log("웅지관 로딩 완료");
                     })
-                    .catch(function(error) {
+                    .catch(function (error) {
                         console.error("웅지관 로딩 실패:", error);
                     });
 
@@ -684,9 +686,9 @@
             Cesium.Matrix4.multiplyByScale(
                 modelMatrix,
                 new Cesium.Cartesian3(
-            1.8,
-            1.5,
-            1.5
+                    1.8,
+                    1.5,
+                    1.5
                 ),
                 modelMatrix
             );
@@ -700,11 +702,11 @@
             if (Cesium.Model.fromGltfAsync) {
 
                 Cesium.Model.fromGltfAsync(options)
-                    .then(function(model) {
+                    .then(function (model) {
                         viewer.scene.primitives.add(model);
                         console.log("산학협력단 로딩 완료");
                     })
-                    .catch(function(error) {
+                    .catch(function (error) {
                         console.error("산학협력단 로딩 실패:", error);
                     });
 
@@ -716,7 +718,7 @@
                 console.log("산학협력단 로딩 완료");
             }
         }
-        
+
         function loadRotcModel() {
 
             var viewer = ws3d.viewer;
@@ -776,11 +778,11 @@
             if (Cesium.Model.fromGltfAsync) {
 
                 Cesium.Model.fromGltfAsync(options)
-                    .then(function(model) {
+                    .then(function (model) {
                         viewer.scene.primitives.add(model);
                         console.log("ROTC 로딩 완료");
                     })
-                    .catch(function(error) {
+                    .catch(function (error) {
                         console.error("ROTC 로딩 실패:", error);
                     });
 
@@ -830,7 +832,7 @@
             * 이 부분이 흰색 폴리곤의 구멍이 됨
             */
             var campusPositions = Cesium.Cartesian3.fromDegreesArray([
-                 // 서쪽 경계
+                // 서쪽 경계
                 127.4758141, 34.9697356,
                 127.4758274, 34.9701379,
                 127.4759191, 34.9705426,
@@ -925,213 +927,213 @@
         }
 
         async function loadRoadZones() {
-    try {
-        // 중복 실행 방지
-        if (window.scnuRoadZonesLoaded) {
-            return;
-        }
-
-        window.scnuRoadZonesLoaded = true;
-
-        var viewer = ws3d.viewer;
-
-        var roadDataSource =
-            await Cesium.GeoJsonDataSource.load(
-                "./assets/data/road_zones_wgs84.geojson",
-                {
-                    clampToGround: true
-                }
-            );
-
-        viewer.dataSources.add(roadDataSource);
-
-       // 평상시: 눈에는 거의 안 보이지만 클릭은 가능
-        var normalColor =
-            new Cesium.Color(0.20, 0.22, 0.24, 0.01);
-
-        // 클릭한 구역만 회색으로 표시
-        var selectedColor =
-            new Cesium.Color(0.32, 0.35, 0.39, 0.48);
-
-        // 구역 경계선은 아주 약하게
-        var outlineColor =
-            new Cesium.Color(0.22, 0.24, 0.27, 0.95);
-
-        var currentTime = Cesium.JulianDate.now();
-
-        roadDataSource.entities.values.forEach(function (entity) {
-
-            if (!entity.polygon) {
-                return;
-            }
-
-            entity.polygon.material = normalColor;
-            entity.polygon.outline = false;
-
-            // GeoJSON 속성 읽기
-            var featureId = entity.id;
-            var zoneName = "이름 없음";
-
-            if (
-                entity.properties &&
-                entity.properties.FEATURE_ID
-            ) {
-                featureId =
-                    entity.properties.FEATURE_ID.getValue(
-                        currentTime
-                    );
-            }
-
-            if (
-                entity.properties &&
-                entity.properties.ZONE_NAME
-            ) {
-                zoneName =
-                    entity.properties.ZONE_NAME.getValue(
-                        currentTime
-                    );
-            }
-
-            // 클릭할 때 사용할 값 저장
-            entity.scnuFeatureId = featureId;
-            entity.scnuZoneName = zoneName;
-
-            entity.name = zoneName;
-        });
-
-
-        // 오른쪽 상단 정보창 생성
-        var infoPanel =
-            document.getElementById("road-zone-info");
-
-        if (!infoPanel) {
-            infoPanel = document.createElement("div");
-            infoPanel.id = "road-zone-info";
-
-            Object.assign(infoPanel.style, {
-                position: "absolute",
-                top: "20px",
-                right: "20px",
-                zIndex: "9999",
-                minWidth: "220px",
-                padding: "14px 16px",
-                background: "rgba(28, 31, 35, 0.92)",
-                color: "#ffffff",
-                border: "1px solid rgba(255,255,255,0.25)",
-                borderRadius: "8px",
-                fontFamily: "Arial, sans-serif",
-                fontSize: "14px",
-                lineHeight: "1.6",
-                boxShadow: "0 4px 14px rgba(0,0,0,0.25)",
-                display: "none"
-            });
-
-            document.body.appendChild(infoPanel);
-        }
-
-
-        var selectedRoadEntity = null;
-
-        // 기존 클릭 이벤트가 있으면 제거
-        if (window.scnuRoadClickHandler) {
-            window.scnuRoadClickHandler.destroy();
-        }
-
-        window.scnuRoadClickHandler =
-            new Cesium.ScreenSpaceEventHandler(
-                viewer.scene.canvas
-            );
-
-        window.scnuRoadClickHandler.setInputAction(
-            function (movement) {
-
-                var pickedObject =
-                    viewer.scene.pick(movement.position);
-
-                // 이전 선택 색상 복구
-                if (
-                    selectedRoadEntity &&
-                    selectedRoadEntity.polygon
-                ) {
-                    selectedRoadEntity.polygon.material =
-                        normalColor;
-                    
-                    selectedRoadEntity.polygon.outline = false;
-                }
-
-                if (
-                    !Cesium.defined(pickedObject) ||
-                    !pickedObject.id ||
-                    !roadDataSource.entities.contains(
-                        pickedObject.id
-                    )
-                ) {
-                    infoPanel.style.display = "none";
+            try {
+                // 중복 실행 방지
+                if (window.scnuRoadZonesLoaded) {
                     return;
                 }
 
-                var clickedEntity = pickedObject.id;
+                window.scnuRoadZonesLoaded = true;
 
-                if (!clickedEntity.polygon) {
-                    infoPanel.style.display = "none";
-                    return;
+                var viewer = ws3d.viewer;
+
+                var roadDataSource =
+                    await Cesium.GeoJsonDataSource.load(
+                        "./assets/data/road_zones_wgs84.geojson",
+                        {
+                            clampToGround: true
+                        }
+                    );
+
+                viewer.dataSources.add(roadDataSource);
+
+                // 평상시: 눈에는 거의 안 보이지만 클릭은 가능
+                var normalColor =
+                    new Cesium.Color(0.20, 0.22, 0.24, 0.01);
+
+                // 클릭한 구역만 회색으로 표시
+                var selectedColor =
+                    new Cesium.Color(0.32, 0.35, 0.39, 0.48);
+
+                // 구역 경계선은 아주 약하게
+                var outlineColor =
+                    new Cesium.Color(0.22, 0.24, 0.27, 0.95);
+
+                var currentTime = Cesium.JulianDate.now();
+
+                roadDataSource.entities.values.forEach(function (entity) {
+
+                    if (!entity.polygon) {
+                        return;
+                    }
+
+                    entity.polygon.material = normalColor;
+                    entity.polygon.outline = false;
+
+                    // GeoJSON 속성 읽기
+                    var featureId = entity.id;
+                    var zoneName = "이름 없음";
+
+                    if (
+                        entity.properties &&
+                        entity.properties.FEATURE_ID
+                    ) {
+                        featureId =
+                            entity.properties.FEATURE_ID.getValue(
+                                currentTime
+                            );
+                    }
+
+                    if (
+                        entity.properties &&
+                        entity.properties.ZONE_NAME
+                    ) {
+                        zoneName =
+                            entity.properties.ZONE_NAME.getValue(
+                                currentTime
+                            );
+                    }
+
+                    // 클릭할 때 사용할 값 저장
+                    entity.scnuFeatureId = featureId;
+                    entity.scnuZoneName = zoneName;
+
+                    entity.name = zoneName;
+                });
+
+
+                // 오른쪽 상단 정보창 생성
+                var infoPanel =
+                    document.getElementById("road-zone-info");
+
+                if (!infoPanel) {
+                    infoPanel = document.createElement("div");
+                    infoPanel.id = "road-zone-info";
+
+                    Object.assign(infoPanel.style, {
+                        position: "absolute",
+                        top: "20px",
+                        right: "20px",
+                        zIndex: "9999",
+                        minWidth: "220px",
+                        padding: "14px 16px",
+                        background: "rgba(28, 31, 35, 0.92)",
+                        color: "#ffffff",
+                        border: "1px solid rgba(255,255,255,0.25)",
+                        borderRadius: "8px",
+                        fontFamily: "Arial, sans-serif",
+                        fontSize: "14px",
+                        lineHeight: "1.6",
+                        boxShadow: "0 4px 14px rgba(0,0,0,0.25)",
+                        display: "none"
+                    });
+
+                    document.body.appendChild(infoPanel);
                 }
 
-                selectedRoadEntity = clickedEntity;
 
-                // 선택 구역 강조
-                clickedEntity.polygon.material =
-                    selectedColor;
+                var selectedRoadEntity = null;
 
-                clickedEntity.polygon.outline = true;
+                // 기존 클릭 이벤트가 있으면 제거
+                if (window.scnuRoadClickHandler) {
+                    window.scnuRoadClickHandler.destroy();
+                }
 
-                clickedEntity.polygon.outlineColor =
-                    selectedOutlineColor;
+                window.scnuRoadClickHandler =
+                    new Cesium.ScreenSpaceEventHandler(
+                        viewer.scene.canvas
+                    );
 
-                // 정보창 내용
-                infoPanel.replaceChildren();
+                window.scnuRoadClickHandler.setInputAction(
+                    function (movement) {
 
-                var title = document.createElement("div");
-                title.textContent = "도로 구역 정보";
-                title.style.fontWeight = "bold";
-                title.style.fontSize = "16px";
-                title.style.marginBottom = "8px";
+                        var pickedObject =
+                            viewer.scene.pick(movement.position);
 
-                var nameRow = document.createElement("div");
-                nameRow.textContent =
-                    "구역명: " + zoneName;
+                        // 이전 선택 색상 복구
+                        if (
+                            selectedRoadEntity &&
+                            selectedRoadEntity.polygon
+                        ) {
+                            selectedRoadEntity.polygon.material =
+                                normalColor;
 
-                var idRow = document.createElement("div");
-                idRow.textContent =
-                    "구역 ID: " + featureId;
+                            selectedRoadEntity.polygon.outline = false;
+                        }
 
-                infoPanel.appendChild(title);
-                infoPanel.appendChild(nameRow);
-                infoPanel.appendChild(idRow);
+                        if (
+                            !Cesium.defined(pickedObject) ||
+                            !pickedObject.id ||
+                            !roadDataSource.entities.contains(
+                                pickedObject.id
+                            )
+                        ) {
+                            infoPanel.style.display = "none";
+                            return;
+                        }
 
-                infoPanel.style.display = "block";
+                        var clickedEntity = pickedObject.id;
+
+                        if (!clickedEntity.polygon) {
+                            infoPanel.style.display = "none";
+                            return;
+                        }
+
+                        selectedRoadEntity = clickedEntity;
+
+                        // 선택 구역 강조
+                        clickedEntity.polygon.material =
+                            selectedColor;
+
+                        clickedEntity.polygon.outline = true;
+
+                        clickedEntity.polygon.outlineColor =
+                            selectedOutlineColor;
+
+                        // 정보창 내용
+                        infoPanel.replaceChildren();
+
+                        var title = document.createElement("div");
+                        title.textContent = "도로 구역 정보";
+                        title.style.fontWeight = "bold";
+                        title.style.fontSize = "16px";
+                        title.style.marginBottom = "8px";
+
+                        var nameRow = document.createElement("div");
+                        nameRow.textContent =
+                            "구역명: " + zoneName;
+
+                        var idRow = document.createElement("div");
+                        idRow.textContent =
+                            "구역 ID: " + featureId;
+
+                        infoPanel.appendChild(title);
+                        infoPanel.appendChild(nameRow);
+                        infoPanel.appendChild(idRow);
+
+                        infoPanel.style.display = "block";
+
+                        console.log(
+                            "선택한 도로 구역:",
+                            featureId,
+                            zoneName
+                        );
+                    },
+                    Cesium.ScreenSpaceEventType.LEFT_CLICK
+                );
 
                 console.log(
-                    "선택한 도로 구역:",
-                    featureId,
-                    zoneName
+                    "도로 구역 클릭 기능 적용 완료:",
+                    roadDataSource.entities.values.length
                 );
-            },
-            Cesium.ScreenSpaceEventType.LEFT_CLICK
-        );
 
-        console.log(
-            "도로 구역 클릭 기능 적용 완료:",
-            roadDataSource.entities.values.length
-        );
-
-    } catch (error) {
-        console.error(
-            "도로 구역 로딩 실패:",
-            error
-        );
-    }
-}
+            } catch (error) {
+                console.error(
+                    "도로 구역 로딩 실패:",
+                    error
+                );
+            }
+        }
 
         // 건물 기준점
         const campusBuildingPoints = [
@@ -1166,7 +1168,7 @@
             var nearestName = null;
             var nearestDistance = Infinity;
 
-            campusBuildingPoints.forEach(function(building) {
+            campusBuildingPoints.forEach(function (building) {
 
                 var buildingPosition =
                     Cesium.Cartesian3.fromDegrees(
@@ -1214,12 +1216,12 @@
                     new Cesium.Color(0.30, 0.32, 0.34, 0.12);
 
                 var selectedColor =
-                new Cesium.Color(1.0, 0.55, 0.05, 1.0);
+                    new Cesium.Color(1.0, 0.55, 0.05, 1.0);
 
                 var currentTime = Cesium.JulianDate.now();
 
 
-                walkwayDataSource.entities.values.forEach(function(entity) {
+                walkwayDataSource.entities.values.forEach(function (entity) {
 
                     if (!entity.polyline) {
                         return;
@@ -1295,7 +1297,7 @@
 
                 window.scnuWalkwayClickHandler.setInputAction(
 
-                    function(movement) {
+                    function (movement) {
 
                         // 기존 선택 해제
                         if (
@@ -1420,6 +1422,155 @@
             }
         }
 
+        async function loadCrosswalkPolygons() {
+
+            try {
+
+                var viewer = ws3d.viewer;
+
+                var dataSource =
+                    await Cesium.GeoJsonDataSource.load(
+                        "./assets/data/crosswalks_wgs84.geojson",
+                        {
+                            clampToGround: true
+                        }
+                    );
+
+                viewer.dataSources.add(dataSource);
+
+
+                // 평소에는 거의 안 보임
+                var normalColor =
+                    new Cesium.Color(
+                        1.0,
+                        0.85,
+                        0.0,
+                        0.01
+                    );
+
+                // 클릭하면 표시
+                var selectedColor =
+                    new Cesium.Color(
+                        1.0,
+                        0.75,
+                        0.0,
+                        0.35
+                    );
+
+
+                dataSource.entities.values.forEach(
+                    function (entity) {
+
+                        if (!entity.polygon) {
+                            return;
+                        }
+
+                        entity.polygon.material =
+                            normalColor;
+
+                        entity.polygon.outline =
+                            false;
+
+                        entity.scnuCrosswalkPolygon =
+                            true;
+                    }
+                );
+
+
+                var selectedCrosswalk = null;
+
+
+                if (window.scnuCrosswalkPolygonHandler) {
+                    window.scnuCrosswalkPolygonHandler.destroy();
+                }
+
+
+                window.scnuCrosswalkPolygonHandler =
+                    new Cesium.ScreenSpaceEventHandler(
+                        viewer.scene.canvas
+                    );
+
+
+                window.scnuCrosswalkPolygonHandler.setInputAction(
+
+                    function (movement) {
+
+                        // 이전 선택 원상복구
+                        if (
+                            selectedCrosswalk &&
+                            selectedCrosswalk.polygon
+                        ) {
+
+                            selectedCrosswalk.polygon.material =
+                                normalColor;
+
+                            selectedCrosswalk = null;
+                        }
+
+
+                        var picked =
+                            viewer.scene.pick(
+                                movement.position
+                            );
+
+
+                        if (
+                            !Cesium.defined(picked) ||
+                            !picked.id ||
+                            !picked.id.scnuCrosswalkPolygon
+                        ) {
+                            return;
+                        }
+
+
+                        selectedCrosswalk =
+                            picked.id;
+
+
+                        selectedCrosswalk.polygon.material =
+                            selectedColor;
+
+
+                        var id = "횡단보도";
+
+                        if (
+                            selectedCrosswalk.properties &&
+                            selectedCrosswalk.properties.id
+                        ) {
+
+                            id =
+                                selectedCrosswalk.properties.id
+                                    .getValue(
+                                        Cesium.JulianDate.now()
+                                    );
+                        }
+
+
+                        console.log(
+                            "횡단보도 선택:",
+                            id
+                        );
+                    },
+
+                    Cesium.ScreenSpaceEventType.LEFT_CLICK
+                );
+
+
+                console.log(
+                    "횡단보도 Polygon 로딩 완료:",
+                    dataSource.entities.values.length
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "횡단보도 Polygon 로딩 실패:",
+                    error
+                );
+            }
+        }
+
         function setupCampusCamera() {
 
             if (
@@ -1448,7 +1599,7 @@
 
             // 순천대학교 중심좌표
             var campusCenter = Cesium.Cartesian3.fromDegrees(
-            127.4797,
+                127.4797,
                 34.9687,
                 0
             );
@@ -1479,7 +1630,7 @@
 
                 // 일반 카메라 조작 상태로 복귀
                 camera.lookAtTransform(
-                Cesium.Matrix4.IDENTITY
+                    Cesium.Matrix4.IDENTITY
                 );
 
                 setTimeout(function () {
@@ -1528,15 +1679,15 @@
         }
 
         console.log(map.getLayerAllElement());
-        
+
         setTimeout(
-            function() {
+            function () {
                 map.onClick.addEventListener(buildingInfoEvent);
                 map.onClick.addEventListener(campusBoundaryEvent);
             },
             100);
-        var buildingInfoEvent = function(windowPosition, ecefPosition, cartographic, modelObject) {
-            
+        var buildingInfoEvent = function (windowPosition, ecefPosition, cartographic, modelObject) {
+
             if (cartographic) {
                 console.log(
                     "건물 좌표:",
@@ -1600,7 +1751,7 @@
                 }
             }
         };
-        
+
         function closeBuildingPanel() {
             document
                 .getElementById("buildingPanel")
@@ -1610,7 +1761,7 @@
         // 순천대학교 캠퍼스 경계 좌표 저장
         var campusBoundaryCoords = [];
 
-        var campusBoundaryEvent = function(
+        var campusBoundaryEvent = function (
             windowPosition,
             ecefPosition,
             cartographic
@@ -1637,7 +1788,7 @@
 
         var campusBoundaryCoords = [];
 
-        var campusBoundaryEvent = function(
+        var campusBoundaryEvent = function (
             windowPosition,
             ecefPosition,
             cartographic
@@ -1676,8 +1827,8 @@
                 `${year}.${month}.${day} ${hours}:${minutes}:${seconds}`;
         }
 
-updateSystemClock();
-setInterval(updateSystemClock, 1000);
+        updateSystemClock();
+        setInterval(updateSystemClock, 1000);
         function $id(id) {
             return document.getElementById(id);
         }
