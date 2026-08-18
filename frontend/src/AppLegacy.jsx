@@ -9,7 +9,6 @@ import {
   ChevronRight,
   Clock3,
   Cloud,
-  Eye,
   Gauge,
   RefreshCw,
   Settings,
@@ -215,7 +214,6 @@ export default function App() {
   const [activeTab, setActiveTab] = useState("dashboard"); // dashboard, parking, safety, energy, environment
   const [isPanelOpen, setIsPanelOpen] = useState(true);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [isRepresentativePlanOpen, setIsRepresentativePlanOpen] = useState(false);
   const [isSimulatorOpen, setIsSimulatorOpen] = useState(true);
   const [themeMode, setThemeMode] = useState("system");
   const [popupData, setPopupData] = useState(null);
@@ -433,6 +431,31 @@ export default function App() {
     setOverlayRefreshKey((value) => value + 1);
   }, []);
 
+  const fetchMicroclimate = useCallback(async (elementId) => {
+    setActiveTab("microclimate");
+    setIsPanelOpen(true);
+
+    const apiUrl = import.meta.env.VITE_API_URL ?? "http://127.0.0.1:8000";
+    setPopupLoading(true);
+    setPopupError(null);
+    setPopupData(null);
+
+    try {
+      const res = await fetch(`${apiUrl}/microclimate/elements/${elementId}/popup`);
+      if (res.status === 404) {
+        setPopupError("이 건물의 미기후 데이터가 없습니다.");
+        return;
+      }
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      setPopupData(await res.json());
+    } catch (err) {
+      console.error("팝업 API 호출 실패:", err);
+      setPopupError("데이터를 불러오지 못했습니다.");
+    } finally {
+      setPopupLoading(false);
+    }
+  }, []);
+
   const handleBuildingClick = useCallback(async (obj) => {
     const elementId =
       obj?.parent?.name && obj.parent.name !== "Scene"
@@ -457,26 +480,48 @@ export default function App() {
       return;
     }
 
-    const apiUrl = import.meta.env.VITE_API_URL ?? "http://127.0.0.1:8000";
-    setPopupLoading(true);
-    setPopupError(null);
-    setPopupData(null);
+    await fetchMicroclimate(elementId);
+  }, [openD4Section, selectBuilding, fetchMicroclimate]);
 
-    try {
-      const res = await fetch(`${apiUrl}/microclimate/elements/${elementId}/popup`);
-      if (res.status === 404) {
-        setPopupError("이 건물의 미기후 데이터가 없습니다.");
-        return;
+  // 클릭 없이 카메라가 건물 가까이 다가가기만 해도(자유 줌/궤도 회전) 그 건물의
+  // 미기후를 보여준다. 다만 사용자가 주차·안전/에너지/환경 시뮬처럼 다른 목적으로
+  // 명시적으로 골라둔 탭은 방해하지 않고, 기본 현황이거나 이미 미기후를 보는 중일
+  // 때만 자동으로 갱신한다. 반대로 모든 건물에서 일정 범위 밖으로 줌아웃하면
+  // (anchor === null) 미기후 보기를 접고 기본 현황 패널로 되돌아간다.
+  const handleBuildingProximity = useCallback((anchor) => {
+    if (!anchor) {
+      if (activeTab === "microclimate") {
+        setActiveTab("dashboard");
+        setSelectedId("");
+        setPopupData(null);
+        setPopupError(null);
       }
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      setPopupData(await res.json());
-    } catch (err) {
-      console.error("팝업 API 호출 실패:", err);
-      setPopupError("데이터를 불러오지 못했습니다.");
-    } finally {
-      setPopupLoading(false);
+      return;
     }
-  }, [openD4Section, selectBuilding]);
+
+    const elementId = anchor.elementId;
+    if (!elementId || !elementId.startsWith("BLD_")) return;
+    if (isD4ElementId(elementId)) return;
+    if (buildingViewMode !== "campus") return;
+    if (activeTab !== "dashboard" && activeTab !== "microclimate") return;
+
+    const buildingId = elementId.slice("BLD_".length);
+    if (activeTab === "microclimate" && selectedBuildingId === buildingId) return;
+
+    selectBuilding({
+      elementId,
+      buildingId,
+      displayName: anchor.displayName ?? anchor.name ?? buildingId,
+    });
+    fetchMicroclimate(elementId);
+  }, [activeTab, buildingViewMode, selectedBuildingId, selectBuilding, fetchMicroclimate]);
+
+  const closeMicroclimatePanel = useCallback(() => {
+    setActiveTab("dashboard");
+    setSelectedId("");
+    setPopupData(null);
+    setPopupError(null);
+  }, []);
 
   return (
     <div className="dashboard-root relative h-screen w-screen overflow-hidden bg-[var(--colors-canvas)] text-[var(--colors-ink)]">
@@ -516,6 +561,7 @@ export default function App() {
               selectedId={selectedId}
               onSelect={handleSelect}
               onBuildingClick={handleBuildingClick}
+              onBuildingProximity={handleBuildingProximity}
             />
             <CampusTrafficSimulation />
           </Suspense>
@@ -535,41 +581,6 @@ export default function App() {
       </div>
 
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(1,1,2,0.02)_0%,rgba(1,1,2,0.08)_50%,rgba(1,1,2,0.16)_100%)]" />
-
-      {buildingViewMode === "campus" && (
-        <VWorldCampusStatus
-          onSelection={(selection) => {
-            selectBuilding(selection);
-          }}
-        />
-      )}
-
-      {buildingViewMode === "campus" && (
-        isRepresentativePlanOpen ? (
-          <RepresentativePlanOverlayController
-            buildingIds={CAMPUS_REPRESENTATIVE_BUILDING_IDS}
-            refreshKey={overlayRefreshKey}
-            onOverlayDataChange={() => {}}
-            onBuildingSelect={(buildingId) => {
-              const elementId = selectBuilding({
-                elementId: `BLD_${buildingId}`,
-                buildingId,
-                displayName: buildingId,
-              });
-              if (isD4ElementId(elementId)) openD4Section();
-            }}
-            className="absolute left-6 top-6 z-20 max-h-[calc(100vh-3rem)] overflow-y-auto"
-          />
-        ) : (
-          <button
-            type="button"
-            onClick={() => setIsRepresentativePlanOpen(true)}
-            className="dashboard-ghost-button pointer-events-auto absolute left-6 top-6 z-20 inline-flex min-h-10 items-center gap-2 px-3 text-xs font-extrabold shadow-lg"
-          >
-            <Eye size={15} /> 대표 설치 계획
-          </button>
-        )
-      )}
 
       {buildingViewMode === "section" && (
         <D4SectionExperience
@@ -621,8 +632,7 @@ export default function App() {
             <div className="flex rounded-lg p-1 border border-[var(--colors-hairline)] gap-0.5" style={{ backgroundColor: 'color-mix(in srgb, var(--colors-surface-2) 50%, transparent)' }}>
               {[
                 { id: "dashboard", label: "기본 현황" },
-                { id: "parking", label: "주차" },
-                { id: "safety", label: "안전" },
+                { id: "parking_safety", label: "주차·안전" },
                 { id: "energy", label: "에너지" },
                 { id: "environment", label: "환경 시뮬" },
               ].map(tab => (
@@ -746,7 +756,142 @@ export default function App() {
               </>
             )}
 
-            {activeTab === "parking" && (
+            {activeTab === "microclimate" && (
+              <div className="space-y-4">
+                <div
+                  className="flex items-start justify-between rounded-lg px-4 py-3"
+                  style={{ background: popupData ? popupData.thermal.risk_color : "var(--colors-surface-2)" }}
+                >
+                  <div>
+                    <div className="text-[11px] font-extrabold uppercase tracking-[0.08em]" style={{ color: popupData ? "rgba(255,255,255,0.85)" : "var(--colors-primary)" }}>
+                      MICROCLIMATE
+                    </div>
+                    <h3
+                      className="mt-0.5 font-[700] text-[16px] tracking-[-0.1px]"
+                      style={{ color: popupData ? "white" : "var(--colors-ink)" }}
+                    >
+                      {popupData?.name ?? selectedId}
+                    </h3>
+                    {popupData && (
+                      <div className="mt-0.5 text-sm" style={{ color: "rgba(255,255,255,0.85)" }}>
+                        {popupData.zone_id} · {popupData.thermal.stress_category}
+                      </div>
+                    )}
+                  </div>
+                  <button
+                    onClick={closeMicroclimatePanel}
+                    className="transition-opacity hover:opacity-70"
+                    style={{ color: popupData ? "white" : "var(--colors-ink-muted)" }}
+                    aria-label="미기후 패널 닫기"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+
+                {popupLoading && (
+                  <div className="flex items-center justify-center gap-3 px-2 py-8 text-sm text-[var(--colors-ink-muted)]">
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-[var(--colors-hairline)] border-t-[var(--colors-primary)]" />
+                    미기후 데이터 불러오는 중…
+                  </div>
+                )}
+
+                {popupError && !popupLoading && (
+                  <div className="flex items-center gap-2 px-2 py-6 text-sm text-[var(--colors-semantic-danger,#D32F2F)]">
+                    <AlertTriangle size={16} /> {popupError}
+                  </div>
+                )}
+
+                {popupData && !popupLoading && (() => {
+                  const { thermal, factors, delta, reasons, base_weather } = popupData;
+                  const riskBg = `${thermal.risk_color}18`;
+                  const factorMeta = {
+                    shade:       { Icon: Sun,       label: "그늘" },
+                    vegetation:  { Icon: TreePine,  label: "녹지" },
+                    wind:        { Icon: Wind,      label: "통풍" },
+                    radiation:   { Icon: Thermometer, label: "복사" },
+                    material_heat: { Icon: Gauge,   label: "재질열" },
+                  };
+                  return (
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-4 gap-2">
+                        {[
+                          { label: "기온",   value: `${thermal.local_temp}°C` },
+                          { label: "체감",   value: `${thermal.feels_like}°C` },
+                          { label: "UTCI",   value: `${thermal.utci}°C` },
+                          { label: "WBGT",   value: `${thermal.wbgt}°C` },
+                        ].map(({ label, value }) => (
+                          <div key={label} className="rounded-lg p-2 text-center" style={{ background: riskBg }}>
+                            <div className="text-[10px] font-medium text-[var(--colors-ink-subtle)]">{label}</div>
+                            <div className="mt-1 text-[13px] font-[900] text-[var(--colors-ink)]">{value}</div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div>
+                        <div className="mb-1.5 flex items-center justify-between text-sm">
+                          <span className="text-[var(--colors-ink-subtle)]">위험도</span>
+                          <span className="font-[700]" style={{ color: thermal.risk_color }}>{thermal.risk_level}</span>
+                        </div>
+                        <div className="h-1.5 overflow-hidden rounded-full bg-[var(--colors-surface-2)]">
+                          <div className="h-full rounded-full" style={{ width: `${(thermal.risk_score / 4) * 100}%`, background: thermal.risk_color }} />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-4 gap-1.5">
+                        {Object.entries(factors).slice(0, 4).map(([key, val]) => {
+                          const meta = factorMeta[key] ?? { label: key };
+                          const Icon = meta.Icon;
+                          return (
+                            <div key={key} className="rounded-lg p-2 text-center bg-[var(--colors-surface-2)]">
+                              {Icon && <Icon size={12} className="mx-auto mb-1 text-[var(--colors-ink-muted)]" />}
+                              <div className="text-[10px] font-medium text-[var(--colors-ink-subtle)]">{meta.label}</div>
+                              <div className="mt-0.5 text-[10px] font-[800] text-[var(--colors-ink)]">{val.level}</div>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {delta?.label && (
+                        <div
+                          className="rounded-lg px-3 py-2 text-[12px] font-[700]"
+                          style={{ background: riskBg, color: delta.temp > 0 ? "#D32F2F" : "#1976D2" }}
+                        >
+                          📍 {delta.label}
+                        </div>
+                      )}
+
+                      {reasons?.length > 0 && (
+                        <div>
+                          <div className="mb-1.5 text-sm font-medium text-[var(--colors-ink-subtle)]">원인 분석</div>
+                          <ul className="space-y-1">
+                            {reasons.map((r) => (
+                              <li key={r} className="flex items-start gap-1.5 text-[12px] text-[var(--colors-ink-muted)]">
+                                <span className="mt-0.5 shrink-0 font-[900]" style={{ color: thermal.risk_color }}>·</span>
+                                {r}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      <div className="flex gap-3 border-t border-[var(--colors-hairline)] pt-3 text-[12px] font-[700] text-[var(--colors-ink-subtle)]">
+                        <span>🌡 {base_weather.temperature}°C</span>
+                        <span>💧 {base_weather.humidity}%</span>
+                        <span>💨 {base_weather.wind_speed}m/s</span>
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {!popupData && !popupLoading && !popupError && (
+                  <div className="px-2 text-sm leading-6 text-[var(--colors-ink-muted)]">
+                    이 건물의 상세 미기후 데이터를 선택해 확인하세요.
+                  </div>
+                )}
+              </div>
+            )}
+
+            {activeTab === "parking_safety" && (
               <div className="space-y-6">
                 <div className="pb-4 border-b border-[var(--colors-hairline)]/50">
                   <div className="text-base font-[700] text-[var(--colors-ink)] flex items-center gap-2">
@@ -765,11 +910,7 @@ export default function App() {
                     <MetricCard label="누적 출차" value={`${trafficStats?.exited ?? 0}대`} hint="오늘" />
                   </div>
                 </div>
-              </div>
-            )}
 
-            {activeTab === "safety" && (
-              <div className="space-y-6">
                 <TrafficSafetyPanel />
                 <div className="pb-4 border-b border-[var(--colors-hairline)]/50">
                   <div className="text-base font-[700] text-[var(--colors-ink)] flex items-center gap-2">
@@ -817,6 +958,25 @@ export default function App() {
 
             {activeTab === "energy" && (
               <div className="space-y-4">
+                <VWorldCampusStatus
+                  onSelection={(selection) => selectBuilding(selection)}
+                  className="w-full"
+                />
+                <RepresentativePlanOverlayController
+                  buildingIds={CAMPUS_REPRESENTATIVE_BUILDING_IDS}
+                  refreshKey={overlayRefreshKey}
+                  onOverlayDataChange={() => {}}
+                  onBuildingSelect={(buildingId) => {
+                    const elementId = selectBuilding({
+                      elementId: `BLD_${buildingId}`,
+                      buildingId,
+                      displayName: buildingId,
+                    });
+                    if (isD4ElementId(elementId)) openD4Section();
+                  }}
+                  className="w-full"
+                  widthClassName="max-w-none"
+                />
                 <BuildingAnalysis
                   key={`${selectedBuildingId}:${representativePlanId ?? "none"}`}
                   buildingId={selectedBuildingId}
@@ -920,151 +1080,6 @@ export default function App() {
           )}
         </div>
       </div>
-
-      {/* Building Info Modal */}
-      {buildingViewMode === "campus" && selectedId && (
-        <div className="pointer-events-auto absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50">
-          <FloatingPanel className="w-[340px] max-h-[80vh] overflow-y-auto px-0 py-0 shadow-2xl">
-            {/* Header */}
-            <div
-              className="sticky top-0 flex items-start justify-between px-5 py-4"
-              style={{ background: popupData ? popupData.thermal.risk_color : "var(--colors-surface-2)" }}
-            >
-              <div>
-                <h3
-                  className="font-[700] text-[16px] tracking-[-0.1px]"
-                  style={{ color: popupData ? "white" : "var(--colors-ink)" }}
-                >
-                  {popupData?.name ?? selectedId}
-                </h3>
-                {popupData && (
-                  <div className="mt-0.5 text-sm" style={{ color: "rgba(255,255,255,0.85)" }}>
-                    {popupData.zone_id} · {popupData.thermal.stress_category}
-                  </div>
-                )}
-              </div>
-              <button
-                onClick={() => { setSelectedId(""); setPopupData(null); setPopupError(null); }}
-                className="transition-opacity hover:opacity-70"
-                style={{ color: popupData ? "white" : "var(--colors-ink-muted)" }}
-              >
-                <X size={18} />
-              </button>
-            </div>
-
-            {/* Loading */}
-            {popupLoading && (
-              <div className="flex items-center justify-center gap-3 px-5 py-8 text-sm text-[var(--colors-ink-muted)]">
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-[var(--colors-hairline)] border-t-[var(--colors-primary)]" />
-                미기후 데이터 불러오는 중…
-              </div>
-            )}
-
-            {/* Error */}
-            {popupError && !popupLoading && (
-              <div className="flex items-center gap-2 px-5 py-6 text-sm text-[var(--colors-semantic-danger,#D32F2F)]">
-                <AlertTriangle size={16} /> {popupError}
-              </div>
-            )}
-
-            {/* Microclimate data */}
-            {popupData && !popupLoading && (() => {
-              const { thermal, factors, delta, reasons, base_weather } = popupData;
-              const riskBg = `${thermal.risk_color}18`;
-              const factorMeta = {
-                shade:       { Icon: Sun,       label: "그늘" },
-                vegetation:  { Icon: TreePine,  label: "녹지" },
-                wind:        { Icon: Wind,      label: "통풍" },
-                radiation:   { Icon: Thermometer, label: "복사" },
-                material_heat: { Icon: Gauge,   label: "재질열" },
-              };
-              return (
-                <div className="p-5 space-y-4">
-                  {/* Thermal 4-grid */}
-                  <div className="grid grid-cols-4 gap-2">
-                    {[
-                      { label: "기온",   value: `${thermal.local_temp}°C` },
-                      { label: "체감",   value: `${thermal.feels_like}°C` },
-                      { label: "UTCI",   value: `${thermal.utci}°C` },
-                      { label: "WBGT",   value: `${thermal.wbgt}°C` },
-                    ].map(({ label, value }) => (
-                      <div key={label} className="rounded-lg p-2 text-center" style={{ background: riskBg }}>
-                        <div className="text-[10px] font-medium text-[var(--colors-ink-subtle)]">{label}</div>
-                        <div className="mt-1 text-[13px] font-[900] text-[var(--colors-ink)]">{value}</div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Risk bar */}
-                  <div>
-                    <div className="mb-1.5 flex items-center justify-between text-sm">
-                      <span className="text-[var(--colors-ink-subtle)]">위험도</span>
-                      <span className="font-[700]" style={{ color: thermal.risk_color }}>{thermal.risk_level}</span>
-                    </div>
-                    <div className="h-1.5 overflow-hidden rounded-full bg-[var(--colors-surface-2)]">
-                      <div className="h-full rounded-full" style={{ width: `${(thermal.risk_score / 4) * 100}%`, background: thermal.risk_color }} />
-                    </div>
-                  </div>
-
-                  {/* Factors */}
-                  <div className="grid grid-cols-4 gap-1.5">
-                    {Object.entries(factors).slice(0, 4).map(([key, val]) => {
-                      const meta = factorMeta[key] ?? { label: key };
-                      const Icon = meta.Icon;
-                      return (
-                        <div key={key} className="rounded-lg p-2 text-center bg-[var(--colors-surface-2)]">
-                          {Icon && <Icon size={12} className="mx-auto mb-1 text-[var(--colors-ink-muted)]" />}
-                          <div className="text-[10px] font-medium text-[var(--colors-ink-subtle)]">{meta.label}</div>
-                          <div className="mt-0.5 text-[10px] font-[800] text-[var(--colors-ink)]">{val.level}</div>
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  {/* Delta */}
-                  {delta?.label && (
-                    <div
-                      className="rounded-lg px-3 py-2 text-[12px] font-[700]"
-                      style={{ background: riskBg, color: delta.temp > 0 ? "#D32F2F" : "#1976D2" }}
-                    >
-                      📍 {delta.label}
-                    </div>
-                  )}
-
-                  {/* Reasons */}
-                  {reasons?.length > 0 && (
-                    <div>
-                      <div className="mb-1.5 text-sm font-medium text-[var(--colors-ink-subtle)]">원인 분석</div>
-                      <ul className="space-y-1">
-                        {reasons.map((r) => (
-                          <li key={r} className="flex items-start gap-1.5 text-[12px] text-[var(--colors-ink-muted)]">
-                            <span className="mt-0.5 shrink-0 font-[900]" style={{ color: thermal.risk_color }}>·</span>
-                            {r}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  {/* Base weather */}
-                  <div className="flex gap-3 border-t border-[var(--colors-hairline)] pt-3 text-[12px] font-[700] text-[var(--colors-ink-subtle)]">
-                    <span>🌡 {base_weather.temperature}°C</span>
-                    <span>💧 {base_weather.humidity}%</span>
-                    <span>💨 {base_weather.wind_speed}m/s</span>
-                  </div>
-                </div>
-              );
-            })()}
-
-            {/* Fallback: selected map element has no microclimate response yet. */}
-            {!popupData && !popupLoading && !popupError && (
-              <div className="p-5 text-sm leading-6 text-[var(--colors-ink-muted)]">
-                이 건물의 상세 미기후 데이터를 선택해 확인하세요.
-              </div>
-            )}
-          </FloatingPanel>
-        </div>
-      )}
 
       {/* Settings Modal */}
       {isSettingsOpen && (

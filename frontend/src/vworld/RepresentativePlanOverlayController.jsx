@@ -19,6 +19,7 @@ export function RepresentativePlanOverlayController({
   refreshKey,
   defaultVisible = true,
   className = "",
+  widthClassName = "max-w-72",
 }) {
   const api = useMemo(() => client ?? createInstallationPlanClient(), [client]);
   const callbackRef = useRef(onOverlayDataChange);
@@ -64,8 +65,8 @@ export function RepresentativePlanOverlayController({
 
   const overlayByBuilding = new Map(overlays.map((overlay) => [overlay.buildingId, overlay]));
   const label = visible ? "대표 설치 계획 숨기기" : "대표 설치 계획 표시하기";
-  return <aside className={`dashboard-card pointer-events-auto max-w-72 rounded-lg p-2 ${className}`} aria-label="대표 설치 계획 지도 레이어">
-    <button type="button" aria-label={label} aria-pressed={visible} onClick={toggle} className="dashboard-ghost-button inline-flex min-h-10 items-center gap-2 px-3 text-xs font-extrabold focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--colors-primary)]">
+  return <aside className={`dashboard-card pointer-events-auto ${widthClassName} rounded-lg p-2 ${className}`} aria-label="대표 설치 계획 지도 레이어">
+    <button type="button" aria-label={label} aria-pressed={visible} onClick={toggle} className="dashboard-ghost-button flex min-h-10 w-full items-center justify-center gap-2 px-3 text-xs font-extrabold focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--colors-primary)]">
       {state.status === "loading" ? <RefreshCw className="animate-spin" size={15} /> : visible ? <Eye size={15} /> : <EyeOff size={15} />}
       대표 설치 계획
     </button>
