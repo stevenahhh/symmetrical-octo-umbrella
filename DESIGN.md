@@ -37,6 +37,8 @@ An operational campus command center with restrained, high-contrast surfaces ove
 - Base unit: 4px.
 - Tokens: `--spacing-xxs` 4px, `--spacing-xs` 8px, `--spacing-sm` 12px, `--spacing-md` 16px, `--spacing-lg` 24px, `--spacing-xl` 32px, `--spacing-xxl` 48px.
 - The dashboard is a bounded `100dvh` overlay-stack. VWorld/Three.js owns the spatial canvas; the right dashboard panel owns its own vertical scroll.
+- The energy detail panel grows from 440px up to 680px while retaining map space; changes to the remaining VWorld area drive camera reframing.
+- At 439px and below, the detail panel uses the full viewport and the panel toggle restores the spatial canvas when needed.
 - Popups remain within the viewport and collapse to the available inline size on narrow screens.
 
 ## 5. Components

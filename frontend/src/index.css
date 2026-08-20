@@ -91,8 +91,13 @@ body {
   color: var(--colors-ink);
 }
 
+.dashboard-root--building-focus {
+  --dashboard-panel-width: min(680px, max(440px, 58vw));
+}
+
 @media (max-width: 439px) {
   :root { --dashboard-panel-width: 100vw; }
+  .dashboard-root--building-focus { --dashboard-panel-width: 100vw; }
   .dashboard-root select,
   .dashboard-root input,
   .dashboard-root button { min-width: 0; }

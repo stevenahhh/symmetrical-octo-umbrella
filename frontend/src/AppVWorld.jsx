@@ -377,6 +377,7 @@ export default function App() {
       setSelectedId(displayName);
       setSelectedBuildingId(buildingId);
       setActiveTab("energy");
+      setIsPanelOpen(true);
       setPopupData(null);
       setPopupError(null);
       fetchPopupData(elementId);
@@ -426,7 +427,7 @@ export default function App() {
   }, []);
 
   return (
-    <div className="dashboard-root relative h-screen w-screen overflow-hidden bg-[var(--colors-canvas)] text-[var(--colors-ink)]">
+    <div className={`dashboard-root relative h-screen w-screen overflow-hidden bg-[var(--colors-canvas)] text-[var(--colors-ink)] ${activeTab === "energy" ? "dashboard-root--building-focus" : ""}`}>
       <div className="absolute inset-0" style={{ background: sceneBackground }} />
 
       <div className="absolute inset-0 z-0">
@@ -702,6 +703,13 @@ export default function App() {
 
             {activeTab === "energy" && (
               <div className="space-y-4">
+                <section
+                  role="region"
+                  aria-label={`${selectedBuildingId} 건물 전력 현황`}
+                  className="rounded-xl border border-[var(--colors-hairline)] bg-[color-mix(in_srgb,var(--colors-surface-1)_72%,transparent)] p-4"
+                >
+                  <EnergyDashboard key={selectedBuildingId} buildingId={selectedBuildingId} />
+                </section>
                 <BuildingAnalysis
                   key={`${selectedBuildingId}:${representativePlanId ?? "none"}`}
                   buildingId={selectedBuildingId}
@@ -709,7 +717,6 @@ export default function App() {
                   representativePlanId={representativePlanId}
                 />
                 <CampusComparison onOpenRecommendation={setEditorRequest} />
-                <EnergyDashboard key={selectedBuildingId} buildingId={selectedBuildingId} />
               </div>
             )}
 
@@ -825,6 +832,7 @@ export default function App() {
               </div>
               <button
                 onClick={() => { setSelectedId(""); setPopupData(null); setPopupError(null); }}
+                aria-label="건물 정보 닫기"
                 className="transition-opacity hover:opacity-70"
                 style={{ color: popupData ? "white" : "var(--colors-ink-muted)" }}
               >
