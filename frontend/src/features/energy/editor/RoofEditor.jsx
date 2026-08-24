@@ -104,9 +104,9 @@ export function RoofEditor({ buildingId = "D4", scenarioId = DEFAULT_SCENARIO_ID
   const selectedArray = editor?.previewArrays.find((item) => item.id === editor.selectedArrayId) ?? null;
   const summary = useMemo(() => editor ? summarizeLayout(editor) : null, [editor]);
 
-  if (!editor) return <div className="absolute inset-0 grid place-items-center bg-[#07101b] text-sm text-white" role={status.kind === "error" ? "alert" : "status"}>{status.message || "옥상 데이터를 불러오는 중입니다."}</div>;
+  if (!editor) return <div className="absolute inset-0 grid place-items-center text-sm text-white" role={status.kind === "error" ? "alert" : "status"}><span className="rounded-md bg-black/60 px-3 py-2 backdrop-blur-sm">{status.message || "옥상 데이터를 불러오는 중입니다."}</span></div>;
 
-  return <div className="absolute inset-0 flex min-h-0 flex-col bg-[#07101b] md:flex-row" aria-label={`${buildingId} 태양광 설치 모드`}>
+  return <div className="absolute inset-0 flex min-h-0 flex-col md:flex-row" aria-label={`${buildingId} 태양광 설치 모드`}>
     <div className="relative min-h-0 min-w-0 flex-1">
       <RoofEditorScene state={editor} onSelect={(id) => setEditor((current) => selectArray(current, id))} onMove={(origin) => setEditor((current) => moveSelectedArray(current, origin))} />
       <div className="pointer-events-none absolute left-3 top-16 z-10 flex items-center gap-2 rounded-md border border-white/15 bg-black/65 px-3 py-2 text-xs font-bold text-white/90 backdrop-blur-sm sm:left-4 sm:top-20">

@@ -161,8 +161,7 @@ function RoofPlane({ state, center, onSelect, onMove }) {
 
 export function RoofEditorScene({ state, onSelect, onMove }) {
   const center = useMemo(() => roofCenter(state.roof), [state.roof]);
-  return <Canvas camera={{ position: [42, 82, 78], fov: 38, near: 2, far: 350 }} gl={{ toneMappingExposure: 1.12, antialias: true }} aria-label={`${state.roof.buildingId} 옥상 배열 배치 캔버스`}>
-    <color attach="background" args={["#0b1726"]} />
+  return <Canvas camera={{ position: [42, 82, 78], fov: 38, near: 2, far: 350 }} gl={{ toneMappingExposure: 1.12, antialias: true, alpha: true }} aria-label={`${state.roof.buildingId} 옥상 배열 배치 캔버스`}>
     <RoofPlane state={state} center={center} onSelect={onSelect} onMove={onMove} />
   </Canvas>;
 }

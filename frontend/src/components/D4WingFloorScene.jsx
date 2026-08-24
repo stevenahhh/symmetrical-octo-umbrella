@@ -107,7 +107,7 @@ export function D4WingFloorScene({ building, activeWingId, onSelectFloor }) {
   const centerY = GROUP_Y_OFFSET + ((maxFloors - 1) * FLOOR_STEP) / 2;
 
   return (
-    <Canvas camera={{ fov: 24 }} shadows>
+    <Canvas camera={{ fov: 24 }} shadows gl={{ alpha: true }}>
       <FitCamera contentWidth={contentWidth} contentHeight={contentHeight} centerY={centerY} />
       <ambientLight intensity={1.15} />
       <directionalLight position={[6, 9, 6]} intensity={1.35} castShadow />

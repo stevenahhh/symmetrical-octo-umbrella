@@ -1,5 +1,5 @@
 import { ArrowLeft, Building2, Sun } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { D4RoomGridSelect } from "../components/D4RoomGridSelect";
 import { D4WingFloorSelect } from "../components/D4WingFloorSelect";
@@ -9,6 +9,12 @@ import { D4_BUILDING_DATA, D4_ROOMS, getWingById } from "../utils/d4BuildingData
 import { getCurrentRoomStatus, isRoomInUse } from "../utils/d4RoomStatus.mjs";
 
 const DEFAULT_WING_ID = D4_BUILDING_DATA.wings[0].id;
+
+// 공간 탐색 화면 위에서 마우스 휠/트랙패드로 축소(줌아웃)하면 캠퍼스로 돌아간다.
+// 태양광 설치 화면은 목록 스크롤·옥상 편집기 자체 줌과 휠을 이미 쓰고 있어서
+// 겹치지 않도록 공간 탐색 모드에서만 반응한다.
+const ZOOM_OUT_EXIT_THRESHOLD = 220;
+const ZOOM_OUT_RESET_DELAY_MS = 400;
 
 export function D4SectionExperience({
   onClose,
@@ -31,6 +37,13 @@ export function D4SectionExperience({
   const [d4SelectedFloor, setD4SelectedFloor] = useState(1);
   const [selectedRoomId, setSelectedRoomId] = useState(null);
   const [currentTime] = useState(() => new Date());
+  // 확대된 캠퍼스 화면은 그대로 배경으로 유지되고, 이 패널은 마운트 직후
+  // 살짝 페이드인되어 건물 기능 UI만 그 위에 자연스럽게 나타나는 느낌을 준다.
+  const [hasEntered, setHasEntered] = useState(false);
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => setHasEntered(true));
+    return () => cancelAnimationFrame(raf);
+  }, []);
   const activeWing = getWingById(d4ActiveWingId);
   const floorRooms = useMemo(
     () => D4_ROOMS.filter((room) => room.wing === d4ActiveWingId && room.floor === d4SelectedFloor),
@@ -77,6 +90,29 @@ export function D4SectionExperience({
     setSelectedRoomId(null);
   };
 
+  const zoomOutAccumRef = useRef(0);
+  const zoomOutResetTimerRef = useRef(null);
+  const handleZoomOutWheel = useCallback((event) => {
+    if (experienceMode !== "rooms") return;
+    // 사용 중인 강의실 목록처럼 자체 스크롤이 있는 영역에서는 목록 스크롤을 그대로 둔다.
+    if (event.target.closest?.(".overflow-y-auto")) return;
+    if (event.deltaY <= 0) {
+      zoomOutAccumRef.current = 0;
+      return;
+    }
+    zoomOutAccumRef.current += event.deltaY;
+    clearTimeout(zoomOutResetTimerRef.current);
+    zoomOutResetTimerRef.current = window.setTimeout(() => {
+      zoomOutAccumRef.current = 0;
+    }, ZOOM_OUT_RESET_DELAY_MS);
+    if (zoomOutAccumRef.current >= ZOOM_OUT_EXIT_THRESHOLD) {
+      zoomOutAccumRef.current = 0;
+      clearTimeout(zoomOutResetTimerRef.current);
+      onClose?.();
+    }
+  }, [experienceMode, onClose]);
+  useEffect(() => () => clearTimeout(zoomOutResetTimerRef.current), []);
+
   const jumpToInUseRoom = (room) => {
     setD4ActiveWingId(room.wing);
     setD4SelectedFloor(room.floor);
@@ -85,9 +121,15 @@ export function D4SectionExperience({
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-[100] min-h-0 overflow-hidden bg-[#09111d]" aria-label="D4 공과대학 3호관 상세 경험">
+    <div
+      className={`fixed inset-0 z-[100] min-h-0 overflow-hidden transition-opacity duration-500 ease-out ${
+        hasEntered ? "opacity-100" : "opacity-0"
+      }`}
+      onWheel={handleZoomOutWheel}
+      aria-label="D4 공과대학 3호관 상세 경험"
+    >
       {experienceMode === "rooms" ? (
-        <div className="absolute inset-0 bg-[var(--colors-canvas)] pt-16">
+        <div className="absolute inset-0 pt-16">
           {d4View === "wings" ? (
             <D4WingFloorSelect
               building={D4_BUILDING_DATA}
@@ -127,7 +169,7 @@ export function D4SectionExperience({
         onBackToPlans={() => setIsPlanEditorOpen(false)}
       />
   ) : (
-    <div className="absolute inset-0 overflow-y-auto bg-[#07101b] px-4 pb-8 pt-20 sm:px-6">
+    <div className="absolute inset-0 overflow-y-auto px-4 pb-8 pt-20 sm:px-6">
       <InstallationPlanManager
         buildingId={buildingId}
         refreshKey={`${planRefreshKey ?? ""}:${localPlanRevision}`}

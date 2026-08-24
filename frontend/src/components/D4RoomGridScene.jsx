@@ -88,7 +88,7 @@ export function D4RoomGridScene({ rooms, roomUsageById, selectedRoomId, onSelect
   const contentDepth = rowCount * ROW_DEPTH + 1.6;
 
   return (
-    <Canvas camera={{ fov: 26 }} shadows>
+    <Canvas camera={{ fov: 26 }} shadows gl={{ alpha: true }}>
       <FitCamera contentWidth={contentWidth} contentDepth={contentDepth} />
       <ambientLight intensity={1.2} />
       <directionalLight position={[5, 8, 6]} intensity={1.3} castShadow />
