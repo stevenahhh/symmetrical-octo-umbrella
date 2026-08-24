@@ -369,6 +369,13 @@ export default function App() {
     setIsPanelOpen(false);
   }, []);
 
+  // 건물을 클릭하거나 카메라가 D4에 충분히 가까이(줌인) 다가갔을 때 쓰는 진입 경로.
+  // 확대된 캠퍼스 화면은 그대로 배경으로 유지한 채, 그 위에 공간 탐색/태양광 설치
+  // 패널을 투명 오버레이로 띄운다(D4SectionExperience가 자체 페이드인 처리).
+  const enterD4Section = useCallback((request = null) => {
+    openD4Section(request);
+  }, [openD4Section]);
+
   const handleExitD4Section = useCallback(() => {
     setBuildingViewMode("campus");
     setIsPanelOpen(true);
@@ -476,12 +483,18 @@ export default function App() {
     });
 
     if (isD4ElementId(elementId)) {
-      openD4Section();
+      enterD4Section();
       return;
     }
 
     await fetchMicroclimate(elementId);
-  }, [openD4Section, selectBuilding, fetchMicroclimate]);
+  }, [enterD4Section, selectBuilding, fetchMicroclimate]);
+
+  // 클릭 없이 카메라가 D4를 일정 크기 이상 확대(줌인)했을 때도 같은 진입 전환을 탄다.
+  const handleD4Enter = useCallback(() => {
+    if (buildingViewMode !== "campus") return;
+    enterD4Section();
+  }, [buildingViewMode, enterD4Section]);
 
   // 클릭 없이 카메라가 건물 가까이 다가가기만 해도(자유 줌/궤도 회전) 그 건물의
   // 미기후를 보여준다. 다만 사용자가 주차·안전/에너지/환경 시뮬처럼 다른 목적으로
@@ -562,6 +575,7 @@ export default function App() {
               onSelect={handleSelect}
               onBuildingClick={handleBuildingClick}
               onBuildingProximity={handleBuildingProximity}
+              onD4Enter={handleD4Enter}
             />
             <CampusTrafficSimulation />
           </Suspense>

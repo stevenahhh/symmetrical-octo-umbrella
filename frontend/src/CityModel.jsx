@@ -12,6 +12,11 @@ import commonElements from "../../common/data/common_elemetns.json";
 const PROXIMITY_ENTER_DISTANCE = 120;
 const PROXIMITY_EXIT_DISTANCE = 170;
 
+// D4는 근접만으로 "공간 탐색" 화면 자체를 열어버리는, 훨씬 더 무거운 전환이라
+// 일반 미기후 근접(120)보다 확실히 더 가까이(줌인) 다가갔을 때만 반응하게 한다.
+const D4_ENTER_DISTANCE = 55;
+const D4_ELEMENT_ID = "BLD_D4";
+
 const BLOCKED_ELEMENT_IDS = new Set(["BLD_C1001"]);
 const BUILDING_MAP = {
   대학본부: "BLD_A1",
@@ -110,6 +115,7 @@ export function CityModel({
   selectedId,
   onBuildingClick,
   onBuildingProximity,
+  onD4Enter,
   controlsRef,
   isNight = false,
   ...props
@@ -120,6 +126,7 @@ export function CityModel({
   const [isAutoFocusing, setIsAutoFocusing] = useState(false);
   const [labelScale, setLabelScale] = useState(1);
   const closeElementIdRef = useRef(null);
+  const isInsideD4Ref = useRef(false);
 
   useEffect(() => {
     const controls = controlsRef?.current;
@@ -220,9 +227,10 @@ export function CityModel({
       }
     }
 
-    if (onBuildingProximity && labelAnchors.length > 0) {
+    if ((onBuildingProximity || onD4Enter) && labelAnchors.length > 0) {
       let nearest = null;
       let nearestDistance = Infinity;
+      let d4Distance = Infinity;
       for (const anchor of labelAnchors) {
         // labelAnchors의 position은 재중심화 그룹(-center) 적용 전 좌표라서,
         // 카메라와 같은 월드 좌표계로 맞추려면 center를 빼줘야 한다.
@@ -237,13 +245,30 @@ export function CityModel({
           nearestDistance = distance;
           nearest = anchor;
         }
+        if (anchor.elementId === D4_ELEMENT_ID) {
+          d4Distance = distance;
+        }
       }
 
-      const threshold = closeElementIdRef.current ? PROXIMITY_EXIT_DISTANCE : PROXIMITY_ENTER_DISTANCE;
-      const nextCloseElementId = nearest && nearestDistance < threshold ? nearest.elementId : null;
-      if (nextCloseElementId !== closeElementIdRef.current) {
-        closeElementIdRef.current = nextCloseElementId;
-        onBuildingProximity(nextCloseElementId ? nearest : null);
+      if (onBuildingProximity) {
+        const threshold = closeElementIdRef.current ? PROXIMITY_EXIT_DISTANCE : PROXIMITY_ENTER_DISTANCE;
+        const nextCloseElementId = nearest && nearestDistance < threshold ? nearest.elementId : null;
+        if (nextCloseElementId !== closeElementIdRef.current) {
+          closeElementIdRef.current = nextCloseElementId;
+          onBuildingProximity(nextCloseElementId ? nearest : null);
+        }
+      }
+
+      if (onD4Enter) {
+        const isInside = isInsideD4Ref.current;
+        const nextIsInside = d4Distance < D4_ENTER_DISTANCE;
+        if (nextIsInside && !isInside) {
+          isInsideD4Ref.current = true;
+          onD4Enter();
+        } else if (!nextIsInside && isInside && d4Distance > D4_ENTER_DISTANCE * 1.3) {
+          // 다시 트리거될 수 있도록, 확실히 멀어졌을 때만 "안에 있음" 상태를 푼다.
+          isInsideD4Ref.current = false;
+        }
       }
     }
   });
